@@ -126,7 +126,7 @@ class Announcements extends React.PureComponent {
 			  [code]コード[/code]<br />
 			  [quote]引用[/quote]<br />
         [faicon]coffee[/faicon](<span class="fa fa-coffee"></span>の例)<br />
-        <a href="https://fontawesome.com/v4.7.0/icons/" target="_blank">faicon アイコン一覧</a>
+        <a href="https://yuzulabo.github.io/generate-faicon/" target="_blank">faiconを生成</a>
 			  </p>
             </div>
           </Collapsable>
