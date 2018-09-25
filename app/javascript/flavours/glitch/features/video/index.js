@@ -135,7 +135,10 @@ export default class Video extends React.PureComponent {
     this.seek = c;
   }
 
-  handleClickRoot = e => e.stopPropagation();
+  handleMouseDownRoot = e => {
+    e.preventDefault();
+    e.stopPropagation();
+  }
 
   handlePlay = () => {
     this.setState({ paused: false });
@@ -261,11 +264,12 @@ export default class Video extends React.PureComponent {
   }
 
   handleOpenVideo = () => {
-    const { src, preview, width, height } = this.props;
+    const { src, preview, width, height, alt } = this.props;
     const media = fromJS({
       type: 'video',
       url: src,
       preview_url: preview,
+      description: alt,
       width,
       height,
     });
@@ -318,7 +322,7 @@ export default class Video extends React.PureComponent {
         ref={this.setPlayerRef}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
-        onClick={this.handleClickRoot}
+        onMouseDown={this.handleMouseDownRoot}
         tabIndex={0}
       >
         <video

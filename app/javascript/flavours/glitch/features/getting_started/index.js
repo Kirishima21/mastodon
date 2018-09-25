@@ -191,6 +191,9 @@ export default class GettingStarted extends ImmutablePureComponent {
                   }}
                 />
               </p>
+              <p>
+                <iframe src="https://discordapp.com/widget?id=481529935039561748&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" class="discord"></iframe>
+              </p>
             </div>
           </div>
         </div>
