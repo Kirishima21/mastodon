@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import { defineMessages } from 'react-intl';
 import classNames from 'classnames';
 
 //  Actions.
@@ -44,6 +45,11 @@ const CustomEmojiOekaki = class extends React.PureComponent {
     );
   }
 };
+
+//  Messages.
+const messages = defineMessages({
+  compose: { id: 'navigation_bar.compose', defaultMessage: 'Compose new toot' },
+});
 
 //  State mapping.
 const mapStateToProps = state => ({
@@ -116,7 +122,7 @@ class Drawer extends React.Component {
 
     //  The result.
     return (
-      <div className={computedClass}>
+      <div className={computedClass} role='region' aria-label={intl.formatMessage(messages.compose)}>
         {multiColumn ? (
           <DrawerHeader
             columns={columns}
