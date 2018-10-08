@@ -20,8 +20,12 @@ export const store = configureStore();
 const hydrateAction = hydrateStore(initialState);
 store.dispatch(hydrateAction);
 
-// load custom emojis
-store.dispatch(fetchCustomEmojis());
+// load custom emojis after 10 sec
+setTimeout(
+  function(){
+    store.dispatch(fetchCustomEmojis());
+  },10 * 1000
+)
 
 export default class Mastodon extends React.PureComponent {
 
