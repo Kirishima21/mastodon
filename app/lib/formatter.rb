@@ -103,8 +103,12 @@ class Formatter
 
   private
 
+  def html_entities
+    @html_entities ||= HTMLEntities.new
+  end
+
   def encode(html)
-    HTMLEntities.new.encode(html)
+    html_entities.encode(html)
   end
 
   def encode_and_link_urls(html, accounts = nil, options = {})
@@ -161,7 +165,7 @@ class Formatter
         emoji     = emoji_map[shortcode]
 
         if emoji
-          replacement = "<img draggable=\"false\" class=\"emojione\" alt=\":#{shortcode}:\" title=\":#{shortcode}:\" src=\"#{emoji}\" />"
+          replacement = "<img draggable=\"false\" class=\"emojione\" alt=\":#{encode(shortcode)}:\" title=\":#{encode(shortcode)}:\" src=\"#{encode(emoji)}\" />"
           before_html = shortname_start_index.positive? ? html[0..shortname_start_index - 1] : ''
           html        = before_html + replacement + html[i + 1..-1]
           i          += replacement.size - (shortcode.size + 2) - 1
@@ -231,7 +235,7 @@ class Formatter
     return link_to_account(acct) unless linkable_accounts and domain != "twitter.com"
 
     account = linkable_accounts.find { |item| TagManager.instance.same_acct?(item.acct, acct) }
-    account ? mention_html(account) : "@#{acct}"
+    account ? mention_html(account) : "@#{encode(acct)}"
   end
 
   def link_to_account(acct)
@@ -244,7 +248,7 @@ class Formatter
     domain  = nil if TagManager.instance.local_domain?(domain)
     account = EntityCache.instance.mention(username, domain)
 
-    account ? mention_html(account) : "@#{acct}"
+    account ? mention_html(account) : "@#{encode(acct)}"
   end
 
   def link_to_hashtag(entity)
@@ -262,11 +266,11 @@ class Formatter
   end
 
   def hashtag_html(tag)
-    "<a href=\"#{tag_url(tag.downcase)}\" class=\"mention hashtag\" rel=\"tag\">#<span>#{tag}</span></a>"
+    "<a href=\"#{encode(tag_url(tag.downcase))}\" class=\"mention hashtag\" rel=\"tag\">#<span>#{encode(tag)}</span></a>"
   end
 
   def mention_html(account)
-    "<span class=\"h-card\"><a href=\"#{TagManager.instance.url_for(account)}\" class=\"u-url mention\">@<span>#{account.username}</span></a></span>"
+    "<span class=\"h-card\"><a href=\"#{encode(TagManager.instance.url_for(account))}\" class=\"u-url mention\">@<span>#{encode(account.username)}</span></a></span>"
   end
 
   def mention_twitter_html(username)
