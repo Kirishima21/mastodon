@@ -332,14 +332,12 @@ sk:
         delete: Vymaž
         placeholder: Opíš aké opatrenia boli urobené, alebo akékoľvek iné súvisiace aktualizácie…
       reopen: Znovu otvor report
-      report: Nahlásiť
+      report: 'Nahlásiť #%{id}'
       reported_account: Nahlásený účet
       reported_by: Nahlásené užívateľom
       resolved: Vyriešené
       resolved_msg: Hlásenie úspešne vyriešené!
-      silence_account: Zamĺčať účet
       status: Stav
-      suspend_account: Pozastaviť účet
       title: Reporty
       unassign: Odobrať
       unresolved: Nevyriešené

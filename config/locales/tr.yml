@@ -115,9 +115,7 @@ tr:
       reported_account: Şikayet edilen hesap
       reported_by: Şikayet eden
       resolved: Giderildi
-      silence_account: Hesabı sustur
       status: Durum
-      suspend_account: Hesabı uzaklaştır
       title: Şikayetler
       unresolved: Giderilmedi
     settings:
@@ -224,7 +222,7 @@ tr:
       too_many: 4'ten fazla dosya ekleyemezsiniz
   notification_mailer:
     digest:
-      body: 'Son ziyaretiniz olan %{since}''den beri %{instance}''da kaçırdığınız şeylerin özeti:'
+      body: 'Son ziyaretiniz olan %{since}''den beri''da kaçırdığınız şeylerin özeti:'
       mention: "%{name} senden bahsetti:"
       new_followers_summary:
         one: Yeni bir takipçiniz var!
