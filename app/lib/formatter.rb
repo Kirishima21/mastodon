@@ -311,7 +311,7 @@ class Formatter
           :description => 'Large text',
           :example => '[large=2x]Large text[/large]',
           :allow_quick_param => true, :allow_between_as_param => false,
-          :quick_param_format => /(2x|3x|4x|5x)/,
+          :quick_param_format => /(2x|3x|4x|5x|ex)/,
           :quick_param_format_description => 'The size parameter \'%param%\' is incorrect, a number is expected',
           :param_tokens => [{:token => :size}]},
         :color => {
@@ -346,7 +346,7 @@ class Formatter
             { :token => :width, :optional => true, :default => 400 },
             { :token => :height, :optional => true, :default => 320 }
           ]},
-      }, :enable, :i, :b, :quote, :code, :size, :u, :s, :spin, :pulse, :flip, :large, :colorhex, :faicon, :youtube)
+      }, :enable, :i, :b, :quote, :code, :u, :s, :spin, :pulse, :flip, :large, :colorhex, :faicon, :youtube)
     rescue Exception => e
     end
     html

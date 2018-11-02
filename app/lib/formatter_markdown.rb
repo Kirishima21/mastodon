@@ -211,7 +211,7 @@ class Formatter_Markdown
 
         #前々から要望があったcode内でBBCodeを無効化するための奴
         def escape_bbcode(string)
-            string.gsub(/\[/){ "［" }
+            string.gsub(/\[/){ "&#091;" }
         end
 
         #markdownの中でmarkdownを展開させないためのエスケープする奴
@@ -228,7 +228,7 @@ class Formatter_Markdown
 
         #code内の一部を色分けするための変更
         def code_contents(string)
-            simple = string.gsub(/(true|error|false|failed|def|puts|end|fn|let|mut|String|println!)/ ,
+            simple = string.gsub(/(true|error|false|failed|def|puts|end|fn|let|mut|use|String|println!)/ ,
                 "true" => "<span class='positive'>#{:true}</span>",
                 "error" => "<span class='negative'>#{:error}</span>",
                 "false" => "<span class='negative'>#{:false}</span>",
@@ -239,8 +239,9 @@ class Formatter_Markdown
                 "fn" => "<span class='rust-fanc'>#{:fn}</span>",
                 "let" => "<span class='rust-fanc'>#{:let}</span>",
                 "mut" => "<span class='rust-fanc'>#{:mut}</span>",
-                "String" => "<span class='rust-fanc'>#{:String}</span>",
-                "println!" => "<span class='rust-fanc'>#{:println!}</span>",
+                "use" => "<span class='rust-fanc'>#{:use}</span>",
+                "String" => "<span class='rust-macro'>#{:String}</span>",
+                "println!" => "<span class='rust-macro'>#{:println!}</span>",
             )
             simple.gsub(/(&quot;[a-zA-Z0-9_ ,]+&quot;)/){ "<span class='contents'>#{$1}</span>" }
 #                "" => "<span class=''>#{:}</span>",
