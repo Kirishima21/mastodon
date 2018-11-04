@@ -4065,7 +4065,7 @@
                                 '</div>' +
                             '</div>' +
                             /* Cutls P */
-                            '<span class="moe" style="display:none;">NowPlaying<img src="" id="moe-image" style="opacity:0;width:20px;height:20px;"><strong id="moe-title"><!-- --></strong>-<span id="moe-artist" style="font-size:80%"><!-- --></span></span>' +
+                            '<span class="moe" style="display:none;">NowPlaying<img src="" id="moe-image" style="opacity:0;width:20px;height:20px;margin:2px;margin-bottom:-5px"><strong id="moe-title"><!-- --></strong>-<span id="moe-artist" style="font-size:80%"><!-- --></span></span>' +
                             /* Cutls P */
                         '</div>' +
                     '</div>' +
