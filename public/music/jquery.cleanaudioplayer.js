@@ -1359,6 +1359,14 @@
 				}
 			}, false);
 			mediaElement.addEventListener("loadeddata", function() {
+        /* Cutls P */
+				if(self.htmlElement.media.currentSrc=="https://listen.moe/stream"){
+                    $(".moe").show();
+                    socket();
+				}else{
+					$(".moe").hide();
+				}
+        /* Cutls P */
 				if(entity.gate) {
 					self.androidFix.setMedia = false; // Disable the fix after the first progress event.
 					if(self.androidFix.play) { // Play Android audio - performing the fix.
@@ -4053,9 +4061,12 @@
                         '<div class="mdtc-clnplra-seek-container-inner">' +
                             '<div class="mdtc-clnplra-song-title">' +
                                 '<div class="mdtc-clnplra-song-title-inner">' +
-                                    '<strong id="current-song"><!-- --></strong>' +
+                                    '<strong id="current-song"><!-- --></strong>'+
                                 '</div>' +
                             '</div>' +
+                            /* Cutls P */
+                            '<span class="moe" style="display:none;">NowPlaying<img src="" id="moe-image" style="opacity:0;width:20px;height:20px;margin:2px;margin-bottom:-5px"><strong id="moe-title"><!-- --></strong>-<span id="moe-artist" style="font-size:80%"><!-- --></span></span>' +
+                            /* Cutls P */
                         '</div>' +
                     '</div>' +
 					'<div class="mdtc-clnplra-volume-bar">' +
@@ -4280,3 +4291,51 @@
 $(function(){
 	$('.mediatec-cleanaudioplayer').cleanaudioplayer();
 });
+/* Cutls P */
+function socket(){
+    var token="";
+    moe = new WebSocket("wss://listen.moe/gateway");
+	moe.onopen = function(mess) {
+		const jwt = token ? `Bearer ${token}` : '';
+        moe.send(JSON.stringify({ op: 0, d: { auth: jwt } }));
+        var heartbeat=setInterval(check, 45000);
+	}
+	moe.onmessage = function(mess) {
+        var json=JSON.parse(mess.data).d;
+        if(json){
+            var song=json.song;
+            if(song){
+                console.log(song);
+                $("#moe-title").text(song.title);
+                $("#moe-artist").text(song.artists[0].name);
+                var album=song.albums;
+                if(album[0]){
+                    if(album[0].image){
+                        $("#moe-image").attr("src","https://cdn.listen.moe/covers/"+album[0].image);
+                        $("#moe-image").css("opacity",1);
+                    }else{
+                        $("#moe-image").attr("src","");
+                        $("#moe-image").css("opacity",0);
+                    }
+                }
+            }else{
+                console.log(JSON.parse(mess.data));
+            }
+        }
+	}
+	moe.onerror = function(error) {
+		console.error("WS Error");
+		console.error(error);
+		return false;
+	};
+	moe.onclose = function() {
+        console.error("WS was closed");
+        clearInterval(heartbeat);
+        socket();
+    };
+    var check = function(){
+        console.log("Heartbeat to LISTEN.moe");
+        moe.send(JSON.stringify({ op: 9 }));
+    } 
+}
+/* Cutls P*/
