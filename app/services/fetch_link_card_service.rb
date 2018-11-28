@@ -17,8 +17,7 @@ class FetchLinkCardService < BaseService
 
     return if @url.nil? || @status.preview_cards.any?
 
-    @mentions = status.mentions
-    @url      = @url.to_s
+    @url = @url.to_s
 
     RedisLock.acquire(lock_options) do |lock|
       if lock.acquired?
@@ -63,6 +62,7 @@ class FetchLinkCardService < BaseService
 
   def attach_card
     @status.preview_cards << @card
+    Rails.cache.delete(@status)
   end
 
   def parse_urls
@@ -83,9 +83,8 @@ class FetchLinkCardService < BaseService
   end
 
   def mention_link?(a)
-    return false if @mentions.nil?
-    @mentions.any? do |mention|
-      a['href'] == TagManager.instance.url_for(mention.target)
+    @status.mentions.any? do |mention|
+      a['href'] == TagManager.instance.url_for(mention.account)
     end
   end
 
@@ -137,14 +136,15 @@ class FetchLinkCardService < BaseService
     detector = CharlockHolmes::EncodingDetector.new
     detector.strip_tags = true
 
-    guess = detector.detect(@html, @html_charset)
-    page  = Nokogiri::HTML(@html, nil, guess&.fetch(:encoding, nil))
+    guess      = detector.detect(@html, @html_charset)
+    page       = Nokogiri::HTML(@html, nil, guess&.fetch(:encoding, nil))
+    player_url = meta_property(page, 'twitter:player')
 
-    if meta_property(page, 'twitter:player')
+    if player_url && !bad_url?(Addressable::URI.parse(player_url))
       @card.type   = :video
       @card.width  = meta_property(page, 'twitter:player:width') || 0
       @card.height = meta_property(page, 'twitter:player:height') || 0
-      @card.html   = content_tag(:iframe, nil, src: meta_property(page, 'twitter:player'),
+      @card.html   = content_tag(:iframe, nil, src: player_url,
                                                width: @card.width,
                                                height: @card.height,
                                                allowtransparency: 'true',
