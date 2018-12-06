@@ -266,7 +266,7 @@ code {
         font-family: inherit;
         font-size: 14px;
         color: $primary-text-color;
-        display: block;
+        display: inline-block;
         width: auto;
         position: relative;
         padding-top: 5px;
@@ -330,9 +330,12 @@ code {
     }
 
     input[type=text],
+    input[type=number],
     input[type=email],
-    input[type=password] {
-      border-bottom-color: $valid-value-color;
+    input[type=password],
+    textarea,
+    select {
+      border-color: lighten($error-red, 12%);
     }
 
     .error {

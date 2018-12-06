@@ -14,12 +14,27 @@ class MigrateAccountConversations < ActiveRecord::Migration[5.2]
       sleep 1
     end
 
-    local_direct_statuses.find_each do |status|
+    migrated  = 0
+    last_time = Time.zone.now
+
+    local_direct_statuses.includes(:account, mentions: :account).find_each do |status|
       AccountConversation.add_status(status.account, status)
+      migrated += 1
+
+      if Time.zone.now - last_time > 1
+        say_progress(migrated)
+        last_time = Time.zone.now
+      end
     end
 
-    notifications_about_direct_statuses.find_each do |notification|
+    notifications_about_direct_statuses.includes(:account, mention: { status: [:account, mentions: :account] }).find_each do |notification|
       AccountConversation.add_status(notification.account, notification.target_status)
+      migrated += 1
+
+      if Time.zone.now - last_time > 1
+        say_progress(migrated)
+        last_time = Time.zone.now
+      end
     end
   end
 
@@ -28,16 +43,15 @@ class MigrateAccountConversations < ActiveRecord::Migration[5.2]
 
   private
 
+  def say_progress(migrated)
+    say "Migrated #{migrated} rows", true
+  end
+
   def local_direct_statuses
-    Status.unscoped
-          .local
-          .where(visibility: :direct)
-          .includes(:account, mentions: :account)
+    Status.unscoped.local.where(visibility: :direct)
   end
 
   def notifications_about_direct_statuses
-    Notification.joins(mention: :status)
-                .where(activity_type: 'Mention', statuses: { visibility: :direct })
-                .includes(:account, mention: { status: [:account, mentions: :account] })
+    Notification.joins(mention: :status).where(activity_type: 'Mention', statuses: { visibility: :direct })
   end
 end

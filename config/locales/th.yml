@@ -49,10 +49,6 @@ th:
       most_recent_activity: กิจกรรมล่าสุด
       most_recent_ip: IP ล่าสุด
       not_subscribed: Not subscribed
-      order:
-        alphabetic: ตามตัวอักษร
-        most_recent: ล่าสุด
-        title: จัดเรียง
       perform_full_suspension: Perform full suspension
       profile_url: Profile URL
       public: สาธารณะ
@@ -224,6 +220,7 @@ th:
       too_many: แนบมากกว่า 4 ไฟล์ไม่ได้
   notification_mailer:
     digest:
+      body: Here is a brief summary of the messages you missed since your last visit on %{since}
       mention: "%{name} ส่งข้อความถึงคุณ:"
       new_followers_summary:
         one: ยินดีด้วยคุณได้ผู้ติดตามคนใหม่! Yay!
