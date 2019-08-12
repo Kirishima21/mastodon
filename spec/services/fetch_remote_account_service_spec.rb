@@ -4,6 +4,7 @@ RSpec.describe FetchRemoteAccountService, type: :service do
   let(:url) { 'https://example.com' }
   let(:prefetched_body) { nil }
   let(:protocol) { :ostatus }
+
   subject { FetchRemoteAccountService.new.call(url, prefetched_body, protocol) }
 
   let(:actor) do
@@ -36,33 +37,11 @@ RSpec.describe FetchRemoteAccountService, type: :service do
     include_examples 'return Account'
   end
 
-  context 'protocol is :ostatus' do
-    let(:prefetched_body) { xml }
-    let(:protocol) { :ostatus }
-
-    before do
-      stub_request(:get, "https://kickass.zone/.well-known/webfinger?resource=acct:localhost@kickass.zone").to_return(request_fixture('webfinger-hacker3.txt'))
-      stub_request(:get, "https://kickass.zone/api/statuses/user_timeline/7477.atom").to_return(request_fixture('feed.txt'))
-    end
-
-    include_examples 'return Account'
-  end
-
   context 'when prefetched_body is nil' do
     context 'protocol is :activitypub' do
       before do
         stub_request(:get, url).to_return(status: 200, body: Oj.dump(actor), headers: { 'Content-Type' => 'application/activity+json' })
         stub_request(:get, 'https://example.com/.well-known/webfinger?resource=acct:alice@example.com').to_return(body: Oj.dump(webfinger), headers: { 'Content-Type': 'application/jrd+json' })
-      end
-
-      include_examples 'return Account'
-    end
-
-    context 'protocol is :ostatus' do
-      before do
-        stub_request(:get, url).to_return(status: 200, body: xml, headers: { 'Content-Type' => 'application/atom+xml' })
-        stub_request(:get, "https://kickass.zone/.well-known/webfinger?resource=acct:localhost@kickass.zone").to_return(request_fixture('webfinger-hacker3.txt'))
-        stub_request(:get, "https://kickass.zone/api/statuses/user_timeline/7477.atom").to_return(request_fixture('feed.txt'))
       end
 
       include_examples 'return Account'

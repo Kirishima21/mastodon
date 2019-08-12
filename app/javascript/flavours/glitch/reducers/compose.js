@@ -182,6 +182,7 @@ function continueThread (state, status) {
     map.set('privacy', status.visibility);
     map.set('sensitive', false);
     map.update('media_attachments', list => list.clear());
+    map.set('poll', null);
     map.set('idempotencyKey', uuid());
     map.set('focusDate', new Date());
     map.set('caretPosition', null);
@@ -273,6 +274,12 @@ const expandMentions = status => {
   });
 
   return fragment.innerHTML;
+};
+
+const expiresInFromExpiresAt = expires_at => {
+  if (!expires_at) return 24 * 3600;
+  const delta = (new Date(expires_at).getTime() - Date.now()) / 1000;
+  return [300, 1800, 3600, 21600, 86400, 259200, 604800].find(expires_in => expires_in >= delta) || 24 * 3600;
 };
 
 export default function compose(state = initialState, action) {
@@ -458,7 +465,7 @@ export default function compose(state = initialState, action) {
         map.set('poll', ImmutableMap({
           options: action.status.getIn(['poll', 'options']).map(x => x.get('title')),
           multiple: action.status.getIn(['poll', 'multiple']),
-          expires_in: 24 * 3600,
+          expires_in: expiresInFromExpiresAt(action.status.getIn(['poll', 'expires_at'])),
         }));
       }
     });

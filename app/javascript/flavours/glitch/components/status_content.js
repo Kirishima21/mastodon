@@ -5,6 +5,54 @@ import { isRtl } from 'flavours/glitch/util/rtl';
 import { FormattedMessage } from 'react-intl';
 import Permalink from './permalink';
 import classnames from 'classnames';
+import { autoPlayGif } from 'flavours/glitch/util/initial_state';
+import { decode as decodeIDNA } from 'flavours/glitch/util/idna';
+
+const textMatchesTarget = (text, origin, host) => {
+  return (text === origin || text === host
+          || text.startsWith(origin + '/') || text.startsWith(host + '/')
+          || 'www.' + text === host || ('www.' + text).startsWith(host + '/'));
+}
+
+const isLinkMisleading = (link) => {
+  let linkTextParts = [];
+
+  // Reconstruct visible text, as we do not have much control over how links
+  // from remote software look, and we can't rely on `innerText` because the
+  // `invisible` class does not set `display` to `none`.
+
+  const walk = (node) => {
+    switch (node.nodeType) {
+    case Node.TEXT_NODE:
+      linkTextParts.push(node.textContent);
+      break;
+    case Node.ELEMENT_NODE:
+      if (node.classList.contains('invisible')) return;
+      const children = node.childNodes;
+      for (let i = 0; i < children.length; i++) {
+        walk(children[i]);
+      }
+      break;
+    }
+  };
+
+  walk(link);
+
+  const linkText = linkTextParts.join('');
+  const targetURL = new URL(link.href);
+
+  // The following may not work with international domain names
+  if (textMatchesTarget(linkText, targetURL.origin, targetURL.host) || textMatchesTarget(linkText.toLowerCase(), targetURL.origin, targetURL.host)) {
+    return false;
+  }
+
+  // The link hasn't been recognized, maybe it features an international domain name
+  const hostname = decodeIDNA(targetURL.hostname).normalize('NFKC');
+  const host = targetURL.host.replace(targetURL.hostname, hostname);
+  const origin = targetURL.origin.replace(targetURL.host, host);
+  const text = linkText.normalize('NFKC');
+  return !(textMatchesTarget(text, origin, host) || textMatchesTarget(text.toLowerCase(), origin, host));
+};
 
 export default class StatusContent extends React.PureComponent {
 
@@ -18,6 +66,11 @@ export default class StatusContent extends React.PureComponent {
     parseClick: PropTypes.func,
     disabled: PropTypes.bool,
     onUpdate: PropTypes.func,
+    tagLinks: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    tagLinks: true,
   };
 
   state = {
@@ -25,7 +78,8 @@ export default class StatusContent extends React.PureComponent {
   };
 
   _updateStatusLinks () {
-    const node = this.node;
+    const node = this.contentsNode;
+    const { tagLinks } = this.props;
 
     if (!node) {
       return;
@@ -50,6 +104,22 @@ export default class StatusContent extends React.PureComponent {
       } else {
         link.addEventListener('click', this.onLinkClick.bind(this), false);
         link.setAttribute('title', link.href);
+        link.classList.add('unhandled-link');
+
+        try {
+          if (tagLinks && isLinkMisleading(link)) {
+            // Add a tag besides the link to display its origin
+
+            const tag = document.createElement('span');
+            tag.classList.add('link-origin-tag');
+            tag.textContent = `[${new URL(link.href).host}]`;
+            link.insertAdjacentText('beforeend', ' ');
+            link.insertAdjacentElement('beforeend', tag);
+          }
+        } catch (e) {
+          // The URL is invalid, remove the href just to be safe
+          if (tagLinks && e instanceof TypeError) link.removeAttribute('href');
+        }
       }
 
       link.setAttribute('target', '_blank');
@@ -57,12 +127,35 @@ export default class StatusContent extends React.PureComponent {
     }
   }
 
+  _updateStatusEmojis () {
+    const node = this.node;
+
+    if (!node || autoPlayGif) {
+      return;
+    }
+
+    const emojis = node.querySelectorAll('.custom-emoji');
+
+    for (var i = 0; i < emojis.length; i++) {
+      let emoji = emojis[i];
+      if (emoji.classList.contains('status-emoji')) {
+        continue;
+      }
+      emoji.classList.add('status-emoji');
+
+      emoji.addEventListener('mouseenter', this.handleEmojiMouseEnter, false);
+      emoji.addEventListener('mouseleave', this.handleEmojiMouseLeave, false);
+    }
+  }
+
   componentDidMount () {
     this._updateStatusLinks();
+    this._updateStatusEmojis();
   }
 
   componentDidUpdate () {
     this._updateStatusLinks();
+    this._updateStatusEmojis();
     if (this.props.onUpdate) this.props.onUpdate();
   }
 
@@ -79,11 +172,19 @@ export default class StatusContent extends React.PureComponent {
   }
 
   onHashtagClick = (hashtag, e) => {
-    hashtag = hashtag.replace(/^#/, '').toLowerCase();
+    hashtag = hashtag.replace(/^#/, '');
 
     if (this.props.parseClick) {
       this.props.parseClick(e, `/timelines/tag/${hashtag}`);
     }
+  }
+
+  handleEmojiMouseEnter = ({ target }) => {
+    target.src = target.getAttribute('data-original');
+  }
+
+  handleEmojiMouseLeave = ({ target }) => {
+    target.src = target.getAttribute('data-static');
   }
 
   handleMouseDown = (e) => {
@@ -129,6 +230,10 @@ export default class StatusContent extends React.PureComponent {
     this.node = c;
   }
 
+  setContentsRef = (c) => {
+    this.contentsNode = c;
+  }
+
   render () {
     const {
       status,
@@ -136,6 +241,7 @@ export default class StatusContent extends React.PureComponent {
       mediaIcon,
       parseClick,
       disabled,
+      tagLinks,
     } = this.props;
 
     const hidden = this.props.onExpandedToggle ? !this.props.expanded : this.state.hidden;
@@ -194,7 +300,7 @@ export default class StatusContent extends React.PureComponent {
       }
 
       return (
-        <div className={classNames} tabIndex='0' onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp}>
+        <div className={classNames} tabIndex='0' onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} ref={this.setRef}>
           <p
             style={{ marginBottom: hidden && status.get('mentions').isEmpty() ? '0px' : null }}
           >
@@ -209,7 +315,8 @@ export default class StatusContent extends React.PureComponent {
 
           <div className={`status__content__spoiler ${!hidden ? 'status__content__spoiler--visible' : ''}`}>
             <div
-              ref={this.setRef}
+              ref={this.setContentsRef}
+              key={`contents-${tagLinks}`}
               style={directionStyle}
               tabIndex={!hidden ? 0 : null}
               dangerouslySetInnerHTML={content}
@@ -229,9 +336,11 @@ export default class StatusContent extends React.PureComponent {
           onMouseDown={this.handleMouseDown}
           onMouseUp={this.handleMouseUp}
           tabIndex='0'
+          ref={this.setRef}
         >
           <div
-            ref={this.setRef}
+            ref={this.setContentsRef}
+            key={`contents-${tagLinks}`}
             dangerouslySetInnerHTML={content}
             lang={status.get('language')}
             className='status__content__text'
@@ -246,8 +355,9 @@ export default class StatusContent extends React.PureComponent {
           className='status__content'
           style={directionStyle}
           tabIndex='0'
+          ref={this.setRef}
         >
-          <div ref={this.setRef} className='status__content__text' dangerouslySetInnerHTML={content} lang={status.get('language')} tabIndex='0' />
+          <div ref={this.setContentsRef} key={`contents-${tagLinks}`} className='status__content__text' dangerouslySetInnerHTML={content} lang={status.get('language')} tabIndex='0' />
           {media}
         </div>
       );

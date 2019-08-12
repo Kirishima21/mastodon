@@ -458,13 +458,6 @@ ja:
       no_media: メディアなし
       title: トゥート一覧
       with_media: メディアあり
-    subscriptions:
-      callback_url: コールバックURL
-      confirmed: 確認済み
-      expires_in: 期限
-      last_delivery: 最終配送
-      title: WebSub
-      topic: トピック
     tags:
       accounts: アカウント
       hidden: 非表示
@@ -801,10 +794,6 @@ ja:
     reply:
       proceed: 返信する
       prompt: '返信しようとしています:'
-  remote_unfollow:
-    error: エラー
-    title: タイトル
-    unfollowed: フォロー解除しました
   scheduled_statuses:
     over_daily_limit: その日予約できる投稿数 %{limit} を超えています
     over_total_limit: 予約できる投稿数 %{limit} を超えています
@@ -831,7 +820,7 @@ ja:
       uc_browser: UCBrowser
       weibo: Weibo
     current_session: 現在のセッション
-    description: "%{browser} on %{platform}"
+    description: "%{platform} 上の %{browser}"
     explanation: あなたのMastodonアカウントに現在ログインしているウェブブラウザの一覧です。
     ip: IP
     platforms:

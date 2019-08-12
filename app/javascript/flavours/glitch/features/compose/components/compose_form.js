@@ -197,7 +197,10 @@ class ComposeForm extends ImmutablePureComponent {
 
   handleFocus = () => {
     if (this.composeForm && !this.props.singleColumn) {
-      this.composeForm.scrollIntoView();
+      const { left, right } = this.composeForm.getBoundingClientRect();
+      if (left < 0 || right > (window.innerWidth || document.documentElement.clientWidth)) {
+        this.composeForm.scrollIntoView();
+      }
     }
   }
 
@@ -296,12 +299,12 @@ class ComposeForm extends ImmutablePureComponent {
     let disabledButton = isSubmitting || isUploading || isChangingUpload || (!text.trim().length && !anyMedia);
 
     return (
-      <div className='composer' ref={this.setRef}>
+      <div className='composer'>
         <WarningContainer />
 
         <ReplyIndicatorContainer />
 
-        <div className={`composer--spoiler ${spoiler ? 'composer--spoiler--visible' : ''}`}>
+        <div className={`composer--spoiler ${spoiler ? 'composer--spoiler--visible' : ''}`} ref={this.setRef}>
           <AutosuggestInput
             placeholder={intl.formatMessage(messages.spoiler_placeholder)}
             value={spoilerText}

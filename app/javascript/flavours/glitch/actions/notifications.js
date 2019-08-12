@@ -11,7 +11,9 @@ import { saveSettings } from './settings';
 import { defineMessages } from 'react-intl';
 import { List as ImmutableList } from 'immutable';
 import { unescapeHTML } from 'flavours/glitch/util/html';
-import { getFilters, regexFromFilters } from 'flavours/glitch/selectors';
+import { getFiltersRegex } from 'flavours/glitch/selectors';
+import { usePendingItems as preferPendingItems } from 'flavours/glitch/util/initial_state';
+import compareId from 'flavours/glitch/util/compare_id';
 
 export const NOTIFICATIONS_UPDATE = 'NOTIFICATIONS_UPDATE';
 
@@ -32,8 +34,9 @@ export const NOTIFICATIONS_EXPAND_FAIL    = 'NOTIFICATIONS_EXPAND_FAIL';
 
 export const NOTIFICATIONS_FILTER_SET = 'NOTIFICATIONS_FILTER_SET';
 
-export const NOTIFICATIONS_CLEAR      = 'NOTIFICATIONS_CLEAR';
-export const NOTIFICATIONS_SCROLL_TOP = 'NOTIFICATIONS_SCROLL_TOP';
+export const NOTIFICATIONS_CLEAR        = 'NOTIFICATIONS_CLEAR';
+export const NOTIFICATIONS_SCROLL_TOP   = 'NOTIFICATIONS_SCROLL_TOP';
+export const NOTIFICATIONS_LOAD_PENDING = 'NOTIFICATIONS_LOAD_PENDING';
 
 export const NOTIFICATIONS_MOUNT   = 'NOTIFICATIONS_MOUNT';
 export const NOTIFICATIONS_UNMOUNT = 'NOTIFICATIONS_UNMOUNT';
@@ -52,18 +55,27 @@ const fetchRelatedRelationships = (dispatch, notifications) => {
   }
 };
 
+export const loadPending = () => ({
+  type: NOTIFICATIONS_LOAD_PENDING,
+});
+
 export function updateNotifications(notification, intlMessages, intlLocale) {
   return (dispatch, getState) => {
     const showInColumn = getState().getIn(['settings', 'notifications', 'shows', notification.type], true);
     const showAlert    = getState().getIn(['settings', 'notifications', 'alerts', notification.type], true);
     const playSound    = getState().getIn(['settings', 'notifications', 'sounds', notification.type], true);
-    const filters      = getFilters(getState(), { contextType: 'notifications' });
+    const filters      = getFiltersRegex(getState(), { contextType: 'notifications' });
 
     let filtered = false;
 
     if (notification.type === 'mention') {
-      const regex       = regexFromFilters(filters);
+      const dropRegex   = filters[0];
+      const regex       = filters[1];
       const searchIndex = notification.status.spoiler_text + '\n' + unescapeHTML(notification.status.content);
+
+      if (dropRegex && dropRegex.test(searchIndex)) {
+        return;
+      }
 
       filtered = regex && regex.test(searchIndex);
     }
@@ -78,6 +90,7 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
       dispatch({
         type: NOTIFICATIONS_UPDATE,
         notification,
+        usePendingItems: preferPendingItems,
         meta: (playSound && !filtered) ? { sound: 'boop' } : undefined,
       });
 
@@ -131,9 +144,18 @@ export function expandNotifications({ maxId } = {}, done = noOp) {
         : excludeTypesFromFilter(activeFilter),
     };
 
-    if (!maxId && notifications.get('items').size > 0) {
-      params.since_id = notifications.getIn(['items', 0, 'id']);
+    if (!params.max_id && (notifications.get('items', ImmutableList()).size + notifications.get('pendingItems', ImmutableList()).size) > 0) {
+      const a = notifications.getIn(['pendingItems', 0, 'id']);
+      const b = notifications.getIn(['items', 0, 'id']);
+
+      if (a && b && compareId(a, b) > 0) {
+        params.since_id = a;
+      } else {
+        params.since_id = b || a;
+      }
     }
+
+    const isLoadingRecent = !!params.since_id;
 
     dispatch(expandNotificationsRequest(isLoadingMore));
 
@@ -143,7 +165,7 @@ export function expandNotifications({ maxId } = {}, done = noOp) {
       dispatch(importFetchedAccounts(response.data.map(item => item.account)));
       dispatch(importFetchedStatuses(response.data.map(item => item.status).filter(status => !!status)));
 
-      dispatch(expandNotificationsSuccess(response.data, next ? next.uri : null, isLoadingMore));
+      dispatch(expandNotificationsSuccess(response.data, next ? next.uri : null, isLoadingMore, isLoadingRecent && preferPendingItems));
       fetchRelatedRelationships(dispatch, response.data);
       done();
     }).catch(error => {
@@ -160,13 +182,12 @@ export function expandNotificationsRequest(isLoadingMore) {
   };
 };
 
-export function expandNotificationsSuccess(notifications, next, isLoadingMore) {
+export function expandNotificationsSuccess(notifications, next, isLoadingMore, usePendingItems) {
   return {
     type: NOTIFICATIONS_EXPAND_SUCCESS,
     notifications,
-    accounts: notifications.map(item => item.account),
-    statuses: notifications.map(item => item.status).filter(status => !!status),
     next,
+    usePendingItems,
     skipLoading: !isLoadingMore,
   };
 };

@@ -55,8 +55,8 @@ export const defaultMediaVisibility = (status, settings) => {
   return (displayMedia !== 'hide_all' && !status.get('sensitive') || displayMedia === 'show_all');
 }
 
-@injectIntl
-export default class Status extends ImmutablePureComponent {
+export default @injectIntl
+class Status extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
@@ -105,6 +105,8 @@ export default class Status extends ImmutablePureComponent {
     showMedia: undefined,
     statusId: undefined,
     revealBehindCW: undefined,
+    showCard: false,
+    forceFilter: undefined,
   }
 
   // Avoid checking props that are functions (and whose equality will always
@@ -125,6 +127,7 @@ export default class Status extends ImmutablePureComponent {
     'isExpanded',
     'isCollapsed',
     'showMedia',
+    'forceFilter',
   ]
 
   //  If our settings have changed to disable collapsed statuses, then we
@@ -255,28 +258,32 @@ export default class Status extends ImmutablePureComponent {
       this.setState({ autoCollapsed: true });
     }
 
-    this.didShowCard  = !this.props.muted && !this.props.hidden && this.props.status && this.props.status.get('card') && this.props.settings.get('inline_preview_cards');
+    // Hack to fix timeline jumps when a preview card is fetched
+    this.setState({
+      showCard: !this.props.muted && !this.props.hidden && this.props.status && this.props.status.get('card') && this.props.settings.get('inline_preview_cards'),
+    });
   }
 
+  //  Hack to fix timeline jumps on second rendering when auto-collapsing
+  //  or on subsequent rendering when a preview card has been fetched
   getSnapshotBeforeUpdate (prevProps, prevState) {
-    if (this.props.getScrollPosition) {
+    if (!this.props.getScrollPosition) return null;
+
+    const { muted, hidden, status, settings } = this.props;
+
+    const doShowCard = !muted && !hidden && status && status.get('card') && settings.get('inline_preview_cards');
+    if (this.state.autoCollapsed || (doShowCard && !this.state.showCard)) {
+      if (doShowCard) this.setState({ showCard: true });
+      if (this.state.autoCollapsed) this.setState({ autoCollapsed: false });
       return this.props.getScrollPosition();
     } else {
       return null;
     }
   }
 
-  //  Hack to fix timeline jumps on second rendering when auto-collapsing
   componentDidUpdate (prevProps, prevState, snapshot) {
-    const doShowCard  = !this.props.muted && !this.props.hidden && this.props.status && this.props.status.get('card') && this.props.settings.get('inline_preview_cards');
-    if (this.state.autoCollapsed || (doShowCard && !this.didShowCard)) {
-      if (doShowCard) this.didShowCard = true;
-      if (this.state.autoCollapsed) this.setState({ autoCollapsed: false });
-      if (snapshot !== null && this.props.updateScrollBottom) {
-        if (this.node.offsetTop < snapshot.top) {
-          this.props.updateScrollBottom(snapshot.height - snapshot.top);
-        }
-      }
+    if (snapshot !== null && this.props.updateScrollBottom && this.node.offsetTop < snapshot.top) {
+      this.props.updateScrollBottom(snapshot.height - snapshot.top);
     }
   }
 
@@ -422,6 +429,15 @@ export default class Status extends ImmutablePureComponent {
     this.handleToggleMediaVisibility();
   }
 
+  handleUnfilterClick = e => {
+    const { onUnfilter, status } = this.props;
+    onUnfilter(status.get('reblog') ? status.get('reblog') : status, () => this.setState({ forceFilter: false }));
+  }
+
+  handleFilterClick = () => {
+    this.setState({ forceFilter: true });
+  }
+
   handleRef = c => {
     this.node = c;
   }
@@ -460,7 +476,7 @@ export default class Status extends ImmutablePureComponent {
       featured,
       ...other
     } = this.props;
-    const { isExpanded, isCollapsed } = this.state;
+    const { isExpanded, isCollapsed, forceFilter } = this.state;
     let background = null;
     let attachments = null;
     let media = null;
@@ -480,7 +496,8 @@ export default class Status extends ImmutablePureComponent {
       );
     }
 
-    if (status.get('filtered') || status.getIn(['reblog', 'filtered'])) {
+    const filtered = (status.get('filtered') || status.getIn(['reblog', 'filtered'])) && settings.get('filtering_behavior') !== 'content_warning';
+    if (forceFilter === undefined ? filtered : forceFilter) {
       const minHandlers = this.props.muted ? {} : {
         moveUp: this.handleHotkeyMoveUp,
         moveDown: this.handleHotkeyMoveDown,
@@ -490,6 +507,12 @@ export default class Status extends ImmutablePureComponent {
         <HotKeys handlers={minHandlers}>
           <div className='status__wrapper status__wrapper--filtered focusable' tabIndex='0' ref={this.handleRef}>
             <FormattedMessage id='status.filtered' defaultMessage='Filtered' />
+            {settings.get('filtering_behavior') !== 'upstream' && ' '}
+            {settings.get('filtering_behavior') !== 'upstream' && (
+              <button className='status__wrapper--filtered__button' onClick={this.handleUnfilterClick}>
+                <FormattedMessage id='status.show_filter_reason' defaultMessage='(show why)' />
+              </button>
+            )}
           </div>
         </HotKeys>
       );
@@ -521,16 +544,16 @@ export default class Status extends ImmutablePureComponent {
             media={status.get('media_attachments')}
           />
         );
-      } else if (attachments.getIn([0, 'type']) === 'video') {  //  Media type is 'video'
-        const video = status.getIn(['media_attachments', 0]);
+      } else if (['video', 'audio'].includes(attachments.getIn([0, 'type']))) {
+        const attachment = status.getIn(['media_attachments', 0]);
 
         media = (
           <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer} >
             {Component => (<Component
-              preview={video.get('preview_url')}
-              blurhash={video.get('blurhash')}
-              src={video.get('url')}
-              alt={video.get('description')}
+              preview={attachment.get('preview_url')}
+              blurhash={attachment.get('blurhash')}
+              src={attachment.get('url')}
+              alt={attachment.get('description')}
               inline
               sensitive={status.get('sensitive')}
               letterbox={settings.getIn(['media', 'letterbox'])}
@@ -544,7 +567,7 @@ export default class Status extends ImmutablePureComponent {
             />)}
           </Bundle>
         );
-        mediaIcon = 'video-camera';
+        mediaIcon = attachment.get('type') === 'video' ? 'video-camera' : 'music';
       } else {  //  Media type is 'image' or 'gifv'
         media = (
           <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery}>
@@ -676,6 +699,7 @@ export default class Status extends ImmutablePureComponent {
             onExpandedToggle={this.handleExpandedToggle}
             parseClick={parseClick}
             disabled={!router}
+            tagLinks={settings.get('tag_misleading_links')}
           />
           {!isCollapsed || !(muted || !settings.getIn(['collapsed', 'show_action_bar'])) ? (
             <StatusActionBar
@@ -684,6 +708,7 @@ export default class Status extends ImmutablePureComponent {
               account={status.get('account')}
               showReplyCount={settings.get('show_reply_count')}
               directMessage={!!otherAccounts}
+              onFilter={this.handleFilterClick}
             />
           ) : null}
           {notification ? (

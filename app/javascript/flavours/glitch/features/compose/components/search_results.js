@@ -7,6 +7,8 @@ import StatusContainer from 'flavours/glitch/containers/status_container';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import Hashtag from 'flavours/glitch/components/hashtag';
 import Icon from 'flavours/glitch/components/icon';
+import { searchEnabled } from 'flavours/glitch/util/initial_state';
+import LoadMore from 'flavours/glitch/components/load_more';
 
 const messages = defineMessages({
   dismissSuggestion: { id: 'suggestions.dismiss', defaultMessage: 'Dismiss suggestion' },
@@ -19,16 +21,26 @@ class SearchResults extends ImmutablePureComponent {
     results: ImmutablePropTypes.map.isRequired,
     suggestions: ImmutablePropTypes.list.isRequired,
     fetchSuggestions: PropTypes.func.isRequired,
+    expandSearch: PropTypes.func.isRequired,
     dismissSuggestion: PropTypes.func.isRequired,
+    searchTerm: PropTypes.string,
     intl: PropTypes.object.isRequired,
   };
 
   componentDidMount () {
-    this.props.fetchSuggestions();
+    if (this.props.searchTerm === '') {
+      this.props.fetchSuggestions();
+    }
   }
 
-  render() {
-    const { intl, results, suggestions, dismissSuggestion } = this.props;
+  handleLoadMoreAccounts = () => this.props.expandSearch('accounts');
+
+  handleLoadMoreStatuses = () => this.props.expandSearch('statuses');
+
+  handleLoadMoreHashtags = () => this.props.expandSearch('hashtags');
+
+  render () {
+    const { intl, results, suggestions, dismissSuggestion, searchTerm } = this.props;
 
     if (results.isEmpty() && !suggestions.isEmpty()) {
       return (
@@ -51,6 +63,16 @@ class SearchResults extends ImmutablePureComponent {
           </div>
         </div>
       );
+    } else if(results.get('statuses') && results.get('statuses').size === 0 && !searchEnabled && !(searchTerm.startsWith('@') || searchTerm.startsWith('#') || searchTerm.includes(' '))) {
+      statuses = (
+        <section>
+          <h5><Icon id='quote-right' fixedWidth /><FormattedMessage id='search_results.statuses' defaultMessage='Toots' /></h5>
+
+          <div className='search-results__info'>
+            <FormattedMessage id='search_results.statuses_fts_disabled' defaultMessage='Searching toots by their content is not enabled on this Mastodon server.' />
+          </div>
+        </section>
+      );
     }
 
     let accounts, statuses, hashtags;
@@ -63,6 +85,8 @@ class SearchResults extends ImmutablePureComponent {
           <h5><Icon icon='users' fixedWidth /><FormattedMessage id='search_results.accounts' defaultMessage='People' /></h5>
 
           {results.get('accounts').map(accountId => <AccountContainer id={accountId} key={accountId} />)}
+
+          {results.get('accounts').size >= 5 && <LoadMore visible onClick={this.handleLoadMoreAccounts} />}
         </section>
       );
     }
@@ -74,6 +98,8 @@ class SearchResults extends ImmutablePureComponent {
           <h5><Icon icon='quote-right' fixedWidth /><FormattedMessage id='search_results.statuses' defaultMessage='Toots' /></h5>
 
           {results.get('statuses').map(statusId => <StatusContainer id={statusId} key={statusId}/>)}
+
+          {results.get('statuses').size >= 5 && <LoadMore visible onClick={this.handleLoadMoreStatuses} />}
         </section>
       );
     }
@@ -85,6 +111,8 @@ class SearchResults extends ImmutablePureComponent {
           <h5><Icon icon='hashtag' fixedWidth /><FormattedMessage id='search_results.hashtags' defaultMessage='Hashtags' /></h5>
 
           {results.get('hashtags').map(hashtag => <Hashtag key={hashtag.get('name')} hashtag={hashtag} />)}
+
+          {results.get('hashtags').size >= 5 && <LoadMore visible onClick={this.handleLoadMoreHashtags} />}
         </section>
       );
     }

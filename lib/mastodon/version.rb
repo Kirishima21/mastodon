@@ -13,23 +13,19 @@ module Mastodon
     end
 
     def patch
-      0
-    end
-
-    def pre
-      nil
+      2
     end
 
     def flags
       ''
     end
 
-    def to_a
-      [major, minor, patch, pre].compact
-    end
-
     def suffix
       '+ Astarte on Glitch'
+    end
+
+    def to_a
+      [major, minor, patch].compact
     end
 
     def to_s
