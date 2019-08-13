@@ -192,7 +192,7 @@ class Formatter_Markdown
             end
 
             linkcheck = "#{link}"
-            if linkcheck !~ /\Ahttps:\/\/[^<>"\[\] 　]+\z/
+            if linkcheck !~ /\Ahttps?:\/\/[^<>"\[\] 　]+\z/
                 %(#{encode(content)})
             else
                 %(<a href="#{URI.encode_www_form_component(link)}">#{encode(content)}</a>)
