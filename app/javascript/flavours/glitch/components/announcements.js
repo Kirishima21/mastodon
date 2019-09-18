@@ -1,11 +1,12 @@
 import React from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import Link from 'react-router-dom/Link';
 import { defineMessages, injectIntl } from 'react-intl';
 import IconButton from '../../../mastodon/components/announcement_icon_button';
 import Motion from 'react-motion/lib/Motion';
 import spring from 'react-motion/lib/spring';
+
+import Music from './music';
 
 const Collapsable = ({ fullHeight, minHeight, isVisible, children }) => (
   <Motion defaultStyle={{ height: isVisible ? fullHeight : minHeight }} style={{ height: spring(!isVisible ? minHeight : fullHeight) }}>
@@ -38,32 +39,6 @@ const hashtags = Immutable.fromJS([
   '神崎ドン自己紹介',
 ]);
 
-const musicList = [
-  { name: 'Listen.moe', url: 'https://listen.moe/stream' },
-  { name: 'AnimeNfo Radio', url: 'http://itori.animenfo.com:443/;' },
-  { name: 'LoFi hip hop Radio', url: 'http://hyades.shoutca.st:8043/stream' },
-  { name: 'Linn Classical', url: 'http://89.16.185.174:8004/stream' },
-  { name: 'Linn Jazz', url: 'http://89.16.185.174:8000/stream' },
-  { name: 'canal-jazz.eu', url: 'http://91.121.59.45:10024/stream' },
-  { name: 'Poolside.fm', url: 'http://stream.radio.co/s98f81d47e/listen' },
-  { name: "Drum 'n Bass", sub: 'dubplate.fm', url: 'http://sc2.dubplate.fm:5000/DnB/192' },
-  { name: 'FUTURE-BASS-MIX', url: 'http://stream.zenolive.com/am16uk1f4k5tv' },
-  {
-    name: 'TOP 40 RU',
-    sub: 'European Hit Radio',
-    url: 'http://stream.europeanhitradio.com:8000/Stream_35.aac'
-  },
-  {
-    name: 'REMIXES RU',
-    sub: 'European Hit Radio',
-    url: 'http://stream.europeanhitradio.com:8000/Stream_33.aac'
-  },
-  { name: 'FMHIPHOP.COM', url: 'http://149.56.175.167:5708/;' },
-  { name: 'Vapor.fm', url: 'https://vapor.fm:8000/stream' }
-];
-
-const musicPlayer = document.getElementById("kirishima-music");
-
 class Announcements extends React.PureComponent {
 
   static propTypes = {
@@ -80,6 +55,7 @@ class Announcements extends React.PureComponent {
   onClick = (announcementId, currentState) => {
     this.setState({ showId: currentState.showId === announcementId ? null : announcementId });
   }
+
   nl2br (text) {
     return text.split(/(\n)/g).map((line, i) => {
       if (line.match(/(\n)/g)) {
@@ -89,35 +65,8 @@ class Announcements extends React.PureComponent {
     });
   }
 
-  musicTogglePlay() {
-    if (musicPlayer.paused) {
-      if (musicPlayer.dataset.name) musicPlayer.play();
-      else this.musicChangeSrc(0);
-    } else {
-      musicPlayer.pause();
-    }
-    this.forceUpdate();
-  }
-
-  musicIsPaused() {
-    return musicPlayer.paused;
-  }
-
-  musicPlayingNow() {
-    return musicPlayer.paused ? 'Not Playing' : musicPlayer.dataset.name;
-  }
-
-  musicChangeSrc(index) {
-    musicPlayer.dataset.name = musicList[index]['name'];
-    musicPlayer.src = musicList[index]['url'];
-    musicPlayer.play();
-    this.forceUpdate();
-  }
-
   render () {
     const { intl } = this.props;
-
-    const music_items = musicList.map((item, index) => <li onClick={() => this.musicChangeSrc(index)}>{item.name}</li>);
 
     return (
       <ul className='announcements'>
@@ -271,11 +220,7 @@ class Announcements extends React.PureComponent {
         <li>
           <Collapsable isVisible={this.state.showId === 'music'} fullHeight={410} minHeight={22} >
             <div className='announcements__body'>
-              <p><span>{this.musicPlayingNow()}</span> <IconButton icon={this.musicIsPaused() ? 'play' : 'pause'} onClick={() => this.musicTogglePlay()} size={17} /><br /><br />
-                <ul className="musicList">
-                  {music_items}
-                </ul>
-      			  </p>
+              <Music />
             </div>
           </Collapsable>
           <div className='announcements__icon'>
