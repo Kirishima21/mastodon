@@ -441,8 +441,6 @@ export default function compose(state = initialState, action) {
     return state.mergeIn(['doodle'], action.options);
   case REDRAFT:
     return state.withMutations(map => {
-//      map.set('text', action.status.get('original_content'));
-//      map.set('text', action.raw_text || unescapeHTML(expandMentions(action.status.get('original_content'))));
       map.set('text', action.raw_text || unescapeHTML(expandMentions(action.status)));
       map.set('content_type', action.content_type || 'text/plain');
       map.set('in_reply_to', action.status.get('in_reply_to_id'));
