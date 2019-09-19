@@ -15,25 +15,9 @@ import { changeComposing } from '../../actions/compose';
 import elephantUIPlane from '../../../images/elephant_ui_plane.svg';
 import { mascot } from '../../initial_state';
 import Icon from 'mastodon/components/icon';
-import AnnouncementsContainer from './containers/announcements_container';
 
-import Button from '../../components/button';
-
-const CustomEmojiOekaki = class extends React.PureComponent {
-
-  handleClick() {
-    window.open('https://mamemomonga.github.io/mastodon-custom-emoji-oekaki/#kirishima.cloud');
-    return false;
-  }
-
-  render () {
-    return (
-      <div class="emoji-oekaki">
-        <Button text='☆絵文字でお絵かき☆' onClick={this.handleClick} className="custom-emoji-oekaki" />
-      </div>
-    );
-  }
-};
+import AnnouncementsContainer from '../../../flavours/glitch/containers/announcements_container';
+import CustomEmojiOekaki from '../../../flavours/glitch/features/compose/components/emoji_oekaki';
 
 const messages = defineMessages({
   start: { id: 'getting_started.heading', defaultMessage: 'Getting started' },

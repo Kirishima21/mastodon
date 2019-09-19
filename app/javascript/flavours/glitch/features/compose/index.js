@@ -16,24 +16,8 @@ import { cycleElefriendCompose } from 'flavours/glitch/actions/compose';
 import HeaderContainer from './containers/header_container';
 
 // Astarte.
-import AnnouncementsContainer from '../.././containers/announcements_container';
-import Button from '../../components/button';
-
-const CustomEmojiOekaki = class extends React.PureComponent {
-
-  handleClick() {
-    window.open('https://mamemomonga.github.io/mastodon-custom-emoji-oekaki/#kirishima.cloud');
-    return false;
-  }
-
-  render () {
-    return (
-      <div class="emoji-oekaki">
-        <Button text='☆絵文字でお絵かき☆' onClick={this.handleClick} className="custom-emoji-oekaki" />
-      </div>
-    );
-  }
-};
+import AnnouncementsContainer from '../../containers/announcements_container';
+import CustomEmojiOekaki from './components/emoji_oekaki';
 
 const messages = defineMessages({
   compose: { id: 'navigation_bar.compose', defaultMessage: 'Compose new toot' },

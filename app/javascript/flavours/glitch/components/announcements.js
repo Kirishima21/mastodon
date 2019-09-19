@@ -1,18 +1,18 @@
 import React from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import Link from 'react-router-dom/Link';
 import { defineMessages, injectIntl } from 'react-intl';
-import IconButton from '../../../mastodon/components/announcement_icon_button';
+import IconButton from './announcement_icon_button';
 import Motion from 'react-motion/lib/Motion';
 import spring from 'react-motion/lib/spring';
+import Icon from './icon';
 
 const Collapsable = ({ fullHeight, minHeight, isVisible, children }) => (
   <Motion defaultStyle={{ height: isVisible ? fullHeight : minHeight }} style={{ height: spring(!isVisible ? minHeight : fullHeight) }}>
     {({ height }) =>
-      <div style={{ height: `${height}px`, overflow: 'hidden', width: '100%' }}>
+      (<div style={{ height: `${height}px`, overflow: 'hidden', width: '100%' }}>
         {children}
-      </div>
+      </div>)
     }
   </Motion>
 );
@@ -46,23 +46,23 @@ const musicList = [
   { name: 'Linn Jazz', url: 'http://89.16.185.174:8000/stream' },
   { name: 'canal-jazz.eu', url: 'http://91.121.59.45:10024/stream' },
   { name: 'Poolside.fm', url: 'http://stream.radio.co/s98f81d47e/listen' },
-  { name: "Drum 'n Bass", sub: 'dubplate.fm', url: 'http://sc2.dubplate.fm:5000/DnB/192' },
+  { name: 'Drum \'n Bass', sub: 'dubplate.fm', url: 'http://sc2.dubplate.fm:5000/DnB/192' },
   { name: 'FUTURE-BASS-MIX', url: 'http://stream.zenolive.com/am16uk1f4k5tv' },
   {
     name: 'TOP 40 RU',
     sub: 'European Hit Radio',
-    url: 'http://stream.europeanhitradio.com:8000/Stream_35.aac'
+    url: 'http://stream.europeanhitradio.com:8000/Stream_35.aac',
   },
   {
     name: 'REMIXES RU',
     sub: 'European Hit Radio',
-    url: 'http://stream.europeanhitradio.com:8000/Stream_33.aac'
+    url: 'http://stream.europeanhitradio.com:8000/Stream_33.aac',
   },
   { name: 'FMHIPHOP.COM', url: 'http://149.56.175.167:5708/;' },
-  { name: 'Vapor.fm', url: 'https://vapor.fm:8000/stream' }
+  { name: 'Vapor.fm', url: 'https://vapor.fm:8000/stream' },
 ];
 
-const musicPlayer = document.getElementById("kirishima-music");
+const musicPlayer = document.getElementById('kirishima-music');
 
 class Announcements extends React.PureComponent {
 
@@ -108,8 +108,8 @@ class Announcements extends React.PureComponent {
   }
 
   musicChangeSrc(index) {
-    musicPlayer.dataset.name = musicList[index]['name'];
-    musicPlayer.src = musicList[index]['url'];
+    musicPlayer.dataset.name = musicList[index].name;
+    musicPlayer.src = musicList[index].url;
     musicPlayer.play();
     this.forceUpdate();
   }
@@ -125,21 +125,21 @@ class Announcements extends React.PureComponent {
           <Collapsable isVisible={this.state.showId === 'info'} fullHeight={360} minHeight={20} >
             <div className='announcements__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.info, { domain: document.title }))}<br />
-              <br />
+                <br />
 			  アスタルテと関連のサービス<br />
-			  <br />
+                <br />
 			  ・MINECRAFT Server(停止中)<br />
 			  [address] mc.kirishima.cloud <br />
 			  [URL] http://mc.kirishima.cloud:8123 <br />
-        <a href="http://mc.kirishima.cloud:8123" target="_blank">マップを開く</a><br /><br />
+                <a href='http://mc.kirishima.cloud:8123' target='_blank'>マップを開く</a><br /><br />
         ・Cutlsさんのサービス<br />
         TheDeskはCutlsさんが製作している<br />アスタルテの公認クライアントです<br />
-        <a href="https://thedesk.top/" target="_blank">TheDeskホームページ</a><br /><br />
+                <a href='https://thedesk.top/' target='_blank'>TheDeskホームページ</a><br /><br />
         暇人ランキング<br />
         暇人ランキングはアスタルテの投稿数で<br />ランキング付けされてます<br />
-        <a href="https://astarte.thedesk.top/" target="_blank">暇ラン</a>
-			  <br />
-			  </p>
+                <a href='https://astarte.thedesk.top/' target='_blank'>暇ラン</a>
+                <br />
+              </p>
             </div>
           </Collapsable>
           <div className='announcements__icon'>
@@ -150,17 +150,17 @@ class Announcements extends React.PureComponent {
           <Collapsable isVisible={this.state.showId === 'donation'} fullHeight={270} minHeight={20} >
             <div className='announcements__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.donation, { domain: document.title }))}<br />
-              <br />
+                <br />
 			  ・欲しいものリスト<br />
 			  [URL] http://amzn.asia/hJLmEbc <br />
-        <a href="http://amzn.asia/hJLmEbc" target="_blank">欲しいものリストを開く</a><br />
+                <a href='http://amzn.asia/hJLmEbc' target='_blank'>欲しいものリストを開く</a><br />
         ・FanBox <br />
 			  [URL] https://www.pixiv.net/fanbox/creator/13015144 <br />
-        <a href="https://www.pixiv.net/fanbox/creator/13015144" target="_blank">FanBoxのページを開く</a><br />
+                <a href='https://www.pixiv.net/fanbox/creator/13015144' target='_blank'>FanBoxのページを開く</a><br />
 			  寄付していただいた場合<br />
 			  お名前を寄付一覧に載せます。<br />
 			  強制ではありませんのでDMでご連絡ください<br />
-			  </p>
+              </p>
             </div>
           </Collapsable>
           <div className='announcements__icon'>
@@ -187,7 +187,7 @@ class Announcements extends React.PureComponent {
                   :おそよう:<br />
                   :ありがとう:<br />
                   :ルーレット:<br />
-        			</p>
+              </p>
             </div>
           </Collapsable>
           <div className='announcements__icon'>
@@ -198,7 +198,7 @@ class Announcements extends React.PureComponent {
           <Collapsable isVisible={this.state.showId === 'bbcode'} fullHeight={380} minHeight={20} >
             <div className='announcements__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.bbcode, { domain: document.title }))}<br />
-              <br />
+                <br />
 			  [spin]回転[/spin]<br />
 			  [pulse]点滅[/pulse]<br />
 			  [large=2x]倍角文字[/large]<br />
@@ -213,10 +213,10 @@ class Announcements extends React.PureComponent {
 			  [code]コード[/code]<br />
 			  [quote]引用[/quote]<br />
         [youtube]動画ID[/youtube]<br />
-        [faicon]coffee[/faicon](<span class="fa fa-coffee"></span>の例)<br />
-        <a href="https://yuzulabo.github.io/generate-faicon/" target="_blank">faiconを生成</a>
-        <a href="https://fontawesome.com/v4.7.0/icons/" target="_blank">faicon アイコン一覧</a><br /><br />
-			  </p>
+        [faicon]coffee[/faicon](<Icon icon='coffee' /> の例)<br />
+                <a href='https://yuzulabo.github.io/generate-faicon/' target='_blank'>faiconを生成</a>
+                <a href='https://fontawesome.com/v4.7.0/icons/' target='_blank'>faicon アイコン一覧</a><br /><br />
+              </p>
             </div>
           </Collapsable>
           <div className='announcements__icon'>
@@ -261,7 +261,7 @@ class Announcements extends React.PureComponent {
                 〜〜〜〜〜〜画像〜〜〜〜〜〜<br /><br />
                 ![画像説明](https://・・・)<br /><br />
                 リンク、画像ともにURLにはhttps://から始まる物のみご利用可能です。
-      			  </p>
+              </p>
             </div>
           </Collapsable>
           <div className='announcements__icon'>
@@ -272,10 +272,10 @@ class Announcements extends React.PureComponent {
           <Collapsable isVisible={this.state.showId === 'music'} fullHeight={410} minHeight={22} >
             <div className='announcements__body'>
               <p><span>{this.musicPlayingNow()}</span> <IconButton icon={this.musicIsPaused() ? 'play' : 'pause'} onClick={() => this.musicTogglePlay()} size={17} /><br /><br />
-                <ul className="musicList">
+                <ul className='musicList'>
                   {music_items}
                 </ul>
-      			  </p>
+              </p>
             </div>
           </Collapsable>
           <div className='announcements__icon'>
