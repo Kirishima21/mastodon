@@ -324,8 +324,7 @@
     &.active h4 {
       &,
       .fa,
-      small,
-      .trends__item__current {
+      small {
         color: $primary-text-color;
       }
     }
@@ -337,10 +336,6 @@
 
     &.active .avatar-stack .account__avatar {
       border-color: $ui-highlight-color;
-    }
-
-    .trends__item__current {
-      padding-right: 0;
     }
   }
 }

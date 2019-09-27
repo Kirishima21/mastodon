@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { List as ImmutableList, is } from 'immutable';
+import { List as ImmutableList } from 'immutable';
 import { me } from '../initial_state';
 
 const getAccountBase         = (state, id) => state.getIn(['accounts', id], null);
@@ -36,10 +36,12 @@ const toServerSideType = columnType => {
   }
 };
 
+export const getFilters = (state, { contextType }) => state.get('filters', ImmutableList()).filter(filter => contextType && filter.get('context').includes(toServerSideType(contextType)) && (filter.get('expires_at') === null || Date.parse(filter.get('expires_at')) > (new Date())));
+
 const escapeRegExp = string =>
   string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 
-const regexFromFilters = filters => {
+export const regexFromFilters = filters => {
   if (filters.size === 0) {
     return null;
   }
@@ -61,27 +63,6 @@ const regexFromFilters = filters => {
   }).join('|'), 'i');
 };
 
-// Memoize the filter regexps for each valid server contextType
-const makeGetFiltersRegex = () => {
-  let memo = {};
-
-  return (state, { contextType }) => {
-    if (!contextType) return ImmutableList();
-
-    const serverSideType = toServerSideType(contextType);
-    const filters = state.get('filters', ImmutableList()).filter(filter => filter.get('context').includes(serverSideType) && (filter.get('expires_at') === null || Date.parse(filter.get('expires_at')) > (new Date())));
-
-    if (!memo[serverSideType] || !is(memo[serverSideType].filters, filters)) {
-      const dropRegex = regexFromFilters(filters.filter(filter => filter.get('irreversible')));
-      const regex = regexFromFilters(filters);
-      memo[serverSideType] = { filters: filters, results: [dropRegex, regex] };
-    }
-    return memo[serverSideType].results;
-  };
-};
-
-export const getFiltersRegex = makeGetFiltersRegex();
-
 export const makeGetStatus = () => {
   return createSelector(
     [
@@ -89,10 +70,10 @@ export const makeGetStatus = () => {
       (state, { id }) => state.getIn(['statuses', state.getIn(['statuses', id, 'reblog'])]),
       (state, { id }) => state.getIn(['accounts', state.getIn(['statuses', id, 'account'])]),
       (state, { id }) => state.getIn(['accounts', state.getIn(['statuses', state.getIn(['statuses', id, 'reblog']), 'account'])]),
-      getFiltersRegex,
+      getFilters,
     ],
 
-    (statusBase, statusReblog, accountBase, accountReblog, filtersRegex) => {
+    (statusBase, statusReblog, accountBase, accountReblog, filters) => {
       if (!statusBase) {
         return null;
       }
@@ -103,13 +84,8 @@ export const makeGetStatus = () => {
         statusReblog = null;
       }
 
-      const dropRegex = (accountReblog || accountBase).get('id') !== me && filtersRegex[0];
-      if (dropRegex && dropRegex.test(statusBase.get('reblog') ? statusReblog.get('search_index') : statusBase.get('search_index'))) {
-        return null;
-      }
-
-      const regex     = (accountReblog || accountBase).get('id') !== me && filtersRegex[1];
-      const filtered  = regex && regex.test(statusBase.get('reblog') ? statusReblog.get('search_index') : statusBase.get('search_index'));
+      const regex    = (accountReblog || accountBase).get('id') !== me && regexFromFilters(filters);
+      const filtered = regex && regex.test(statusBase.get('reblog') ? statusReblog.get('search_index') : statusBase.get('search_index'));
 
       return statusBase.withMutations(map => {
         map.set('reblog', statusReblog);

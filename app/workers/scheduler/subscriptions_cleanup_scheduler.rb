@@ -5,5 +5,7 @@ class Scheduler::SubscriptionsCleanupScheduler
 
   sidekiq_options unique: :until_executed, retry: 0
 
-  def perform; end
+  def perform
+    Subscription.expired.in_batches.delete_all
+  end
 end

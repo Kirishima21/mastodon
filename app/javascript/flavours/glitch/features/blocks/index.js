@@ -1,15 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import LoadingIndicator from 'flavours/glitch/components/loading_indicator';
-import ScrollableList from '../../components/scrollable_list';
+import { ScrollContainer } from 'react-router-scroll-4';
 import Column from 'flavours/glitch/features/ui/components/column';
 import ColumnBackButtonSlim from 'flavours/glitch/components/column_back_button_slim';
 import AccountContainer from 'flavours/glitch/containers/account_container';
 import { fetchBlocks, expandBlocks } from 'flavours/glitch/actions/blocks';
-import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
 const messages = defineMessages({
@@ -18,7 +17,6 @@ const messages = defineMessages({
 
 const mapStateToProps = state => ({
   accountIds: state.getIn(['user_lists', 'blocks', 'items']),
-  hasMore: !!state.getIn(['user_lists', 'blocks', 'next']),
 });
 
 @connect(mapStateToProps)
@@ -29,7 +27,6 @@ export default class Blocks extends ImmutablePureComponent {
     params: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     accountIds: ImmutablePropTypes.list,
-    hasMore: PropTypes.bool,
     intl: PropTypes.object.isRequired,
   };
 
@@ -37,12 +34,21 @@ export default class Blocks extends ImmutablePureComponent {
     this.props.dispatch(fetchBlocks());
   }
 
-  handleLoadMore = debounce(() => {
-    this.props.dispatch(expandBlocks());
-  }, 300, { leading: true });
+  handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+
+    if (scrollTop === scrollHeight - clientHeight) {
+      this.props.dispatch(expandBlocks());
+    }
+  }
+
+  shouldUpdateScroll = (prevRouterProps, { location }) => {
+    if ((((prevRouterProps || {}).location || {}).state || {}).mastodonModalOpen) return false;
+    return !(location.state && location.state.mastodonModalOpen);
+  }
 
   render () {
-    const { intl, accountIds, hasMore } = this.props;
+    const { intl, accountIds } = this.props;
 
     if (!accountIds) {
       return (
@@ -52,21 +58,16 @@ export default class Blocks extends ImmutablePureComponent {
       );
     }
 
-    const emptyMessage = <FormattedMessage id='empty_column.blocks' defaultMessage="You haven't blocked any users yet." />;
-
     return (
       <Column name='blocks' icon='ban' heading={intl.formatMessage(messages.heading)}>
         <ColumnBackButtonSlim />
-        <ScrollableList
-          scrollKey='blocks'
-          onLoadMore={this.handleLoadMore}
-          hasMore={hasMore}
-          emptyMessage={emptyMessage}
-        >
-          {accountIds.map(id =>
-            <AccountContainer key={id} id={id} />
-          )}
-        </ScrollableList>
+        <ScrollContainer scrollKey='blocks' shouldUpdateScroll={this.shouldUpdateScroll}>
+          <div className='scrollable' onScroll={this.handleScroll}>
+            {accountIds.map(id =>
+              <AccountContainer key={id} id={id} />
+            )}
+          </div>
+        </ScrollContainer>
       </Column>
     );
   }

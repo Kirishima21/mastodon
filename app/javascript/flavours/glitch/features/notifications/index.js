@@ -10,7 +10,6 @@ import {
   scrollTopNotifications,
   mountNotifications,
   unmountNotifications,
-  loadPending,
 } from 'flavours/glitch/actions/notifications';
 import { addColumn, removeColumn, moveColumn } from 'flavours/glitch/actions/columns';
 import NotificationContainer from './containers/notification_container';
@@ -49,7 +48,6 @@ const mapStateToProps = state => ({
   isLoading: state.getIn(['notifications', 'isLoading'], true),
   isUnread: state.getIn(['notifications', 'unread']) > 0,
   hasMore: state.getIn(['notifications', 'hasMore']),
-  numPending: state.getIn(['notifications', 'pendingItems'], ImmutableList()).size,
   notifCleaningActive: state.getIn(['notifications', 'cleaningMode']),
 });
 
@@ -82,7 +80,6 @@ export default class Notifications extends React.PureComponent {
     isUnread: PropTypes.bool,
     multiColumn: PropTypes.bool,
     hasMore: PropTypes.bool,
-    numPending: PropTypes.number,
     localSettings: ImmutablePropTypes.map,
     notifCleaningActive: PropTypes.bool,
     onEnterCleaningMode: PropTypes.func,
@@ -102,10 +99,6 @@ export default class Notifications extends React.PureComponent {
     const last = this.props.notifications.last();
     this.props.dispatch(expandNotifications({ maxId: last && last.get('id') }));
   }, 300, { leading: true });
-
-  handleLoadPending = () => {
-    this.props.dispatch(loadPending());
-  };
 
   handleScrollToTop = debounce(() => {
     this.props.dispatch(scrollTopNotifications(true));
@@ -177,7 +170,7 @@ export default class Notifications extends React.PureComponent {
   }
 
   render () {
-    const { intl, notifications, shouldUpdateScroll, isLoading, isUnread, columnId, multiColumn, hasMore, numPending, showFilterBar } = this.props;
+    const { intl, notifications, shouldUpdateScroll, isLoading, isUnread, columnId, multiColumn, hasMore, showFilterBar } = this.props;
     const pinned = !!columnId;
     const emptyMessage = <FormattedMessage id='empty_column.notifications' defaultMessage="You don't have any notifications yet. Interact with others to start the conversation." />;
 
@@ -219,10 +212,8 @@ export default class Notifications extends React.PureComponent {
         isLoading={isLoading}
         showLoading={isLoading && notifications.size === 0}
         hasMore={hasMore}
-        numPending={numPending}
         emptyMessage={emptyMessage}
         onLoadMore={this.handleLoadOlder}
-        onLoadPending={this.handleLoadPending}
         onScrollToTop={this.handleScrollToTop}
         onScroll={this.handleScroll}
         shouldUpdateScroll={shouldUpdateScroll}

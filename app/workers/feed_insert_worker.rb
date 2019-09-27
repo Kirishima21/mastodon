@@ -13,8 +13,6 @@ class FeedInsertWorker
     when :list
       @list     = List.find(id)
       @follower = @list.account
-    when :direct
-      @account  = Account.find(id)
     end
 
     check_and_insert
@@ -31,12 +29,7 @@ class FeedInsertWorker
   def feed_filtered?
     # Note: Lists are a variation of home, so the filtering rules
     # of home apply to both
-    case @type
-    when :home, :list
-      FeedManager.instance.filter?(:home, @status, @follower.id)
-    when :direct
-      FeedManager.instance.filter?(:direct, @status, @account.id)
-    end
+    FeedManager.instance.filter?(:home, @status, @follower.id)
   end
 
   def perform_push
@@ -45,8 +38,6 @@ class FeedInsertWorker
       FeedManager.instance.push_to_home(@follower, @status)
     when :list
       FeedManager.instance.push_to_list(@list, @status)
-    when :direct
-      FeedManager.instance.push_to_direct(@account, @status)
     end
   end
 end

@@ -20,7 +20,7 @@ const mapDispatchToProps = (dispatch, { status, items }) => ({
     }) : openDropdownMenu(id, dropdownPlacement, keyboard));
   },
   onClose(id) {
-    dispatch(closeModal('ACTIONS'));
+    dispatch(closeModal());
     dispatch(closeDropdownMenu(id));
   },
 });

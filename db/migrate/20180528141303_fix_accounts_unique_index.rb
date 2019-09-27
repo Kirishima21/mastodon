@@ -12,11 +12,6 @@ class FixAccountsUniqueIndex < ActiveRecord::Migration[5.2]
     end
   end
 
-  class StreamEntry < ApplicationRecord
-    # Dummy class, to make migration possible across version changes
-    belongs_to :account, inverse_of: :stream_entries
-  end
-
   disable_ddl_transaction!
 
   def up

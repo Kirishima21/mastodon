@@ -8,7 +8,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 export default class LocalSettingsPageItem extends React.PureComponent {
 
   static propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.element.isRequired,
     dependsOn: PropTypes.array,
     dependsOnNot: PropTypes.array,
     id: PropTypes.string.isRequired,
@@ -63,12 +63,12 @@ export default class LocalSettingsPageItem extends React.PureComponent {
               disabled={!enabled}
             />
             {opt.message}
-            {opt.hint && <span className='hint'>{opt.hint}</span>}
+            {opt.hint && <span class='hint'>{opt.hint}</span>}
           </label>
         );
       });
       return (
-        <div className='glitch local-settings__page__item radio_buttons'>
+        <div class='glitch local-settings__page__item radio_buttons'>
           <fieldset>
             <legend>{children}</legend>
             {optionElems}

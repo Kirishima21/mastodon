@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class NotificationMailer < ApplicationMailer
-  helper :statuses
+  helper :stream_entries
 
   add_template_helper RoutingHelper
 

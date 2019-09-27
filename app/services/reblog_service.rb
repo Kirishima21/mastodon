@@ -2,6 +2,7 @@
 
 class ReblogService < BaseService
   include Authorization
+  include StreamEntryRenderer
   include Payloadable
 
   # Reblog a status and notify its remote author
@@ -23,7 +24,11 @@ class ReblogService < BaseService
     reblog = account.statuses.create!(reblog: reblogged_status, text: '', visibility: visibility)
 
     DistributionWorker.perform_async(reblog.id)
-    ActivityPub::DistributionWorker.perform_async(reblog.id) unless reblogged_status.local_only?
+
+    unless reblogged_status.local_only?
+      Pubsubhubbub::DistributionWorker.perform_async(reblog.stream_entry.id)
+      ActivityPub::DistributionWorker.perform_async(reblog.id)
+    end
 
     create_notification(reblog)
     bump_potential_friendship(account, reblog)
@@ -38,6 +43,8 @@ class ReblogService < BaseService
 
     if reblogged_status.account.local?
       LocalNotificationWorker.perform_async(reblogged_status.account_id, reblog.id, reblog.class.name)
+    elsif reblogged_status.account.ostatus?
+      NotificationWorker.perform_async(stream_entry_to_xml(reblog.stream_entry), reblog.account_id, reblogged_status.account_id)
     elsif reblogged_status.account.activitypub? && !reblogged_status.account.following?(reblog.account)
       ActivityPub::DeliveryWorker.perform_async(build_json(reblog), reblog.account_id, reblogged_status.account.inbox_url)
     end

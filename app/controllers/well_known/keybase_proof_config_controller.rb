@@ -5,7 +5,7 @@ module WellKnown
     before_action :check_enabled
 
     def show
-      render json: {}, serializer: ProofProvider::Keybase::ConfigSerializer, root: 'keybase_config'
+      render json: {}, serializer: ProofProvider::Keybase::ConfigSerializer
     end
 
     private

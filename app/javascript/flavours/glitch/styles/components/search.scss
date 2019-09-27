@@ -3,25 +3,13 @@
 }
 
 .search__input {
-  @include search-input();
-
   display: block;
-  padding: 15px;
+  padding: 10px;
   padding-right: 30px;
-  line-height: 18px;
-  font-size: 16px;
+  @include search-input();
 }
 
 .search__icon {
-  &::-moz-focus-inner {
-    border: 0;
-  }
-
-  &::-moz-focus-inner,
-  &:focus {
-    outline: 0 !important;
-  }
-
   .fa {
     position: absolute;
     top: 16px;
@@ -30,7 +18,7 @@
     display: inline-block;
     opacity: 0;
     transition: all 100ms linear;
-    transition-property: color, transform, opacity;
+    transition-property: transform, opacity;
     font-size: 18px;
     width: 18px;
     height: 18px;
@@ -45,18 +33,17 @@
   }
 
   .fa-search {
-    transform: rotate(0deg);
+    transform: rotate(90deg);
 
     &.active {
-      pointer-events: auto;
-      opacity: 0.3;
+      pointer-events: none;
+      transform: rotate(0deg);
     }
   }
 
   .fa-times-circle {
     top: 17px;
     transform: rotate(0deg);
-    color: $action-button-color;
     cursor: pointer;
 
     &.active {
@@ -64,7 +51,7 @@
     }
 
     &:hover {
-      color: lighten($action-button-color, 7%);
+      color: $primary-text-color;
     }
   }
 }
@@ -76,12 +63,6 @@
   padding: 15px 10px;
   font-size: 14px;
   font-weight: 500;
-}
-
-.search-results__info {
-  padding: 20px;
-  color: $darker-text-color;
-  text-align: center;
 }
 
 .trends {

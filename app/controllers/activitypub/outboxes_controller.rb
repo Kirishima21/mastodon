@@ -1,21 +1,25 @@
 # frozen_string_literal: true
 
-class ActivityPub::OutboxesController < ActivityPub::BaseController
+class ActivityPub::OutboxesController < Api::BaseController
   LIMIT = 20
 
   include SignatureVerification
-  include AccountOwnedConcern
 
-  before_action :require_signature!, if: :authorized_fetch_mode?
+  before_action :set_account
   before_action :set_statuses
   before_action :set_cache_headers
 
   def show
-    expires_in(page_requested? ? 0 : 3.minutes, public: public_fetch_mode?)
+    expires_in 1.minute, public: true unless page_requested?
+
     render json: outbox_presenter, serializer: ActivityPub::OutboxSerializer, adapter: ActivityPub::Adapter, content_type: 'application/activity+json'
   end
 
   private
+
+  def set_account
+    @account = Account.find_local!(params[:account_username])
+  end
 
   def outbox_presenter
     if page_requested?

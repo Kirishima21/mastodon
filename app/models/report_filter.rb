@@ -9,11 +9,9 @@ class ReportFilter
 
   def results
     scope = Report.unresolved
-
     params.each do |key, value|
       scope = scope.merge scope_for(key, value)
     end
-
     scope
   end
 

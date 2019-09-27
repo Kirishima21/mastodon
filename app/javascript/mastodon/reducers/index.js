@@ -31,7 +31,6 @@ import conversations from './conversations';
 import suggestions from './suggestions';
 import polls from './polls';
 import identity_proofs from './identity_proofs';
-import trends from './trends';
 
 const reducers = {
   dropdown_menu,
@@ -66,7 +65,6 @@ const reducers = {
   conversations,
   suggestions,
   polls,
-  trends,
 };
 
 export default combineReducers(reducers);

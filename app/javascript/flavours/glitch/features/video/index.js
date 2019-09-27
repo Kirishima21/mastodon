@@ -5,7 +5,7 @@ import { fromJS, is } from 'immutable';
 import { throttle } from 'lodash';
 import classNames from 'classnames';
 import { isFullscreen, requestFullscreen, exitFullscreen } from 'flavours/glitch/util/fullscreen';
-import { displayMedia, useBlurhash } from 'flavours/glitch/util/initial_state';
+import { displayMedia } from 'flavours/glitch/util/initial_state';
 import { decode } from 'blurhash';
 
 const messages = defineMessages({
@@ -312,7 +312,7 @@ export default class Video extends React.PureComponent {
   }
 
   _decode () {
-    if (!this.canvas || !useBlurhash) return;
+    if (!this.canvas) return;
 
     const hash   = this.props.blurhash;
     const pixels = decode(hash, 32, 32);

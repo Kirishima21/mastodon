@@ -13,7 +13,6 @@ const messages = defineMessages({
   general: {  id: 'settings.general', defaultMessage: 'General' },
   compose: {  id: 'settings.compose_box_opts', defaultMessage: 'Compose box' },
   content_warnings: { id: 'settings.content_warnings', defaultMessage: 'Content Warnings' },
-  filters: { id: 'settings.filters', defaultMessage: 'Filters' },
   collapsed: { id: 'settings.collapsed_statuses', defaultMessage: 'Collapsed toots' },
   media: { id: 'settings.media', defaultMessage: 'Media' },
   preferences: { id: 'settings.preferences', defaultMessage: 'Preferences' },
@@ -61,34 +60,27 @@ export default class LocalSettingsNavigation extends React.PureComponent {
           active={index === 3}
           index={3}
           onNavigate={onNavigate}
-          icon='filter'
-          title={intl.formatMessage(messages.filters)}
+          icon='angle-double-up'
+          title={intl.formatMessage(messages.collapsed)}
         />
         <LocalSettingsNavigationItem
           active={index === 4}
           index={4}
           onNavigate={onNavigate}
-          icon='angle-double-up'
-          title={intl.formatMessage(messages.collapsed)}
-        />
-        <LocalSettingsNavigationItem
-          active={index === 5}
-          index={5}
-          onNavigate={onNavigate}
           icon='image'
           title={intl.formatMessage(messages.media)}
         />
         <LocalSettingsNavigationItem
-          active={index === 6}
+          active={index === 5}
           href={ preferencesLink }
-          index={6}
-          icon='cog'
+          index={5}
+          icon='sliders'
           title={intl.formatMessage(messages.preferences)}
         />
         <LocalSettingsNavigationItem
-          active={index === 7}
+          active={index === 6}
           className='close'
-          index={7}
+          index={6}
           onNavigate={onClose}
           icon='times'
           title={intl.formatMessage(messages.close)}

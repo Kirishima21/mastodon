@@ -24,6 +24,8 @@ class SuspendAccountService < BaseService
     report_notes
     scheduled_statuses
     status_pins
+    stream_entries
+    subscriptions
   ).freeze
 
   ASSOCIATIONS_ON_DESTROY = %w(
@@ -64,7 +66,6 @@ class SuspendAccountService < BaseService
       @account.user.destroy
     else
       @account.user.disable!
-      @account.user.invites.where(uses: 0).destroy_all
     end
   end
 

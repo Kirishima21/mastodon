@@ -131,14 +131,14 @@ export default class DetailedStatus extends ImmutablePureComponent {
     } else if (status.get('media_attachments').size > 0) {
       if (status.get('media_attachments').some(item => item.get('type') === 'unknown')) {
         media = <AttachmentList media={status.get('media_attachments')} />;
-      } else if (['video', 'audio'].includes(status.getIn(['media_attachments', 0, 'type']))) {
-        const attachment = status.getIn(['media_attachments', 0]);
+      } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
+        const video = status.getIn(['media_attachments', 0]);
         media = (
           <Video
-            preview={attachment.get('preview_url')}
-            blurhash={attachment.get('blurhash')}
-            src={attachment.get('url')}
-            alt={attachment.get('description')}
+            preview={video.get('preview_url')}
+            blurhash={video.get('blurhash')}
+            src={video.get('url')}
+            alt={video.get('description')}
             inline
             sensitive={status.get('sensitive')}
             letterbox={settings.getIn(['media', 'letterbox'])}
@@ -150,7 +150,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
             onToggleVisibility={this.props.onToggleMediaVisibility}
           />
         );
-        mediaIcon = attachment.get('type') === 'video' ? 'video-camera' : 'music';
+        mediaIcon = 'video-camera';
       } else {
         media = (
           <MediaGallery
@@ -241,7 +241,6 @@ export default class DetailedStatus extends ImmutablePureComponent {
             onExpandedToggle={onToggleHidden}
             parseClick={this.parseClick}
             onUpdate={this.handleChildUpdate}
-            tagLinks={settings.get('tag_misleading_links')}
             disabled
           />
 

@@ -10,9 +10,6 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   before_action :set_sessions, only: [:edit, :update]
   before_action :set_instance_presenter, only: [:new, :create, :update]
   before_action :set_body_classes, only: [:new, :create, :edit, :update]
-  before_action :require_not_suspended!, only: [:update]
-
-  skip_before_action :require_functional!, only: [:edit, :update]
 
   def new
     super(&:build_invite_request)
@@ -47,7 +44,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def after_sign_up_path_for(_resource)
-    auth_setup_path
+    new_user_session_path
   end
 
   def after_sign_in_path_for(_resource)
@@ -109,9 +106,5 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def set_sessions
     @sessions = current_user.session_activations
-  end
-
-  def require_not_suspended!
-    forbidden if current_account.suspended?
   end
 end

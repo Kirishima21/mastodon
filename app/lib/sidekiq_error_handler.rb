@@ -3,11 +3,9 @@
 class SidekiqErrorHandler
   def call(*)
     yield
-  rescue Mastodon::HostValidationError
+  rescue Mastodon::HostValidationError => e
+    Rails.logger.error "#{e.class}: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
     # Do not retry
-  ensure
-    socket = Thread.current[:statsd_socket]
-    socket&.close
-    Thread.current[:statsd_socket] = nil
   end
 end

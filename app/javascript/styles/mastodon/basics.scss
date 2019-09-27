@@ -8,7 +8,7 @@
 
 body {
   font-family: $font-sans-serif, sans-serif;
-  background: darken($ui-base-color, 7%);
+  background: darken($ui-base-color, 8%);
   font-size: 13px;
   line-height: 18px;
   font-weight: 400;
@@ -35,19 +35,11 @@ body {
   }
 
   &.app-body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     padding: 0;
-
-    &.layout-single-column {
-      height: auto;
-      min-height: 100vh;
-      overflow-y: scroll;
-    }
-
-    &.layout-multiple-columns {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
+    background: $ui-base-color;
 
     &.with-modals--active {
       overflow-y: hidden;
@@ -64,6 +56,7 @@ body {
 
     &--active {
       overflow-y: hidden;
+      margin-right: 13px;
     }
   }
 
@@ -141,6 +134,7 @@ button {
   & > div {
     display: flex;
     width: 100%;
+    height: 100%;
     align-items: center;
     justify-content: center;
     outline: 0 !important;
@@ -153,18 +147,4 @@ button {
   
 .status__action-bar .fa-envelope::before {
   color: #EEAA7B;
-}
-
-.layout-single-column .app-holder {
-  &,
-  & > div {
-    min-height: 100%;
-  }
-}
-
-.layout-multiple-columns .app-holder {
-  &,
-  & > div {
-    height: 100%;
-  }
 }

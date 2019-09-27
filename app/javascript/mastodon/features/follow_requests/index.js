@@ -32,7 +32,6 @@ class FollowRequests extends ImmutablePureComponent {
     hasMore: PropTypes.bool,
     accountIds: ImmutablePropTypes.list,
     intl: PropTypes.object.isRequired,
-    multiColumn: PropTypes.bool,
   };
 
   componentWillMount () {
@@ -44,7 +43,7 @@ class FollowRequests extends ImmutablePureComponent {
   }, 300, { leading: true });
 
   render () {
-    const { intl, shouldUpdateScroll, accountIds, hasMore, multiColumn } = this.props;
+    const { intl, shouldUpdateScroll, accountIds, hasMore } = this.props;
 
     if (!accountIds) {
       return (
@@ -57,7 +56,7 @@ class FollowRequests extends ImmutablePureComponent {
     const emptyMessage = <FormattedMessage id='empty_column.follow_requests' defaultMessage="You don't have any follow requests yet. When you receive one, it will show up here." />;
 
     return (
-      <Column bindToDocument={!multiColumn} icon='user-plus' heading={intl.formatMessage(messages.heading)}>
+      <Column icon='user-plus' heading={intl.formatMessage(messages.heading)}>
         <ColumnBackButtonSlim />
         <ScrollableList
           scrollKey='follow_requests'
@@ -65,7 +64,6 @@ class FollowRequests extends ImmutablePureComponent {
           hasMore={hasMore}
           shouldUpdateScroll={shouldUpdateScroll}
           emptyMessage={emptyMessage}
-          bindToDocument={!multiColumn}
         >
           {accountIds.map(id =>
             <AccountAuthorizeContainer key={id} id={id} />

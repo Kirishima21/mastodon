@@ -2,22 +2,18 @@
 
 class ActivityPub::FetchRemoteAccountService < BaseService
   include JsonLdHelper
-  include DomainControlHelper
 
   SUPPORTED_TYPES = %w(Application Group Organization Person Service).freeze
 
   # Does a WebFinger roundtrip on each call, unless `only_key` is true
   def call(uri, id: true, prefetched_body: nil, break_on_redirect: false, only_key: false)
-    return if domain_not_allowed?(uri)
     return ActivityPub::TagManager.instance.uri_to_resource(uri, Account) if ActivityPub::TagManager.instance.local_uri?(uri)
 
-    @json = begin
-      if prefetched_body.nil?
-        fetch_resource(uri, id)
-      else
-        body_to_json(prefetched_body, compare_id: id ? uri : nil)
-      end
-    end
+    @json = if prefetched_body.nil?
+              fetch_resource(uri, id)
+            else
+              body_to_json(prefetched_body)
+            end
 
     return if !supported_context? || !expected_type? || (break_on_redirect && @json['movedTo'].present?)
 

@@ -27,16 +27,14 @@ class Api::V1::Timelines::DirectController < Api::BaseController
   end
 
   def direct_timeline_statuses
-    account_direct_feed.get(
+    # this query requires built in pagination.
+    Status.as_direct_timeline(
+      current_account,
       limit_param(DEFAULT_STATUSES_LIMIT),
       params[:max_id],
       params[:since_id],
-      params[:min_id]
+      true # returns array of cache_ids object
     )
-  end
-
-  def account_direct_feed
-    DirectFeed.new(current_account)
   end
 
   def insert_pagination_headers

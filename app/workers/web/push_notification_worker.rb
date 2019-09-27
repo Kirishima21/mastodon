@@ -3,7 +3,7 @@
 class Web::PushNotificationWorker
   include Sidekiq::Worker
 
-  sidekiq_options backtrace: true, retry: 5
+  sidekiq_options backtrace: true
 
   def perform(subscription_id, notification_id)
     subscription = ::Web::PushSubscription.find(subscription_id)

@@ -9,8 +9,17 @@ module WellKnown
     def show
       @account = Account.find_local!(username_from_resource)
 
-      expires_in 3.days, public: true
-      render json: @account, serializer: WebfingerSerializer, content_type: 'application/jrd+json'
+      respond_to do |format|
+        format.any(:json, :html) do
+          render json: @account, serializer: WebfingerSerializer, content_type: 'application/jrd+json'
+        end
+
+        format.xml do
+          render content_type: 'application/xrd+xml'
+        end
+      end
+
+      expires_in(3.days, public: true)
     rescue ActiveRecord::RecordNotFound
       head 404
     end
@@ -18,9 +27,12 @@ module WellKnown
     private
 
     def username_from_resource
-      resource_user    = resource_param
+      resource_user = resource_param
+
       username, domain = resource_user.split('@')
-      resource_user    = "#{username}@#{Rails.configuration.x.local_domain}" if Rails.configuration.x.alternate_domains.include?(domain)
+      if Rails.configuration.x.alternate_domains.include?(domain)
+        resource_user = "#{username}@#{Rails.configuration.x.local_domain}"
+      end
 
       WebfingerResource.new(resource_user).username
     end

@@ -33,7 +33,6 @@ class Blocks extends ImmutablePureComponent {
     hasMore: PropTypes.bool,
     domains: ImmutablePropTypes.orderedSet,
     intl: PropTypes.object.isRequired,
-    multiColumn: PropTypes.bool,
   };
 
   componentWillMount () {
@@ -45,7 +44,7 @@ class Blocks extends ImmutablePureComponent {
   }, 300, { leading: true });
 
   render () {
-    const { intl, domains, shouldUpdateScroll, hasMore, multiColumn } = this.props;
+    const { intl, domains, shouldUpdateScroll, hasMore } = this.props;
 
     if (!domains) {
       return (
@@ -58,7 +57,7 @@ class Blocks extends ImmutablePureComponent {
     const emptyMessage = <FormattedMessage id='empty_column.domain_blocks' defaultMessage='There are no hidden domains yet.' />;
 
     return (
-      <Column bindToDocument={!multiColumn} icon='minus-circle' heading={intl.formatMessage(messages.heading)}>
+      <Column icon='minus-circle' heading={intl.formatMessage(messages.heading)}>
         <ColumnBackButtonSlim />
         <ScrollableList
           scrollKey='domain_blocks'
@@ -66,7 +65,6 @@ class Blocks extends ImmutablePureComponent {
           hasMore={hasMore}
           shouldUpdateScroll={shouldUpdateScroll}
           emptyMessage={emptyMessage}
-          bindToDocument={!multiColumn}
         >
           {domains.map(domain =>
             <DomainContainer key={domain} domain={domain} />

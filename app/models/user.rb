@@ -73,7 +73,6 @@ class User < ApplicationRecord
 
   has_many :applications, class_name: 'Doorkeeper::Application', as: :owner
   has_many :backups, inverse_of: :user
-  has_many :invites, inverse_of: :user
 
   has_one :invite_request, class_name: 'UserInviteRequest', inverse_of: :user, dependent: :destroy
   accepts_nested_attributes_for :invite_request, reject_if: ->(attributes) { attributes['text'].blank? }
@@ -88,9 +87,8 @@ class User < ApplicationRecord
   scope :approved, -> { where(approved: true) }
   scope :confirmed, -> { where.not(confirmed_at: nil) }
   scope :enabled, -> { where(disabled: false) }
-  scope :disabled, -> { where(disabled: true) }
   scope :inactive, -> { where(arel_table[:current_sign_in_at].lt(ACTIVE_DURATION.ago)) }
-  scope :active, -> { confirmed.where(arel_table[:current_sign_in_at].gteq(ACTIVE_DURATION.ago)).joins(:account).where(accounts: { suspended_at: nil }) }
+  scope :active, -> { confirmed.where(arel_table[:current_sign_in_at].gteq(ACTIVE_DURATION.ago)).joins(:account).where.not(accounts: { suspended_at: nil }) }
   scope :matches_email, ->(value) { where(arel_table[:email].matches("#{value}%")) }
   scope :emailable, -> { confirmed.enabled.joins(:account).merge(Account.searchable) }
 
@@ -107,9 +105,7 @@ class User < ApplicationRecord
   delegate :auto_play_gif, :default_sensitive, :unfollow_modal, :boost_modal, :favourite_modal, :delete_modal,
            :reduce_motion, :system_font_ui, :noindex, :flavour, :skin, :display_media, :hide_network, :hide_followers_count,
            :expand_spoilers, :default_language, :aggregate_reblogs, :show_application,
-           :advanced_layout, :use_blurhash, :use_pending_items, :trends,
-           :default_content_type,
-           to: :settings, prefix: :setting, allow_nil: false
+           :advanced_layout, :default_content_type, to: :settings, prefix: :setting, allow_nil: false
 
   attr_reader :invite_code
   attr_writer :external
@@ -164,11 +160,7 @@ class User < ApplicationRecord
   end
 
   def active_for_authentication?
-    true
-  end
-
-  def functional?
-    confirmed? && approved? && !disabled? && !account.suspended?
+    super && approved?
   end
 
   def inactive_message
@@ -207,10 +199,6 @@ class User < ApplicationRecord
 
   def allows_pending_account_emails?
     settings.notification_emails['pending_account']
-  end
-
-  def allows_trending_tag_emails?
-    settings.notification_emails['trending_tag']
   end
 
   def hides_network?

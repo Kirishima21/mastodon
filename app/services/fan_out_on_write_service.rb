@@ -37,7 +37,6 @@ class FanOutOnWriteService < BaseService
   def deliver_to_self(status)
     Rails.logger.debug "Delivering status #{status.id} to author"
     FeedManager.instance.push_to_home(status.account, status)
-    FeedManager.instance.push_to_direct(status.account, status) if status.direct_visibility?
   end
 
   def deliver_to_followers(status)
@@ -77,8 +76,8 @@ class FanOutOnWriteService < BaseService
     Rails.logger.debug "Delivering status #{status.id} to hashtags"
 
     status.tags.pluck(:name).each do |hashtag|
-      Redis.current.publish("timeline:hashtag:#{hashtag.mb_chars.downcase}", @payload)
-      Redis.current.publish("timeline:hashtag:#{hashtag.mb_chars.downcase}:local", @payload) if status.local?
+      Redis.current.publish("timeline:hashtag:#{hashtag}", @payload)
+      Redis.current.publish("timeline:hashtag:#{hashtag}:local", @payload) if status.local?
     end
   end
 
@@ -99,9 +98,11 @@ class FanOutOnWriteService < BaseService
   def deliver_to_direct_timelines(status)
     Rails.logger.debug "Delivering status #{status.id} to direct timelines"
 
-    FeedInsertWorker.push_bulk(status.mentions.includes(:account).map(&:account).select { |mentioned_account| mentioned_account.local? }) do |account|
-      [status.id, account.id, :direct]
+    status.mentions.includes(:account).each do |mention|
+      Redis.current.publish("timeline:direct:#{mention.account.id}", @payload) if mention.account.local?
     end
+
+    Redis.current.publish("timeline:direct:#{status.account.id}", @payload) if status.account.local?
   end
 
   def deliver_to_own_conversation(status)

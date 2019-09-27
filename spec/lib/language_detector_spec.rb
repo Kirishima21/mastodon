@@ -32,11 +32,11 @@ describe LanguageDetector do
       expect(result).to eq 'Our website is and also'
     end
 
-    it 'converts #hashtags back to normal text before detection' do
-      string = 'Hey look at all the #animals and #FishAndChips'
+    it 'strips #hashtags from strings before detection' do
+      string = 'Hey look at all the #animals and #fish'
 
       result = described_class.instance.send(:prepare_text, string)
-      expect(result).to eq 'Hey look at all the animals and fish and chips'
+      expect(result).to eq 'Hey look at all the and'
     end
   end
 

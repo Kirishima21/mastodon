@@ -4,51 +4,64 @@ class ResolveURLService < BaseService
   include JsonLdHelper
   include Authorization
 
+  attr_reader :url
+
   def call(url, on_behalf_of: nil)
-    @url          = url
+    @url = url
     @on_behalf_of = on_behalf_of
 
-    if local_url?
-      process_local_url
-    elsif !fetched_resource.nil?
-      process_url
-    end
+    return process_local_url if local_url?
+
+    process_url unless fetched_atom_feed.nil?
   end
 
   private
 
   def process_url
-    if equals_or_includes_any?(type, ActivityPub::FetchRemoteAccountService::SUPPORTED_TYPES)
-      FetchRemoteAccountService.new.call(resource_url, body, protocol)
-    elsif equals_or_includes_any?(type, ActivityPub::Activity::Create::SUPPORTED_TYPES + ActivityPub::Activity::Create::CONVERTED_TYPES)
-      status = FetchRemoteStatusService.new.call(resource_url, body, protocol)
-      authorize_with @on_behalf_of, status, :show? unless status.nil?
-      status
+    if equals_or_includes_any?(type, %w(Application Group Organization Person Service))
+      FetchRemoteAccountService.new.call(atom_url, body, protocol)
+    elsif equals_or_includes_any?(type, %w(Note Article Image Video Page Question))
+      FetchRemoteStatusService.new.call(atom_url, body, protocol)
     end
   end
 
-  def fetched_resource
-    @fetched_resource ||= FetchResourceService.new.call(@url)
+  def fetched_atom_feed
+    @_fetched_atom_feed ||= FetchAtomService.new.call(url)
   end
 
-  def resource_url
-    fetched_resource.first
+  def atom_url
+    fetched_atom_feed.first
   end
 
   def body
-    fetched_resource.second[:prefetched_body]
+    fetched_atom_feed.second[:prefetched_body]
   end
 
   def protocol
-    fetched_resource.third
+    fetched_atom_feed.third
   end
 
   def type
     return json_data['type'] if protocol == :activitypub
+
+    case xml_root
+    when 'feed'
+      'Person'
+    when 'entry'
+      'Note'
+    end
   end
 
   def json_data
-    @json_data ||= body_to_json(body)
+    @_json_data ||= body_to_json(body)
+  end
+
+  def xml_root
+    xml_data.root.name
+  end
+
+  def xml_data
+    @_xml_data ||= Nokogiri::XML(body, nil, 'utf-8')
   end
 
   def local_url?
@@ -60,7 +73,10 @@ class ResolveURLService < BaseService
 
     return unless recognized_params[:action] == 'show'
 
-    if recognized_params[:controller] == 'statuses'
+    if recognized_params[:controller] == 'stream_entries'
+      status = StreamEntry.find_by(id: recognized_params[:id])&.status
+      check_local_status(status)
+    elsif recognized_params[:controller] == 'statuses'
       status = Status.find_by(id: recognized_params[:id])
       check_local_status(status)
     elsif recognized_params[:controller] == 'accounts'
@@ -70,10 +86,10 @@ class ResolveURLService < BaseService
 
   def check_local_status(status)
     return if status.nil?
-
     authorize_with @on_behalf_of, status, :show?
     status
   rescue Mastodon::NotPermittedError
+    # Do not disclose the existence of status the user is not authorized to see
     nil
   end
 end

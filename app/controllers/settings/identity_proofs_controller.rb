@@ -61,4 +61,8 @@ class Settings::IdentityProofsController < Settings::BaseController
   def post_params
     params.require(:account_identity_proof).permit(:post_status, :status_text)
   end
+
+  def set_body_classes
+    @body_classes = ''
+  end
 end

@@ -66,7 +66,7 @@ export default class NewListForm extends React.PureComponent {
         </label>
 
         <IconButton
-          disabled={disabled || !value}
+          disabled={disabled}
           icon='plus'
           title={title}
           onClick={this.handleClick}

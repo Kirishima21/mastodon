@@ -2,12 +2,11 @@
 
 class ActivityPub::ProcessAccountService < BaseService
   include JsonLdHelper
-  include DomainControlHelper
 
   # Should be called with confirmed valid JSON
   # and WebFinger-resolved username and domain
   def call(username, domain, json, options = {})
-    return if json['inbox'].blank? || unsupported_uri_scheme?(json['id']) || domain_not_allowed?(domain)
+    return if json['inbox'].blank? || unsupported_uri_scheme?(json['id'])
 
     @options     = options
     @json        = json
@@ -56,7 +55,7 @@ class ActivityPub::ProcessAccountService < BaseService
     @account.domain       = @domain
     @account.private_key  = nil
     @account.suspended_at = domain_block.created_at if auto_suspend?
-    @account.silenced_at  = domain_block.created_at if auto_silence?
+    @account.silenced_at = domain_block.created_at if auto_silence?
   end
 
   def update_account
@@ -206,7 +205,7 @@ class ActivityPub::ProcessAccountService < BaseService
 
   def domain_block
     return @domain_block if defined?(@domain_block)
-    @domain_block = DomainBlock.rule_for(@domain)
+    @domain_block = DomainBlock.find_by(domain: @domain)
   end
 
   def key_changed?

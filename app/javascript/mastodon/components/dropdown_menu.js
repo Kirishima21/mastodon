@@ -45,9 +45,7 @@ class DropdownMenu extends React.PureComponent {
     document.addEventListener('click', this.handleDocumentClick, false);
     document.addEventListener('keydown', this.handleKeyDown, false);
     document.addEventListener('touchend', this.handleDocumentClick, listenerOptions);
-    if (this.focusedItem && this.props.openedViaKeyboard) {
-      this.focusedItem.focus();
-    }
+    if (this.focusedItem && this.props.openedViaKeyboard) this.focusedItem.focus();
     this.setState({ mounted: true });
   }
 
@@ -83,18 +81,6 @@ class DropdownMenu extends React.PureComponent {
         element.focus();
       }
       break;
-    case 'Tab':
-      if (e.shiftKey) {
-        element = items[index-1] || items[items.length-1];
-      } else {
-        element = items[index+1] || items[0];
-      }
-      if (element) {
-        element.focus();
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      break;
     case 'Home':
       element = items[0];
       if (element) {
@@ -107,14 +93,11 @@ class DropdownMenu extends React.PureComponent {
         element.focus();
       }
       break;
-    case 'Escape':
-      this.props.onClose();
-      break;
     }
   }
 
-  handleItemKeyPress = e => {
-    if (e.key === 'Enter' || e.key === ' ') {
+  handleItemKeyDown = e => {
+    if (e.key === 'Enter') {
       this.handleClick(e);
     }
   }
@@ -139,11 +122,11 @@ class DropdownMenu extends React.PureComponent {
       return <li key={`sep-${i}`} className='dropdown-menu__separator' />;
     }
 
-    const { text, href = '#', target = '_blank', method } = option;
+    const { text, href = '#' } = option;
 
     return (
       <li className='dropdown-menu__item' key={`${text}-${i}`}>
-        <a href={href} target={target} data-method={method} rel='noopener' role='button' tabIndex='0' ref={i === 0 ? this.setFocusRef : null} onClick={this.handleClick} onKeyPress={this.handleItemKeyPress} data-index={i}>
+        <a href={href} target='_blank' rel='noopener' role='button' tabIndex='0' ref={i === 0 ? this.setFocusRef : null} onClick={this.handleClick} onKeyDown={this.handleItemKeyDown} data-index={i}>
           {text}
         </a>
       </li>
@@ -210,40 +193,24 @@ export default class Dropdown extends React.PureComponent {
     } else {
       const { top } = target.getBoundingClientRect();
       const placement = top * 2 < innerHeight ? 'bottom' : 'top';
+
       this.props.onOpen(this.state.id, this.handleItemClick, placement, type !== 'click');
     }
   }
 
   handleClose = () => {
-    if (this.activeElement) {
-      this.activeElement.focus();
-      this.activeElement = null;
-    }
     this.props.onClose(this.state.id);
   }
 
-  handleMouseDown = () => {
-    if (!this.state.open) {
-      this.activeElement = document.activeElement;
-    }
-  }
-
-  handleButtonKeyDown = (e) => {
-    switch(e.key) {
-    case ' ':
-    case 'Enter':
-      this.handleMouseDown();
-      break;
-    }
-  }
-
-  handleKeyPress = (e) => {
+  handleKeyDown = e => {
     switch(e.key) {
     case ' ':
     case 'Enter':
       this.handleClick(e);
-      e.stopPropagation();
       e.preventDefault();
+      break;
+    case 'Escape':
+      this.handleClose();
       break;
     }
   }
@@ -282,7 +249,7 @@ export default class Dropdown extends React.PureComponent {
     const open = this.state.id === openDropdownId;
 
     return (
-      <div>
+      <div onKeyDown={this.handleKeyDown}>
         <IconButton
           icon={icon}
           title={title}
@@ -291,9 +258,6 @@ export default class Dropdown extends React.PureComponent {
           size={size}
           ref={this.setTargetRef}
           onClick={this.handleClick}
-          onMouseDown={this.handleMouseDown}
-          onKeyDown={this.handleButtonKeyDown}
-          onKeyPress={this.handleKeyPress}
         />
 
         <Overlay show={open} placement={dropdownPlacement} target={this.findTarget}>

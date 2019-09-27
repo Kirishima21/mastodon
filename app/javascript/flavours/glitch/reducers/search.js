@@ -3,7 +3,6 @@ import {
   SEARCH_CLEAR,
   SEARCH_FETCH_SUCCESS,
   SEARCH_SHOW,
-  SEARCH_EXPAND_SUCCESS,
 } from 'flavours/glitch/actions/search';
 import {
   COMPOSE_MENTION,
@@ -17,7 +16,6 @@ const initialState = ImmutableMap({
   submitted: false,
   hidden: false,
   results: ImmutableMap(),
-  searchTerm: '',
 });
 
 export default function search(state = initialState, action) {
@@ -42,10 +40,7 @@ export default function search(state = initialState, action) {
       accounts: ImmutableList(action.results.accounts.map(item => item.id)),
       statuses: ImmutableList(action.results.statuses.map(item => item.id)),
       hashtags: fromJS(action.results.hashtags),
-    })).set('submitted', true).set('searchTerm', action.searchTerm);
-  case SEARCH_EXPAND_SUCCESS:
-    const results = action.searchType === 'hashtags' ? fromJS(action.results.hashtags) : action.results[action.searchType].map(item => item.id);
-    return state.updateIn(['results', action.searchType], list => list.concat(results));
+    })).set('submitted', true);
   default:
     return state;
   }

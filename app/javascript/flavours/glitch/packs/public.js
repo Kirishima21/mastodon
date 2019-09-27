@@ -4,7 +4,6 @@ import ready from 'flavours/glitch/util/ready';
 function main() {
   const IntlMessageFormat = require('intl-messageformat').default;
   const { timeAgoString } = require('flavours/glitch/components/relative_timestamp');
-  const { delegate } = require('rails-ujs');
   const emojify = require('flavours/glitch/util/emoji').default;
   const { getLocale } = require('locales');
   const { messages } = getLocale();
@@ -22,12 +21,6 @@ function main() {
       detailedStatuses[0].scrollIntoView();
       history.replace(location.pathname, { ...location.state, scrolledToDetailedStatus: true });
     }
-  };
-
-  const getEmojiAnimationHandler = (swapTo) => {
-    return ({ target }) => {
-      target.src = target.getAttribute(swapTo);
-    };
   };
 
   ready(() => {
@@ -101,9 +94,6 @@ function main() {
       document.head.appendChild(scrollbarWidthStyle);
       scrollbarWidthStyle.sheet.insertRule(`body.with-modals--active { margin-right: ${scrollbarWidth}px; }`, 0);
     }
-
-    delegate(document, '.custom-emoji', 'mouseover', getEmojiAnimationHandler('data-original'));
-    delegate(document, '.custom-emoji', 'mouseout', getEmojiAnimationHandler('data-static'));
   });
 }
 

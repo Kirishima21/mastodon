@@ -4,7 +4,15 @@ import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import punycode from 'punycode';
 import classnames from 'classnames';
-import { decode as decodeIDNA } from 'flavours/glitch/util/idna';
+
+const IDNA_PREFIX = 'xn--';
+
+const decodeIDNA = domain => {
+  return domain
+    .split('.')
+    .map(part => part.indexOf(IDNA_PREFIX) === 0 ? punycode.decode(part.slice(IDNA_PREFIX.length)) : part)
+    .join('.');
+};
 
 const getHostname = url => {
   const parser = document.createElement('a');

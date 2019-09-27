@@ -6,7 +6,7 @@
   height: calc(100% - 10px);
   overflow-y: hidden;
 
-  .search__input {
+  .drawer--search input {
     line-height: 18px;
     font-size: 16px;
     padding: 15px;
@@ -98,7 +98,7 @@
     top: 15px;
   }
 
-  @media screen and (min-width: $no-gap-breakpoint) {
+  @media screen and (min-width: 360px) {
     padding: 10px 0;
   }
 
@@ -184,7 +184,7 @@
   }
 }
 
-@media screen and (min-width: $no-gap-breakpoint) {
+@media screen and (min-width: 360px) {
   .tabs-bar {
     margin: 10px auto;
     margin-bottom: 0;

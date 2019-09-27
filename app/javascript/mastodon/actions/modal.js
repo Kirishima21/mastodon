@@ -9,9 +9,8 @@ export function openModal(type, props) {
   };
 };
 
-export function closeModal(type) {
+export function closeModal() {
   return {
     type: MODAL_CLOSE,
-    modalType: type,
   };
 };

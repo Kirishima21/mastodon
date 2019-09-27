@@ -41,9 +41,8 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
 
     resolve_thread(@status)
     fetch_replies(@status)
-    check_for_spam
     distribute(@status)
-    forward_for_reply if @status.distributable?
+    forward_for_reply if @status.public_visibility? || @status.unlisted_visibility?
   end
 
   def find_existing_status
@@ -148,9 +147,12 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   def process_hashtag(tag)
     return if tag['name'].blank?
 
-    Tag.find_or_create_by_names(tag['name']) do |hashtag|
-      @tags << hashtag unless @tags.include?(hashtag)
-    end
+    hashtag = tag['name'].gsub(/\A#/, '').mb_chars.downcase
+    hashtag = Tag.where(name: hashtag).first_or_create!(name: hashtag)
+
+    return if @tags.include?(hashtag)
+
+    @tags << hashtag
   rescue ActiveRecord::RecordInvalid
     nil
   end
@@ -368,7 +370,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   end
 
   def unsupported_media_type?(mime_type)
-    mime_type.present? && !MediaAttachment.supported_mime_types.include?(mime_type)
+    mime_type.present? && !(MediaAttachment::IMAGE_MIME_TYPES + MediaAttachment::VIDEO_MIME_TYPES).include?(mime_type)
   end
 
   def supported_blurhash?(blurhash)
@@ -378,7 +380,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
 
   def skip_download?
     return @skip_download if defined?(@skip_download)
-    @skip_download ||= DomainBlock.reject_media?(@account.domain)
+    @skip_download ||= DomainBlock.find_by(domain: @account.domain)&.reject_media?
   end
 
   def reply_to_local?
@@ -402,18 +404,6 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     return false if local_usernames.empty?
 
     Account.local.where(username: local_usernames).exists?
-  end
-
-  def check_for_spam
-    spam_check = SpamCheck.new(@status)
-
-    return if spam_check.skip?
-
-    if spam_check.spam?
-      spam_check.flag!
-    else
-      spam_check.remember!
-    end
   end
 
   def forward_for_reply

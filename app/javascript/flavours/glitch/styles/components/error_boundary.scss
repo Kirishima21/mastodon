@@ -1,8 +1,4 @@
 .error-boundary {
-  color: $primary-text-color;
-  font-size: 15px;
-  line-height: 20px;
-
   h1 {
     font-size: 26px;
     line-height: 36px;
@@ -10,21 +6,27 @@
     margin-bottom: 8px;
   }
 
-  a {
+  p {
     color: $primary-text-color;
-    text-decoration: underline;
-  }
+    font-size: 15px;
+    line-height: 20px;
 
-  ul {
-    list-style: disc;
-    margin-left: 0;
-    padding-left: 1em;
-  }
+    a {
+      color: $primary-text-color;
+      text-decoration: underline;
+    }
 
-  textarea.web_app_crash-stacktrace {
-    width: 100%;
-    resize: none;
-    white-space: pre;
-    font-family: $font-monospace, monospace;
+    ul {
+      list-style: disc;
+      margin-left: 0;
+      padding-left: 1em;
+    }
+
+    textarea.web_app_crash-stacktrace {
+      width: 100%;
+      resize: none;
+      white-space: pre;
+      font-family: $font-monospace, monospace;
+    }
   }
 }
