@@ -204,7 +204,7 @@ class ColumnsArea extends ImmutablePureComponent {
           <div className='columns-area__panels__main'>
             {!navbarUnder && <TabsBar key='tabs' />}
             {content}
-            {navbarUnder && <TabsBar key='tabs' />}
+            {navbarUnder && <TabsBar key='tabs' isUnder />}
           </div>
 
           <div className='columns-area__panels__pane columns-area__panels__pane--start columns-area__panels__pane--navigational'>
