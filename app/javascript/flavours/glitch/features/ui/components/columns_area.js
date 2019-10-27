@@ -194,7 +194,7 @@ class ColumnsArea extends ImmutablePureComponent {
       );
 
       return (
-        <div className='columns-area__panels'>
+        <div className={`columns-area__panels ${navbarUnder ? ' is_under' : ''}`}>
           <div className='columns-area__panels__pane columns-area__panels__pane--compositional'>
             <div className='columns-area__panels__pane__inner'>
               <ComposePanel />

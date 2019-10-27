@@ -24,6 +24,6 @@
 @import 'rtl';
 @import 'dashboard';
 
-@import 'bbcode';
-@import 'markdown';
-@import 'astarte';
+@import 'astarte/bbcode';
+@import 'astarte/markdown';
+@import 'astarte/components';

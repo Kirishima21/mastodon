@@ -646,15 +646,10 @@
 
   & > .side_arm {
     display: inline-block;
+    margin: 0 2px;
     padding: 0;
     width: 36px;
     text-align: center;
-    margin-right: 2px;
-
-    &.is_local {
-      width: initial;
-      padding: 0 4px !important;
-    }
   }
 
   &.over {

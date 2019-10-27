@@ -1,0 +1,130 @@
+.emoji-oekaki {
+  margin: 0 10px 10px 10px;
+}
+
+.custom-emoji-oekaki {
+  width: 100%;
+  padding: auto;
+  height: 36px;
+}
+
+.announcements {
+  padding: 0 10px;
+
+  li {
+    display: flex;
+    padding: 10px;
+    color: #000000;
+    background: darken($white, 10%);
+    border-radius: 4px;
+
+    & + li {
+      margin-top: 10px;
+    }
+  }
+}
+
+.announcements__admin {
+  width: 100%;
+  position: relative;
+
+  p {
+    padding: 0 5px;
+    font-size: 14px;
+  }
+}
+
+.announcements__icon {
+  display: inline-block;
+  position: absolute;
+  margin: -5px 5px;
+  right: 10px;
+}
+
+.announcements__body {
+  width: 100%;
+  position: relative;
+
+  p {
+    padding: 0 5px;
+    font-size: 14px;
+  }
+
+  a {
+    display: inline-block;
+    float: right;
+    clear: both;
+    color: $ui-base-color;
+    background: darken($white, 5%);
+    text-decoration: none;
+    padding: 1px 10px 0;
+    border: solid 1px $ui-base-color;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 4px;
+    margin-top: 5px;
+  }
+}
+
+iframe.discord {
+  width: 100%;
+  height: 500px;
+}
+
+.musicList {
+  width: 100%;
+
+  li {
+    padding: 0;
+    width: 100%;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+}
+.getting-started__footer {
+  ul {
+    color: #ffffff;
+    border: dotted #ffffff 1px;
+    padding: 0.5em 0.5em 0.5em 2em;
+  }
+
+  li {
+    line-height: 1.5;
+    margin-top: 1.5em;
+  }
+}
+
+.status__content {
+  .astarte-stamp {
+    width: 100%;
+  }
+
+  div.poll {
+    .astarte-stamp {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.columns-area__panels.is_under {
+  .tabs-bar__wrapper {
+    position: fixed;
+    bottom: 0;
+    top: initial;
+    width: 100%;
+  }
+
+  .floating-action-button {
+    bottom: 6rem;
+  }
+}
+
+.composer--publisher > .side_arm {
+  margin-left: 0;
+
+  &.is_local {
+    width: initial;
+    padding: 0 4px !important;
+  }
+}
