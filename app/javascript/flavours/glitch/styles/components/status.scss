@@ -1,3 +1,47 @@
+@keyframes spring-flip-in {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  30% {
+    transform: rotate(-242.4deg);
+  }
+
+  60% {
+    transform: rotate(-158.35deg);
+  }
+
+  90% {
+    transform: rotate(-187.5deg);
+  }
+
+  100% {
+    transform: rotate(-180deg);
+  }
+}
+
+@keyframes spring-flip-out {
+  0% {
+    transform: rotate(-180deg);
+  }
+
+  30% {
+    transform: rotate(62.4deg);
+  }
+
+  60% {
+    transform: rotate(-21.635deg);
+  }
+
+  90% {
+    transform: rotate(7.5deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 .status__content--with-action {
   cursor: pointer;
 }
@@ -36,6 +80,7 @@
   }
 
   .e-content {
+    overflow: hidden;
 
     & > ul,
     & > ol {
@@ -190,7 +235,9 @@
 }
 
 .notif-cleaning {
-  .status, .notification-follow {
+  .status,
+  .notification-follow,
+  .notification-follow-request {
     padding-right: ($dismiss-overlay-width + 0.5rem);
   }
 }
@@ -214,7 +261,8 @@
   position: absolute;
 }
 
-.notification-follow {
+.notification-follow,
+.notification-follow-request {
   position: relative;
 
   // same like Status
@@ -431,6 +479,23 @@
     padding-right: 1px;
   }
 
+  .status__collapse-button.active > .fa-angle-double-up {
+    transform: rotate(-180deg);
+  }
+}
+
+.no-reduce-motion .status__collapse-button {
+  &.activate {
+    & > .fa-angle-double-up {
+      animation: spring-flip-in 1s linear;
+    }
+  }
+
+  &.deactivate {
+    & > .fa-angle-double-up {
+      animation: spring-flip-out 1s linear;
+    }
+  }
 }
 
 .status__info__account {
@@ -446,6 +511,7 @@
   .status-check-box__status {
     margin: 10px 0 10px 10px;
     flex: 1;
+    overflow: hidden;
 
     .media-gallery {
       max-width: 250px;

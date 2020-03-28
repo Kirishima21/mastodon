@@ -8,7 +8,7 @@
     height: 36px;
   }
   
-  .announcements {
+  .announcements__astarte {
     padding: 0 10px;
   
     li {
@@ -24,7 +24,7 @@
     }
   }
   
-  .announcements__admin {
+  .announcements__astarte__admin {
     width: 100%;
     position: relative;
   
@@ -34,14 +34,14 @@
     }
   }
   
-  .announcements__icon {
+  .announcements__astarte__icon {
     display: inline-block;
     position: absolute;
     margin: -5px 5px;
     right: 10px;
   }
   
-  .announcements__body {
+  .announcements__astarte__body {
     width: 100%;
     position: relative;
   

@@ -2,7 +2,23 @@
 
 class Sanitize
   module Config
-    HTTP_PROTOCOLS ||= ['http', 'https', 'dat', 'dweb', 'ipfs', 'ipns', 'ssb', 'gopher', :relative].freeze
+    HTTP_PROTOCOLS = %w(
+      http
+      https
+    ).freeze
+
+    LINK_PROTOCOLS = %w(
+      http
+      https
+      dat
+      dweb
+      ipfs
+      ipns
+      ssb
+      gopher
+      xmpp
+      magnet
+    ).freeze
 
     CLASS_WHITELIST_TRANSFORMER = lambda do |env|
       node = env[:node]
@@ -38,6 +54,34 @@ class Sanitize
       end
     end
 
+    LINK_REL_TRANSFORMER = lambda do |env|
+      return unless env[:node_name] == 'a'
+
+      node = env[:node]
+
+      rel = (node['rel'] || '').split(' ') & ['tag']
+      unless env[:config][:outgoing] && TagManager.instance.local_url?(node['href'])
+        rel += ['nofollow', 'noopener', 'noreferrer']
+      end
+      node['rel'] = rel.join(' ')
+    end
+
+    UNSUPPORTED_HREF_TRANSFORMER = lambda do |env|
+      return unless env[:node_name] == 'a'
+
+      current_node = env[:node]
+
+      scheme = begin
+        if current_node['href'] =~ Sanitize::REGEX_PROTOCOL
+          Regexp.last_match(1).downcase
+        else
+          :relative
+        end
+      end
+
+      current_node.replace(current_node.text) unless LINK_PROTOCOLS.include?(scheme)
+    end
+
     MASTODON_STRICT ||= freeze_config(
       elements: %w(p br span a abbr del pre blockquote code b strong u sub sup i em h1 h2 h3 h4 h5 ul ol li),
 
@@ -50,19 +94,20 @@ class Sanitize
 
       add_attributes: {
         'a' => {
-          'rel' => 'nofollow noopener tag',
           'target' => '_blank',
         },
       },
 
       protocols: {
-        'a'          => { 'href' => HTTP_PROTOCOLS },
-        'blockquote' => { 'cite' => HTTP_PROTOCOLS },
+        'a'          => { 'href' => LINK_PROTOCOLS },
+        'blockquote' => { 'cite' => LINK_PROTOCOLS },
       },
 
       transformers: [
         CLASS_WHITELIST_TRANSFORMER,
         IMG_TAG_TRANSFORMER,
+        UNSUPPORTED_HREF_TRANSFORMER,
+        LINK_REL_TRANSFORMER,
       ]
     )
 

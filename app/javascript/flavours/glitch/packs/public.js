@@ -1,10 +1,11 @@
 import loadPolyfills from 'flavours/glitch/util/load_polyfills';
 import ready from 'flavours/glitch/util/ready';
+import loadKeyboardExtensions from 'flavours/glitch/util/load_keyboard_extensions';
 
 function main() {
   const IntlMessageFormat = require('intl-messageformat').default;
   const { timeAgoString } = require('flavours/glitch/components/relative_timestamp');
-  const { delegate } = require('rails-ujs');
+  const { delegate } = require('@rails/ujs');
   const emojify = require('flavours/glitch/util/emoji').default;
   const { getLocale } = require('locales');
   const { messages } = getLocale();
@@ -61,7 +62,7 @@ function main() {
       content.textContent = timeAgoString({
         formatMessage: ({ id, defaultMessage }, values) => (new IntlMessageFormat(messages[id] || defaultMessage, locale)).format(values),
         formatDate: (date, options) => (new Intl.DateTimeFormat(locale, options)).format(date),
-      }, datetime, now, now.getFullYear());
+      }, datetime, now, now.getFullYear(), content.getAttribute('datetime').includes('T'));
     });
 
     const reactComponents = document.querySelectorAll('[data-component]');
@@ -96,15 +97,6 @@ function main() {
 
     delegate(document, '.custom-emoji', 'mouseover', getEmojiAnimationHandler('data-original'));
     delegate(document, '.custom-emoji', 'mouseout', getEmojiAnimationHandler('data-static'));
-
-    delegate(document, '.blocks-table button.icon-button', 'click', function(e) {
-      e.preventDefault();
-
-      const classList = this.firstElementChild.classList;
-      classList.toggle('fa-chevron-down');
-      classList.toggle('fa-chevron-up');
-      this.parentElement.parentElement.nextElementSibling.classList.toggle('hidden');
-    });
   });
 
   delegate(document, '.sidebar__toggle__icon', 'click', () => {
@@ -118,6 +110,9 @@ function main() {
   });
 }
 
-loadPolyfills().then(main).catch(error => {
-  console.error(error);
-});
+loadPolyfills()
+  .then(main)
+  .then(loadKeyboardExtensions)
+  .catch(error => {
+    console.error(error);
+  });
