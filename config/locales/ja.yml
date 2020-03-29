@@ -42,8 +42,7 @@ ja:
       silenced: 'これらのサーバーからの投稿は公開タイムラインと会話から隠されます。また該当するユーザーからの通知は相手をフォローしている場合を除き表示されません:'
       suspended: 'これらのサーバーからのデータは処理されず、保存や変換もされません。該当するユーザーとの交流もできません:'
     unavailable_content_html: 通常 Mastodon では連合先のどんなサーバーのユーザーとでもやりとりできます。ただし次のサーバーには例外が設定されています。
-    user_count_after:
-      other: 人
+    user_count_after: 人
     user_count_before: ユーザー数
     what_is_mastodon: Mastodon とは？
   accounts:
