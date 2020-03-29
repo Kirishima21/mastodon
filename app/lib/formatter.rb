@@ -448,6 +448,12 @@ class Formatter
       html.gsub!(/(\$上上下下左右左右BA)/){ "" }
     elsif html.match(/(¥|\\)上上下下左右左右BA/)
       html.gsub!(/(¥|\\)上上下下左右左右BA/) { "上上下下左右左右BA" }
+    elsif html.match(/:インスタモードnone-img:/)
+      html.gsub!(/(:インスタモードnone-img:)/){""}
+      html.gsub!(/(なくない？)/){"なくない？ wow wow \n"}
+    elsif html.match(/:インスタモード:/)
+      html.gsub!(/(:インスタモード:)/){""}
+      html.gsub!(/(なくない？)/){"なくない？ wow wow![](https://s3.wasabisys.com/astarte-media/b1da0c012e6b01b8.png)"}
     else
       html.gsub!(/(上上下下左右左右BA)/) {"#{$1} ☝( ◠‿◠ )☝ 「使い方が違うぞ！」"}
     end
