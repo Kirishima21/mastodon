@@ -117,7 +117,7 @@ class Announcements extends React.PureComponent {
           </div>
         </li>
         <li>
-          <Collapsable isVisible={this.state.showId === 'stamp'} fullHeight={340} minHeight={22} >
+          <Collapsable isVisible={this.state.showId === 'stamp'} fullHeight={400} minHeight={22} >
             <div className='announcements__astarte__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.stamp, { domain: document.title }))}<br />
                 <br />
@@ -127,6 +127,10 @@ class Announcements extends React.PureComponent {
                   バジリスクタイム<br />
                   ささやきタイマー<br />
                   :おはよう:<br />
+                  :かえりたい:<br />
+                  :はらへり:<br />
+                  :うれしい:<br />
+                  :かなしい:<br />
                   :ロケット:<br />
                   :ヘディング:<br />
                   :ふたば_おはよう:(_は入力しなくても可)<br />
@@ -136,6 +140,7 @@ class Announcements extends React.PureComponent {
                   :おそよう:<br />
                   :ありがとう:<br />
                   :ルーレット:<br />
+                  :大喜利:<br />
               </p>
             </div>
           </Collapsable>
