@@ -63,8 +63,8 @@ class LinkFooter extends React.PureComponent {
             defaultMessage='Glitchsoc is open source software, a friendly fork of {Mastodon}. You can contribute or report issues on GitHub at {github}.'
             values={{
               astarte: <a href='https://github.com/Kirishima21/mastodon' rel='noopener' target='_blank'>Kirishima21/mastodon</a>,
-              github: <span><a href='https://github.com/glitch-soc/mastodon' rel='noopener' target='_blank'>glitch-soc/mastodon</a> (v{version})</span>,
-              Mastodon: <a href='https://github.com/tootsuite/mastodon' rel='noopener' target='_blank'>Mastodon</a> }}
+              github: <span><a href='https://github.com/glitch-soc/mastodon' rel='noopener noreferrer' target='_blank'>glitch-soc/mastodon</a> (v{version})</span>,
+              Mastodon: <a href='https://github.com/tootsuite/mastodon' rel='noopener noreferrer' target='_blank'>Mastodon</a> }}
           />
         </p>
       </div>

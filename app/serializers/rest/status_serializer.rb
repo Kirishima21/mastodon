@@ -97,8 +97,8 @@ class REST::StatusSerializer < ActiveModel::Serializer
   end
 
   def bookmarked
-    if instance_options && instance_options[:bookmarks]
-      instance_options[:bookmarks].bookmarks_map[object.id] || false
+    if instance_options && instance_options[:relationships]
+      instance_options[:relationships].bookmarks_map[object.id] || false
     else
       current_user.account.bookmarked?(object)
     end
@@ -147,7 +147,7 @@ class REST::StatusSerializer < ActiveModel::Serializer
     end
 
     def acct
-      object.account_acct
+      object.account.pretty_acct
     end
   end
 

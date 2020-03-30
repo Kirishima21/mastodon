@@ -143,7 +143,7 @@ class DropdownMenu extends React.PureComponent {
 
     return (
       <li className='dropdown-menu__item' key={`${text}-${i}`}>
-        <a href={href} target='_blank' rel='noopener' role='button' tabIndex='0' ref={i === 0 ? this.setFocusRef : null} onClick={this.handleClick} onKeyPress={this.handleItemKeyPress} data-index={i}>
+        <a href={href} target='_blank' rel='noopener noreferrer' role='button' tabIndex='0' ref={i === 0 ? this.setFocusRef : null} onClick={this.handleClick} onKeyPress={this.handleItemKeyPress} data-index={i}>
           {text}
         </a>
       </li>
@@ -184,7 +184,7 @@ export default class Dropdown extends React.PureComponent {
     icon: PropTypes.string.isRequired,
     items: PropTypes.array.isRequired,
     size: PropTypes.number.isRequired,
-    ariaLabel: PropTypes.string,
+    title: PropTypes.string,
     disabled: PropTypes.bool,
     status: ImmutablePropTypes.map,
     isUserTouching: PropTypes.func,
@@ -197,7 +197,7 @@ export default class Dropdown extends React.PureComponent {
   };
 
   static defaultProps = {
-    ariaLabel: 'Menu',
+    title: 'Menu',
   };
 
   state = {
@@ -277,14 +277,14 @@ export default class Dropdown extends React.PureComponent {
   }
 
   render () {
-    const { icon, items, size, ariaLabel, disabled, dropdownPlacement, openDropdownId, openedViaKeyboard } = this.props;
+    const { icon, items, size, title, disabled, dropdownPlacement, openDropdownId, openedViaKeyboard } = this.props;
     const open = this.state.id === openDropdownId;
 
     return (
       <div>
         <IconButton
           icon={icon}
-          title={ariaLabel}
+          title={title}
           active={open}
           disabled={disabled}
           size={size}

@@ -67,6 +67,7 @@ class Formatter
     html = "RT @#{prepend_reblog} #{html}" if prepend_reblog    
     html = mdFormatter.formatted if status.content_type == 'text/markdown'
     html = encode_and_link_urls(html, linkable_accounts, keep_html: %w(text/markdown text/html).include?(status.content_type))
+#    html = reformat(html, true) if %w(text/markdown text/html).include?(status.content_type)
     html = encode_custom_emojis(html, status.emojis, options[:autoplay]) if options[:custom_emojify]
 
     if status.content_type == 'text/markdown'      
@@ -89,8 +90,10 @@ class Formatter
     html.delete("\r").delete("\n")
   end
 
-  def reformat(html)
-    sanitize(html, Sanitize::Config::MASTODON_STRICT)
+  def reformat(html, outgoing = false)
+    sanitize(html, Sanitize::Config::MASTODON_STRICT.merge(outgoing: outgoing))
+  rescue ArgumentError
+    ''
   end
 
   def plaintext(status)
@@ -144,7 +147,7 @@ class Formatter
   end
 
   def link_url(url)
-    "<a href=\"#{encode(url)}\" target=\"blank\" rel=\"nofollow noopener\">#{link_html(url)}</a>"
+    "<a href=\"#{encode(url)}\" target=\"blank\" rel=\"nofollow noopener noreferrer\">#{link_html(url)}</a>"
   end
 
   private
@@ -346,8 +349,9 @@ class Formatter
     end
 
     standard = Extractor.extract_entities_with_indices(text, options)
+    extra = Extractor.extract_extra_uris_with_indices(text, options)
 
-    Extractor.remove_overlapping_entities(special + standard)
+    Extractor.remove_overlapping_entities(special + standard + extra)
   end
 
   def html_friendly_extractor(html, options = {})
@@ -375,7 +379,7 @@ class Formatter
 
   def link_to_url(entity, options = {})
     url        = Addressable::URI.parse(entity[:url])
-    html_attrs = { target: '_blank', rel: 'nofollow noopener' }
+    html_attrs = { target: '_blank', rel: 'nofollow noopener noreferrer' }
 
     html_attrs[:rel] = "me #{html_attrs[:rel]}" if options[:me]
 
@@ -413,7 +417,7 @@ class Formatter
 
   def link_html(url)
     url    = Addressable::URI.parse(url).to_s
-    prefix = url.match(/\Ahttps?:\/\/(www\.)?/).to_s
+    prefix = url.match(/\A(https?:\/\/(www\.)?|xmpp:)/).to_s
     text   = url[prefix.length, 30]
     suffix = url[prefix.length + 30..-1]
     cutoff = url[prefix.length..-1].length > 30
@@ -444,6 +448,12 @@ class Formatter
       html.gsub!(/(\$上上下下左右左右BA)/){ "" }
     elsif html.match(/(¥|\\)上上下下左右左右BA/)
       html.gsub!(/(¥|\\)上上下下左右左右BA/) { "上上下下左右左右BA" }
+    elsif html.match(/:インスタモードnone-img:/)
+      html.gsub!(/(:インスタモードnone-img:)/){""}
+      html.gsub!(/(なくない？)/){"なくない？ wow wow \n"}
+    elsif html.match(/:インスタモード:/)
+      html.gsub!(/(:インスタモード:)/){""}
+      html.gsub!(/(なくない？)/){"なくない？ wow wow![インスタモード](https://s3.wasabisys.com/astarte-media/b1da0c012e6b01b8.png)"}
     else
       html.gsub!(/(上上下下左右左右BA)/) {"#{$1} ☝( ◠‿◠ )☝ 「使い方が違うぞ！」"}
     end

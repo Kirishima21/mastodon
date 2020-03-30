@@ -103,7 +103,7 @@ class ComposeForm extends ImmutablePureComponent {
     }
   }
 
-  handleSubmit = () => {
+  handleSubmit = (overriddenVisibility = null) => {
     const { textarea: { value }, uploadForm } = this;
     const {
       onChange,
@@ -116,6 +116,7 @@ class ComposeForm extends ImmutablePureComponent {
       text,
       mediaDescriptionConfirmation,
       onMediaDescriptionConfirm,
+      onChangeVisibility,
     } = this.props;
 
     //  If something changes inside the textarea, then we update the
@@ -132,8 +133,11 @@ class ComposeForm extends ImmutablePureComponent {
     // Submit unless there are media with missing descriptions
     if (mediaDescriptionConfirmation && onMediaDescriptionConfirm && media && media.some(item => !item.get('description'))) {
       const firstWithoutDescription = media.find(item => !item.get('description'));
-      onMediaDescriptionConfirm(this.context.router ? this.context.router.history : null, firstWithoutDescription.get('id'));
+      onMediaDescriptionConfirm(this.context.router ? this.context.router.history : null, firstWithoutDescription.get('id'), overriddenVisibility);
     } else if (onSubmit) {
+      if (onChangeVisibility && overriddenVisibility) {
+        onChangeVisibility(overriddenVisibility);
+      }
       onSubmit(this.context.router ? this.context.router.history : null);
     }
   }
@@ -162,13 +166,9 @@ class ComposeForm extends ImmutablePureComponent {
   //  Handles the secondary submit button.
   handleSecondarySubmit = () => {
     const {
-      onChangeVisibility,
       sideArm,
     } = this.props;
-    if (sideArm !== 'none' && onChangeVisibility) {
-      onChangeVisibility(sideArm);
-    }
-    this.handleSubmit();
+    this.handleSubmit(sideArm === 'none' ? null : sideArm);
   }
 
   handleSideArmLocalSubmit = type => {
@@ -192,9 +192,19 @@ class ComposeForm extends ImmutablePureComponent {
   }
 
   //  When the escape key is released, we focus the UI.
-  handleKeyUp = ({ key }) => {
+  handleKeyUp = ({ key, ctrlKey, keyCode, metaKey, altKey }) => {
     if (key === 'Escape') {
       document.querySelector('.ui').parentElement.focus();
+    }
+
+    //  We submit the status on control/meta + enter.
+    if (keyCode === 13 && (ctrlKey || metaKey)) {
+      this.handleSubmit();
+    }
+
+    // Submit the status with secondary visibility on alt + enter.
+    if (keyCode === 13 && altKey) {
+      this.handleSecondarySubmit();
     }
   }
 
@@ -331,8 +341,8 @@ class ComposeForm extends ImmutablePureComponent {
             placeholder={intl.formatMessage(messages.spoiler_placeholder)}
             value={spoilerText}
             onChange={this.handleChangeSpoiler}
-            onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
+            onKeyDown={this.handleKeyDown}
             disabled={!spoiler}
             ref={this.handleRefSpoilerText}
             suggestions={this.props.suggestions}
@@ -352,6 +362,7 @@ class ComposeForm extends ImmutablePureComponent {
           disabled={isSubmitting}
           value={this.props.text}
           onChange={this.handleChange}
+          onKeyUp={this.handleKeyUp}
           suggestions={this.props.suggestions}
           onFocus={this.handleFocus}
           onKeyDown={this.handleKeyDown}

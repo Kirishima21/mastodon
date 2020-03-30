@@ -78,6 +78,7 @@ const initialState = ImmutableMap({
   is_changing_upload: false,
   progress: 0,
   media_attachments: ImmutableList(),
+  pending_media_attachments: 0,
   poll: null,
   suggestion_token: null,
   suggestions: ImmutableList(),
@@ -201,6 +202,7 @@ function appendMedia(state, media, file) {
     map.set('is_uploading', false);
     map.set('resetFileKey', Math.floor((Math.random() * 0x10000)));
     map.set('idempotencyKey', uuid());
+    map.update('pending_media_attachments', n => n - 1);
 
     if (prevSize === 0 && (state.get('default_sensitive') || state.get('spoiler'))) {
       map.set('sensitive', true);
@@ -385,7 +387,7 @@ export default function compose(state = initialState, action) {
 
       if (action.status.get('spoiler_text').length > 0) {
         let spoiler_text = action.status.get('spoiler_text');
-        if (!spoiler_text.match(/^re[: ]/i)) {
+        if (action.prependCWRe && !spoiler_text.match(/^re[: ]/i)) {
           spoiler_text = 're: '.concat(spoiler_text);
         }
         map.set('spoiler', true);
@@ -423,11 +425,11 @@ export default function compose(state = initialState, action) {
   case COMPOSE_UPLOAD_CHANGE_FAIL:
     return state.set('is_changing_upload', false);
   case COMPOSE_UPLOAD_REQUEST:
-    return state.set('is_uploading', true);
+    return state.set('is_uploading', true).update('pending_media_attachments', n => n + 1);
   case COMPOSE_UPLOAD_SUCCESS:
     return appendMedia(state, fromJS(action.media), action.file);
   case COMPOSE_UPLOAD_FAIL:
-    return state.set('is_uploading', false);
+    return state.set('is_uploading', false).update('pending_media_attachments', n => n - 1);
   case COMPOSE_UPLOAD_UNDO:
     return removeMedia(state, action.media_id);
   case COMPOSE_UPLOAD_PROGRESS:

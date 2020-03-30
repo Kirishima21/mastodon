@@ -3,7 +3,9 @@
 class FetchResourceService < BaseService
   include JsonLdHelper
 
-  ACCEPT_HEADER = 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams", text/html'
+  ACCEPT_HEADER = 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams", text/html;q=0.1'
+
+  attr_reader :response_code
 
   def call(url)
     return if url.blank?
@@ -27,13 +29,14 @@ class FetchResourceService < BaseService
   end
 
   def process_response(response, terminal = false)
+    @response_code = response.code
     return nil if response.code != 200
 
     if ['application/activity+json', 'application/ld+json'].include?(response.mime_type)
       body = response.body_with_limit
       json = body_to_json(body)
 
-      [json['id'], { prefetched_body: body, id: true }, :activitypub] if supported_context?(json) && (equals_or_includes_any?(json['type'], ActivityPub::FetchRemoteAccountService::SUPPORTED_TYPES) || expected_type?(json))
+      [json['id'], { prefetched_body: body, id: true }] if supported_context?(json) && (equals_or_includes_any?(json['type'], ActivityPub::FetchRemoteAccountService::SUPPORTED_TYPES) || expected_type?(json))
     elsif !terminal
       link_header = response['Link'] && parse_link_header(response)
 

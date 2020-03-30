@@ -1,5 +1,16 @@
 .composer {
   padding: 10px;
+
+  .emoji-picker-dropdown {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    ::-webkit-scrollbar-track:hover,
+    ::-webkit-scrollbar-track:active {
+      background-color: rgba($base-overlay-background, 0.3);
+    }
+  }
 }
 
 .character-counter {
@@ -143,6 +154,7 @@
     overflow: visible;
     white-space: pre-wrap;
     padding-top: 5px;
+    overflow: hidden;
 
     p, pre, blockquote {
       margin-bottom: 20px;
@@ -234,20 +246,10 @@
   }
 }
 
-.emoji-picker-dropdown {
-  position: absolute;
-  right: 5px;
-  top: 5px;
-
-  ::-webkit-scrollbar-track:hover,
-  ::-webkit-scrollbar-track:active {
-    background-color: rgba($base-overlay-background, 0.3);
-  }
-}
-
 .compose-form__autosuggest-wrapper,
 .autosuggest-input {
   position: relative;
+  width: 100%;
 
   label {
     .autosuggest-textarea__textarea {

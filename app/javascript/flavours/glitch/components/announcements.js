@@ -69,10 +69,10 @@ class Announcements extends React.PureComponent {
     const { intl } = this.props;
 
     return (
-      <ul className='announcements'>
+      <ul className='announcements__astarte'>
         <li>
           <Collapsable isVisible={this.state.showId === 'info'} fullHeight={360} minHeight={20} >
-            <div className='announcements__body'>
+            <div className='announcements__atarte__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.info, { domain: document.title }))}<br />
                 <br />
 			  アスタルテと関連のサービス<br />
@@ -91,13 +91,13 @@ class Announcements extends React.PureComponent {
               </p>
             </div>
           </Collapsable>
-          <div className='announcements__icon'>
+          <div className='announcements__astarte__icon'>
             <IconButton title={intl.formatMessage(messages.toggle_visible)} icon='caret-up' onClick={() => this.onClick('info', this.state)} size={20} animate active={this.state.showId === 'info'} />
           </div>
         </li>
         <li>
           <Collapsable isVisible={this.state.showId === 'donation'} fullHeight={270} minHeight={20} >
-            <div className='announcements__body'>
+            <div className='announcements__astarte__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.donation, { domain: document.title }))}<br />
                 <br />
 			  ・欲しいものリスト<br />
@@ -112,13 +112,13 @@ class Announcements extends React.PureComponent {
               </p>
             </div>
           </Collapsable>
-          <div className='announcements__icon'>
+          <div className='announcements__astarte__icon'>
             <IconButton title={intl.formatMessage(messages.toggle_visible)} icon='caret-up' onClick={() => this.onClick('donation', this.state)} size={20} animate active={this.state.showId === 'donation'} />
           </div>
         </li>
         <li>
-          <Collapsable isVisible={this.state.showId === 'stamp'} fullHeight={340} minHeight={22} >
-            <div className='announcements__body'>
+          <Collapsable isVisible={this.state.showId === 'stamp'} fullHeight={400} minHeight={22} >
+            <div className='announcements__astarte__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.stamp, { domain: document.title }))}<br />
                 <br />
                   5000兆円<br />
@@ -127,6 +127,10 @@ class Announcements extends React.PureComponent {
                   バジリスクタイム<br />
                   ささやきタイマー<br />
                   :おはよう:<br />
+                  :かえりたい:<br />
+                  :はらへり:<br />
+                  :うれしい:<br />
+                  :かなしい:<br />
                   :ロケット:<br />
                   :ヘディング:<br />
                   :ふたば_おはよう:(_は入力しなくても可)<br />
@@ -136,16 +140,17 @@ class Announcements extends React.PureComponent {
                   :おそよう:<br />
                   :ありがとう:<br />
                   :ルーレット:<br />
+                  :大喜利:<br />
               </p>
             </div>
           </Collapsable>
-          <div className='announcements__icon'>
+          <div className='announcements__astarte__icon'>
             <IconButton title={intl.formatMessage(messages.toggle_visible)} icon='caret-up' onClick={() => this.onClick('stamp', this.state)} size={20} animate active={this.state.showId === 'stamp'} />
           </div>
         </li>
         <li>
           <Collapsable isVisible={this.state.showId === 'bbcode'} fullHeight={380} minHeight={20} >
-            <div className='announcements__body'>
+            <div className='announcements__astarte__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.bbcode, { domain: document.title }))}<br />
                 <br />
 			  [spin]回転[/spin]<br />
@@ -168,13 +173,13 @@ class Announcements extends React.PureComponent {
               </p>
             </div>
           </Collapsable>
-          <div className='announcements__icon'>
+          <div className='announcements__astarte__icon'>
             <IconButton title={intl.formatMessage(messages.toggle_visible)} icon='caret-up' onClick={() => this.onClick('bbcode', this.state)} size={20} animate active={this.state.showId === 'bbcode'} />
           </div>
         </li>
         <li>
           <Collapsable isVisible={this.state.showId === 'markdown'} fullHeight={1240} minHeight={20} >
-            <div className='announcements__body'>
+            <div className='announcements__astarte__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.markdown, { domain: document.title }))}<br /><br />
                 (半角)は半角スペースを入力する必要がある場所です。(半角)だけの列は半角スペースのみが入力された列が必要であるを指します。<br /><br />
                 〜〜〜〜〜〜見出し〜〜〜〜〜〜<br /><br />
@@ -213,17 +218,17 @@ class Announcements extends React.PureComponent {
               </p>
             </div>
           </Collapsable>
-          <div className='announcements__icon'>
+          <div className='announcements__astarte__icon'>
             <IconButton title={intl.formatMessage(messages.toggle_visible)} icon='caret-up' onClick={() => this.onClick('markdown', this.state)} size={20} animate active={this.state.showId === 'markdown'} />
           </div>
         </li>
         <li>
           <Collapsable isVisible={this.state.showId === 'music'} fullHeight={410} minHeight={22} >
-            <div className='announcements__body'>
+            <div className='announcements__astarte__body'>
               <Music />
             </div>
           </Collapsable>
-          <div className='announcements__icon'>
+          <div className='announcements__astarte__icon'>
             <IconButton title={intl.formatMessage(messages.toggle_visible)} icon='caret-up' onClick={() => this.onClick('music', this.state)} size={20} animate active={this.state.showId === 'music'} />
           </div>
         </li>

@@ -23,7 +23,7 @@ const messages = defineMessages({
     id: 'status.sensitive_toggle',
   },
   toggle_visible: {
-    defaultMessage: 'Toggle visibility',
+    defaultMessage: 'Hide media',
     id: 'media_gallery.toggle_visible',
   },
   warning: {
@@ -43,6 +43,7 @@ class Item extends React.PureComponent {
     onClick: PropTypes.func.isRequired,
     displayWidth: PropTypes.number,
     visible: PropTypes.bool.isRequired,
+    autoplay: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -68,9 +69,13 @@ class Item extends React.PureComponent {
     }
   }
 
+  getAutoPlay() {
+    return this.props.autoplay || autoPlayGif;
+  }
+
   hoverToPlay () {
     const { attachment } = this.props;
-    return !autoPlayGif && attachment.get('type') === 'gifv';
+    return !this.getAutoPlay() && attachment.get('type') === 'gifv';
   }
 
   handleClick = (e) => {
@@ -179,7 +184,7 @@ class Item extends React.PureComponent {
     if (attachment.get('type') === 'unknown') {
       return (
         <div className={classNames('media-gallery__item', { standalone })} key={attachment.get('id')} style={{ left: left, top: top, right: right, bottom: bottom, width: `${width}%`, height: `${height}%` }}>
-          <a className='media-gallery__item-thumbnail' href={attachment.get('remote_url') || attachment.get('url')} target='_blank' style={{ cursor: 'pointer' }} title={attachment.get('description')}>
+          <a className='media-gallery__item-thumbnail' href={attachment.get('remote_url') || attachment.get('url')} style={{ cursor: 'pointer' }} title={attachment.get('description')} target='_blank' rel='noopener noreferrer'>
             <canvas width={32} height={32} ref={this.setCanvasRef} className='media-gallery__preview' />
           </a>
         </div>
@@ -207,6 +212,7 @@ class Item extends React.PureComponent {
           href={attachment.get('remote_url') || originalUrl}
           onClick={this.handleClick}
           target='_blank'
+          rel='noopener noreferrer'
         >
           <img
             className={letterbox ? 'letterbox' : null}
@@ -221,7 +227,7 @@ class Item extends React.PureComponent {
         </a>
       );
     } else if (attachment.get('type') === 'gifv') {
-      const autoPlay = !isIOS() && autoPlayGif;
+      const autoPlay = !isIOS() && this.getAutoPlay();
 
       thumbnail = (
         <div className={classNames('media-gallery__gifv', { autoplay: autoPlay })}>
@@ -270,6 +276,7 @@ class MediaGallery extends React.PureComponent {
     defaultWidth: PropTypes.number,
     cacheWidth: PropTypes.func,
     visible: PropTypes.bool,
+    autoplay: PropTypes.bool,
     onToggleVisibility: PropTypes.func,
   };
 
@@ -327,7 +334,7 @@ class MediaGallery extends React.PureComponent {
   }
 
   render () {
-    const { media, intl, sensitive, letterbox, fullwidth, defaultWidth } = this.props;
+    const { media, intl, sensitive, letterbox, fullwidth, defaultWidth, autoplay } = this.props;
     const { visible } = this.state;
     const size     = media.take(4).size;
     const uncached = media.every(attachment => attachment.get('type') === 'unknown');
@@ -349,9 +356,9 @@ class MediaGallery extends React.PureComponent {
     }
 
     if (this.isStandaloneEligible()) {
-      children = <Item standalone onClick={this.handleClick} attachment={media.get(0)} displayWidth={width} visible={visible} />;
+      children = <Item standalone autoplay={autoplay} onClick={this.handleClick} attachment={media.get(0)} displayWidth={width} visible={visible} />;
     } else {
-      children = media.take(4).map((attachment, i) => <Item key={attachment.get('id')} onClick={this.handleClick} attachment={attachment} index={i} size={size} letterbox={letterbox} displayWidth={width} visible={visible || uncached} />);
+      children = media.take(4).map((attachment, i) => <Item key={attachment.get('id')} autoplay={autoplay} onClick={this.handleClick} attachment={attachment} index={i} size={size} letterbox={letterbox} displayWidth={width} visible={visible || uncached} />);
     }
 
     if (uncached) {

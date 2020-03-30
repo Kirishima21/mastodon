@@ -20,7 +20,12 @@ import {
 import {
   ACCOUNT_BLOCK_SUCCESS,
   ACCOUNT_MUTE_SUCCESS,
+  FOLLOW_REQUEST_AUTHORIZE_SUCCESS,
+  FOLLOW_REQUEST_REJECT_SUCCESS,
 } from 'flavours/glitch/actions/accounts';
+import {
+  MARKERS_FETCH_SUCCESS,
+} from 'flavours/glitch/actions/markers';
 import { DOMAIN_BLOCK_SUCCESS } from 'flavours/glitch/actions/domain_blocks';
 import { TIMELINE_DELETE, TIMELINE_DISCONNECT } from 'flavours/glitch/actions/timelines';
 import { Map as ImmutableMap, List as ImmutableList } from 'immutable';
@@ -86,11 +91,11 @@ const expandNormalizedNotifications = (state, notifications, next, isLoadingRece
 
       mutable.update(usePendingItems ? 'pendingItems' : 'items', list => {
         const lastIndex = 1 + list.findLastIndex(
-          item => item !== null && (compareId(item.get('id'), items.last().get('id')) > 0 || item.get('id') === items.last().get('id'))
+          item => item !== null && (compareId(item.get('id'), items.last().get('id')) > 0 || item.get('id') === items.last().get('id')),
         );
 
         const firstIndex = 1 + list.take(lastIndex).findLastIndex(
-          item => item !== null && compareId(item.get('id'), items.first().get('id')) > 0
+          item => item !== null && compareId(item.get('id'), items.first().get('id')) > 0,
         );
 
         return list.take(firstIndex).concat(items, list.skip(lastIndex));
@@ -102,7 +107,7 @@ const expandNormalizedNotifications = (state, notifications, next, isLoadingRece
         mutable.update('lastReadId', id => compareId(id, items.first().get('id')) > 0 ? id : items.first().get('id'));
       }
     } else {
-      mutable.update('unread', unread => unread + items.filter(item => compareId(item.get('id'), lastReadId) > 0).size);
+      mutable.update('unread', unread => unread + items.count(item => compareId(item.get('id'), lastReadId) > 0));
     }
 
     if (!next) {
@@ -113,8 +118,8 @@ const expandNormalizedNotifications = (state, notifications, next, isLoadingRece
   });
 };
 
-const filterNotifications = (state, accountIds) => {
-  const helper = list => list.filterNot(item => item !== null && accountIds.includes(item.get('account')));
+const filterNotifications = (state, accountIds, type) => {
+  const helper = list => list.filterNot(item => item !== null && accountIds.includes(item.get('account')) && (type === undefined || type === item.get('type')));
   return state.update('items', helper).update('pendingItems', helper);
 };
 
@@ -195,10 +200,24 @@ const shouldCountUnreadNotifications = (state) => {
   return !(state.get('isTabVisible') && state.get('top') && state.get('mounted') > 0);
 };
 
+const recountUnread = (state, last_read_id) => {
+  return state.withMutations(mutable => {
+    if (compareId(last_read_id, mutable.get('lastReadId')) > 0) {
+      mutable.set('lastReadId', last_read_id);
+    }
+
+    if (state.get('unread') > 0 || shouldCountUnreadNotifications(state)) {
+      mutable.set('unread', mutable.get('pendingItems').count(item => item !== null) + mutable.get('items').count(item => item && compareId(item.get('id'), last_read_id) > 0));
+    }
+  });
+}
+
 export default function notifications(state = initialState, action) {
   let st;
 
   switch(action.type) {
+  case MARKERS_FETCH_SUCCESS:
+    return action.markers.notifications ? recountUnread(state, action.markers.notifications.last_read_id) : state;
   case NOTIFICATIONS_MOUNT:
     return updateMounted(state);
   case NOTIFICATIONS_UNMOUNT:
@@ -227,6 +246,11 @@ export default function notifications(state = initialState, action) {
     return action.relationship.muting_notifications ? filterNotifications(state, [action.relationship.id]) : state;
   case DOMAIN_BLOCK_SUCCESS:
     return filterNotifications(state, action.accounts);
+  case FOLLOW_REQUEST_AUTHORIZE_SUCCESS:
+  case FOLLOW_REQUEST_REJECT_SUCCESS:
+    return filterNotifications(state, [action.id], 'follow_request');
+  case ACCOUNT_MUTE_SUCCESS:
+    return action.relationship.muting_notifications ? filterNotifications(state, [action.relationship.id]) : state;
   case NOTIFICATIONS_CLEAR:
     return state.set('items', ImmutableList()).set('pendingItems', ImmutableList()).set('hasMore', false);
   case TIMELINE_DELETE:
