@@ -94,6 +94,7 @@ const emojify_astarte = (str, customEmojis = {}) => [
   {re: /:おそよう:/g, file: 'osoyou.png', attrs: 'class="astarte-stamp"'},
   {re: /:ありがとう:/g, file: 'arigatou.gif', attrs: 'class="astarte-stamp"'},
   {re: /:ルーレット:/g, file: 'roulette.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:働きたくない:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
 ].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="/emoji/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
 
 export default emojify_astarte;
