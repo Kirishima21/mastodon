@@ -128,8 +128,23 @@
 
 .embed,
 .public-layout {
+  .status__content[data-spoiler=folded] {
+    .e-content {
+      display: none;
+    }
+
+    p:first-child {
+      margin-bottom: 0;
+    }
+  }
+
   .detailed-status {
     padding: 15px;
+
+    .detailed-status__display-avatar .account__avatar {
+      width: 48px;
+      height: 48px;
+    }
   }
 
   .status {
@@ -139,6 +154,11 @@
     &__avatar {
       left: 15px;
       top: 17px;
+
+      .account__avatar {
+        width: 48px;
+        height: 48px;
+      }
     }
 
     &__content {
@@ -158,6 +178,13 @@
     &__action-bar,
     .video-player {
       margin-top: 10px;
+    }
+
+    &__action-bar-button {
+      font-size: 18px;
+      width: 23.1429px;
+      height: 23.1429px;
+      line-height: 23.15px;
     }
   }
 }

@@ -36,6 +36,8 @@ import polls from './polls';
 import identity_proofs from './identity_proofs';
 import trends from './trends';
 import announcements from './announcements';
+import markers from './markers';
+import account_notes from './account_notes';
 
 const reducers = {
   announcements,
@@ -75,6 +77,8 @@ const reducers = {
   pinnedAccountsEditor,
   polls,
   trends,
+  markers,
+  account_notes,
 };
 
 export default combineReducers(reducers);

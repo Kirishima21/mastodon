@@ -191,19 +191,12 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onSuggestionSelected(tokenStart, token, value, ['spoiler_text']);
   }
 
-  //  When the escape key is released, we focus the UI.
-  handleKeyUp = ({ key, ctrlKey, keyCode, metaKey, altKey }) => {
-    if (key === 'Escape') {
-      document.querySelector('.ui').parentElement.focus();
-    }
-
-    //  We submit the status on control/meta + enter.
-    if (keyCode === 13 && (ctrlKey || metaKey)) {
+  handleKeyDown = (e) => {
+    if (e.keyCode === 13 && (e.ctrlKey || e.metaKey)) {
       this.handleSubmit();
     }
 
-    // Submit the status with secondary visibility on alt + enter.
-    if (keyCode === 13 && altKey) {
+    if (e.keyCode == 13 && e.altKey) {
       this.handleSecondarySubmit();
     }
   }
@@ -362,7 +355,7 @@ class ComposeForm extends ImmutablePureComponent {
           disabled={isSubmitting}
           value={this.props.text}
           onChange={this.handleChange}
-          onKeyUp={this.handleKeyUp}
+          onKeyDown={this.handleKeyDown}
           suggestions={this.props.suggestions}
           onFocus={this.handleFocus}
           onKeyDown={this.handleKeyDown}

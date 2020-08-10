@@ -31,10 +31,11 @@ module Mastodon
       processed, aggregate = parallelize_with_progress(MediaAttachment.cached.where.not(remote_url: '').where('created_at < ?', time_ago)) do |media_attachment|
         next if media_attachment.file.blank?
 
-        size = media_attachment.file_file_size
+        size = media_attachment.file_file_size + (media_attachment.thumbnail_file_size || 0)
 
         unless options[:dry_run]
           media_attachment.file.destroy
+          media_attachment.thumbnail.destroy
           media_attachment.save
         end
 
@@ -85,7 +86,14 @@ module Mastodon
           record_map = preload_records_from_mixed_objects(objects)
 
           objects.each do |object|
-            path_segments   = object.key.split('/')
+            path_segments = object.key.split('/')
+            path_segments.delete('cache')
+
+            if path_segments.size != 7
+              progress.log(pastel.yellow("Unrecognized file found: #{object.key}"))
+              next
+            end
+
             model_name      = path_segments.first.classify
             attachment_name = path_segments[1].singularize
             record_id       = path_segments[2..-2].join.to_i
@@ -115,13 +123,21 @@ module Mastodon
       when :filesystem
         require 'find'
 
-        root_path = ENV.fetch('RAILS_ROOT_PATH', File.join(':rails_root', 'public', 'system')).gsub(':rails_root', Rails.root.to_s)
+        root_path = ENV.fetch('PAPERCLIP_ROOT_PATH', File.join(':rails_root', 'public', 'system')).gsub(':rails_root', Rails.root.to_s)
 
         Find.find(File.join(*[root_path, prefix].compact)) do |path|
           next if File.directory?(path)
 
-          key             = path.gsub("#{root_path}#{File::SEPARATOR}", '')
-          path_segments   = key.split(File::SEPARATOR)
+          key = path.gsub("#{root_path}#{File::SEPARATOR}", '')
+
+          path_segments = key.split(File::SEPARATOR)
+          path_segments.delete('cache')
+
+          if path_segments.size != 7
+            progress.log(pastel.yellow("Unrecognized file found: #{key}"))
+            next
+          end
+
           model_name      = path_segments.first.classify
           record_id       = path_segments[2..-2].join.to_i
           attachment_name = path_segments[1].singularize
@@ -139,7 +155,14 @@ module Mastodon
           begin
             size = File.size(path)
 
-            File.delete(path) unless options[:dry_run]
+            unless options[:dry_run]
+              File.delete(path)
+              begin
+                FileUtils.rmdir(File.dirname(path), parents: true)
+              rescue Errno::ENOTEMPTY
+                # OK
+              end
+            end
 
             reclaimed_bytes += size
             removed += 1
@@ -186,7 +209,7 @@ module Mastodon
       if options[:status]
         scope = MediaAttachment.where(status_id: options[:status])
       elsif options[:account]
-        username, domain = username.split('@')
+        username, domain = options[:account].split('@')
         account = Account.find_remote(username, domain)
 
         if account.nil?
@@ -206,10 +229,11 @@ module Mastodon
 
         unless options[:dry_run]
           media_attachment.reset_file!
+          media_attachment.reset_thumbnail!
           media_attachment.save
         end
 
-        media_attachment.file_file_size
+        media_attachment.file_file_size + (media_attachment.thumbnail_file_size || 0)
       end
 
       say("Downloaded #{processed} media attachments (approx. #{number_to_human_size(aggregate)})#{dry_run}", :green, true)
@@ -217,7 +241,7 @@ module Mastodon
 
     desc 'usage', 'Calculate disk space consumed by Mastodon'
     def usage
-      say("Attachments:\t#{number_to_human_size(MediaAttachment.sum(:file_file_size))} (#{number_to_human_size(MediaAttachment.where(account: Account.local).sum(:file_file_size))} local)")
+      say("Attachments:\t#{number_to_human_size(MediaAttachment.sum(Arel.sql('COALESCE(file_file_size, 0) + COALESCE(thumbnail_file_size, 0)')))} (#{number_to_human_size(MediaAttachment.where(account: Account.local).sum(Arel.sql('COALESCE(file_file_size, 0) + COALESCE(thumbnail_file_size, 0)')))} local)")
       say("Custom emoji:\t#{number_to_human_size(CustomEmoji.sum(:image_file_size))} (#{number_to_human_size(CustomEmoji.local.sum(:image_file_size))} local)")
       say("Preview cards:\t#{number_to_human_size(PreviewCard.sum(:image_file_size))}")
       say("Avatars:\t#{number_to_human_size(Account.sum(:avatar_file_size))} (#{number_to_human_size(Account.local.sum(:avatar_file_size))} local)")
@@ -229,10 +253,18 @@ module Mastodon
 
     desc 'lookup URL', 'Lookup where media is displayed by passing a media URL'
     def lookup(url)
-      path          = Addressable::URI.parse(url).path
+      path = Addressable::URI.parse(url).path
+
       path_segments = path.split('/')[2..-1]
-      model_name    = path_segments.first.classify
-      record_id     = path_segments[2..-2].join.to_i
+      path_segments.delete('cache')
+
+      if path_segments.size != 7
+        say('Not a media URL', :red)
+        exit(1)
+      end
+
+      model_name = path_segments.first.classify
+      record_id  = path_segments[2..-2].join.to_i
 
       unless PRELOAD_MODEL_WHITELIST.include?(model_name)
         say("Cannot find corresponding model: #{model_name}", :red)
@@ -276,7 +308,11 @@ module Mastodon
       preload_map = Hash.new { |hash, key| hash[key] = [] }
 
       objects.map do |object|
-        segments   = object.key.split('/').first
+        segments = object.key.split('/')
+        segments.delete('cache')
+
+        next if segments.size != 7
+
         model_name = segments.first.classify
         record_id  = segments[2..-2].join.to_i
 

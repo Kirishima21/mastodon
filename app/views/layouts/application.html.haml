@@ -29,6 +29,9 @@
       - elsif @theme[:supported_locales].include? 'en'
         = javascript_pack_tag "locales/#{@theme[:flavour]}/en", integrity: true, crossorigin: 'anonymous'
     = csrf_meta_tags
+    %meta{ name: 'style-nonce', content: request.content_security_policy_nonce }
+
+    = stylesheet_link_tag '/inert.css', skip_pipeline: true, media: 'all', id: 'inert-style'
 
     = yield :header_tags
 
@@ -42,6 +45,6 @@
   %body{ class: body_classes }
     = content_for?(:content) ? yield(:content) : yield
 
-    %div{ style: 'display: none'}
+    .logo-resources
       = render file: Rails.root.join('app', 'javascript', 'images', 'logo_transparent.svg')
       = render file: Rails.root.join('app', 'javascript', 'images', 'logo_full.svg')

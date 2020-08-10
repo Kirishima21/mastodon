@@ -10,7 +10,7 @@ delegate(document, '#account_display_name', 'input', ({ target }) => {
     if (target.value) {
       name.innerHTML = emojify(escapeTextContentForBrowser(target.value));
     } else {
-      name.textContent = document.querySelector('#default_account_display_name').textContent;
+      name.textContent = name.textContent = target.dataset.default;
     }
   }
 });
@@ -34,10 +34,12 @@ delegate(document, '#account_header', 'change', ({ target }) => {
 delegate(document, '#account_locked', 'change', ({ target }) => {
   const lock = document.querySelector('.card .display-name i');
 
-  if (target.checked) {
-    lock.style.display = 'inline';
-  } else {
-    lock.style.display = 'none';
+  if (lock) {
+    if (target.checked) {
+      delete lock.dataset.hidden;
+    } else {
+      lock.dataset.hidden = 'true';
+    }
   }
 });
 

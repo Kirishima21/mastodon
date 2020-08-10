@@ -55,7 +55,7 @@ class Sanitize
     end
 
     LINK_REL_TRANSFORMER = lambda do |env|
-      return unless env[:node_name] == 'a'
+      return unless env[:node_name] == 'a' and env[:node]['href']
 
       node = env[:node]
 
@@ -90,6 +90,8 @@ class Sanitize
         'span'       => %w(class),
         'abbr'       => %w(title),
         'blockquote' => %w(cite),
+        'ol'         => %w(start reversed),
+        'li'         => %w(value),
       },
 
       add_attributes: {

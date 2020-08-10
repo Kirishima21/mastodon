@@ -57,7 +57,7 @@ module Omniauthable
 
       user = User.new(user_params_from_auth(email, auth))
 
-      user.account.avatar_remote_url = auth.info.image if auth.info.image =~ /\A#{URI.regexp(%w(http https))}\z/
+      user.account.avatar_remote_url = auth.info.image if auth.info.image =~ /\A#{URI::DEFAULT_PARSER.make_regexp(%w(http https))}\z/
       user.skip_confirmation!
       user.save!
       user
@@ -82,7 +82,7 @@ module Omniauthable
       username = starting_username
       i        = 0
 
-      while Account.exists?(username: username)
+      while Account.exists?(username: username, domain: nil)
         i       += 1
         username = "#{starting_username}_#{i}"
       end

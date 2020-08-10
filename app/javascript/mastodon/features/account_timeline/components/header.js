@@ -83,6 +83,10 @@ export default class Header extends ImmutablePureComponent {
     this.props.onAddToList(this.props.account);
   }
 
+  handleEditAccountNote = () => {
+    this.props.onEditAccountNote(this.props.account);
+  }
+
   render () {
     const { account, hideTabs, identity_proofs } = this.props;
 
@@ -108,6 +112,7 @@ export default class Header extends ImmutablePureComponent {
           onUnblockDomain={this.handleUnblockDomain}
           onEndorseToggle={this.handleEndorseToggle}
           onAddToList={this.handleAddToList}
+          onEditAccountNote={this.handleEditAccountNote}
           domain={this.props.domain}
         />
 

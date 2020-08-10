@@ -369,6 +369,7 @@ export function fetchFollowersFail(id, error) {
     type: FOLLOWERS_FETCH_FAIL,
     id,
     error,
+    skipNotFound: true,
   };
 };
 
@@ -455,6 +456,7 @@ export function fetchFollowingFail(id, error) {
     type: FOLLOWING_FETCH_FAIL,
     id,
     error,
+    skipNotFound: true,
   };
 };
 
@@ -544,6 +546,7 @@ export function fetchRelationshipsFail(error) {
     type: RELATIONSHIPS_FETCH_FAIL,
     error,
     skipLoading: true,
+    skipNotFound: true,
   };
 };
 

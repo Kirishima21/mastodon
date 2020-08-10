@@ -9,9 +9,9 @@ import classNames from 'classnames';
 import Icon from 'flavours/glitch/components/icon';
 import Avatar from 'flavours/glitch/components/avatar';
 import Button from 'flavours/glitch/components/button';
-import { shortNumberFormat } from 'flavours/glitch/util/numbers';
 import { NavLink } from 'react-router-dom';
 import DropdownMenuContainer from 'flavours/glitch/containers/dropdown_menu_container';
+import AccountNoteContainer from '../containers/account_note_container';
 
 const messages = defineMessages({
   unfollow: { id: 'account.unfollow', defaultMessage: 'Unfollow' },
@@ -46,6 +46,7 @@ const messages = defineMessages({
   unendorse: { id: 'account.unendorse', defaultMessage: 'Don\'t feature on profile' },
   add_or_remove_from_list: { id: 'account.add_or_remove_from_list', defaultMessage: 'Add or Remove from lists' },
   admin_account: { id: 'status.admin_account', defaultMessage: 'Open moderation interface for @{name}' },
+  add_account_note: { id: 'account.add_account_note', defaultMessage: 'Add note for @{name}' },
 });
 
 const dateFormatOptions = {
@@ -65,6 +66,16 @@ class Header extends ImmutablePureComponent {
     identity_props: ImmutablePropTypes.list,
     onFollow: PropTypes.func.isRequired,
     onBlock: PropTypes.func.isRequired,
+    onMention: PropTypes.func.isRequired,
+    onDirect: PropTypes.func.isRequired,
+    onReport: PropTypes.func.isRequired,
+    onReblogToggle: PropTypes.func.isRequired,
+    onMute: PropTypes.func.isRequired,
+    onBlockDomain: PropTypes.func.isRequired,
+    onUnblockDomain: PropTypes.func.isRequired,
+    onEndorseToggle: PropTypes.func.isRequired,
+    onAddToList: PropTypes.func.isRequired,
+    onEditAccountNote: PropTypes.func.isRequired,
     intl: PropTypes.object.isRequired,
     domain: PropTypes.string.isRequired,
   };
@@ -121,6 +132,8 @@ class Header extends ImmutablePureComponent {
       return null;
     }
 
+    const accountNote = account.getIn(['relationship', 'note']);
+
     let info        = [];
     let actionBtn   = '';
     let lockedIcon  = '';
@@ -172,6 +185,10 @@ class Header extends ImmutablePureComponent {
       menu.push(null);
     }
 
+    if (accountNote === null || accountNote === '') {
+      menu.push({ text: intl.formatMessage(messages.add_account_note, { name: account.get('username') }), action: this.props.onEditAccountNote });
+    }
+
     if (account.get('id') === me) {
       if (profileLink) menu.push({ text: intl.formatMessage(messages.edit_profile), href: profileLink });
       if (preferencesLink) menu.push({ text: intl.formatMessage(messages.preferences), href: preferencesLink });
@@ -186,10 +203,12 @@ class Header extends ImmutablePureComponent {
       menu.push({ text: intl.formatMessage(messages.domain_blocks), to: '/domain_blocks' });
     } else {
       if (account.getIn(['relationship', 'following'])) {
-        if (account.getIn(['relationship', 'showing_reblogs'])) {
-          menu.push({ text: intl.formatMessage(messages.hideReblogs, { name: account.get('username') }), action: this.props.onReblogToggle });
-        } else {
-          menu.push({ text: intl.formatMessage(messages.showReblogs, { name: account.get('username') }), action: this.props.onReblogToggle });
+        if (!account.getIn(['relationship', 'muting'])) {
+          if (account.getIn(['relationship', 'showing_reblogs'])) {
+            menu.push({ text: intl.formatMessage(messages.hideReblogs, { name: account.get('username') }), action: this.props.onReblogToggle });
+          } else {
+            menu.push({ text: intl.formatMessage(messages.showReblogs, { name: account.get('username') }), action: this.props.onReblogToggle });
+          }
         }
 
         menu.push({ text: intl.formatMessage(account.getIn(['relationship', 'endorsed']) ? messages.unendorse : messages.endorse), action: this.props.onEndorseToggle });
@@ -275,6 +294,8 @@ class Header extends ImmutablePureComponent {
               <small>@{acct} {lockedIcon}</small>
             </h1>
           </div>
+
+          <AccountNoteContainer account={account} />
 
           <div className='account__header__extra'>
             <div className='account__header__bio'>
