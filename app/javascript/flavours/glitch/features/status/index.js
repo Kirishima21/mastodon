@@ -316,8 +316,8 @@ class Status extends ImmutablePureComponent {
     this.props.dispatch(openModal('MEDIA', { media, index }));
   }
 
-  handleOpenVideo = (media, time) => {
-    this.props.dispatch(openModal('VIDEO', { media, time }));
+  handleOpenVideo = (media, options) => {
+    this.props.dispatch(openModal('VIDEO', { media, options }));
   }
 
   handleHotkeyOpenMedia = e => {
@@ -329,7 +329,7 @@ class Status extends ImmutablePureComponent {
       if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
         // TODO: toggle play/paused?
       } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
-        this.handleOpenVideo(status.getIn(['media_attachments', 0]), 0);
+        this.handleOpenVideo(status.getIn(['media_attachments', 0]), { startTime: 0 });
       } else {
         this.handleOpenMedia(status.get('media_attachments'), 0);
       }
@@ -557,7 +557,7 @@ class Status extends ImmutablePureComponent {
           showBackButton
           multiColumn={multiColumn}
           extraButton={(
-            <button className='column-header__button' title={intl.formatMessage(!isExpanded ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(!isExpanded ? messages.revealAll : messages.hideAll)} onClick={this.handleToggleAll} aria-pressed={!isExpanded ? 'false' : 'true'}><Icon id={status.get('hidden') ? 'eye-slash' : 'eye'} /></button>
+            <button className='column-header__button' title={intl.formatMessage(!isExpanded ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(!isExpanded ? messages.revealAll : messages.hideAll)} onClick={this.handleToggleAll} aria-pressed={!isExpanded ? 'false' : 'true'}><Icon id={!isExpanded ? 'eye-slash' : 'eye'} /></button>
           )}
         />
 
@@ -566,7 +566,7 @@ class Status extends ImmutablePureComponent {
             {ancestors}
 
             <HotKeys handlers={handlers}>
-              <div className='focusable' tabIndex='0' aria-label={textForScreenReader(intl, status, false, !status.get('hidden'))}>
+              <div className='focusable' tabIndex='0' aria-label={textForScreenReader(intl, status, false, isExpanded)}>
                 <DetailedStatus
                   key={`details-${status.get('id')}`}
                   status={status}

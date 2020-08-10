@@ -73,8 +73,6 @@ class Request
       response.body_with_limit if http_client.persistent?
 
       yield response if block_given?
-    rescue => e
-      raise e.class, e.message, e.backtrace[0]
     ensure
       http_client.close unless http_client.persistent?
     end
@@ -233,6 +231,7 @@ class Request
             begin
               sock.connect_nonblock(addr_by_socket[sock])
             rescue Errno::EISCONN
+              # Do nothing
             rescue => e
               sock.close
               outer_e = e

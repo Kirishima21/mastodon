@@ -7,12 +7,12 @@ import { connect } from 'react-redux';
 import { Redirect, withRouter } from 'react-router-dom';
 import { isMobile } from 'flavours/glitch/util/is_mobile';
 import { debounce } from 'lodash';
-import { uploadCompose, resetCompose } from 'flavours/glitch/actions/compose';
+import { uploadCompose, resetCompose, changeComposeSpoilerness } from 'flavours/glitch/actions/compose';
 import { expandHomeTimeline } from 'flavours/glitch/actions/timelines';
 import { expandNotifications, notificationsSetVisibility } from 'flavours/glitch/actions/notifications';
 import { fetchFilters } from 'flavours/glitch/actions/filters';
 import { clearHeight } from 'flavours/glitch/actions/height_cache';
-import { submitMarkers, fetchMarkers } from 'flavours/glitch/actions/markers';
+import { synchronouslySubmitMarkers, fetchMarkers } from 'flavours/glitch/actions/markers';
 import { WrappedSwitch, WrappedRoute } from 'flavours/glitch/util/react_router_helpers';
 import UploadArea from './components/upload_area';
 import PermaLink from 'flavours/glitch/components/permalink';
@@ -81,6 +81,7 @@ const keyMap = {
   new: 'n',
   search: 's',
   forceNew: 'option+n',
+  toggleComposeSpoilers: 'option+x',
   focusColumn: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
   reply: 'r',
   favourite: 'f',
@@ -267,7 +268,7 @@ class UI extends React.Component {
   handleBeforeUnload = (e) => {
     const { intl, dispatch, hasComposingText, hasMediaAttachments } = this.props;
 
-    dispatch(submitMarkers());
+    dispatch(synchronouslySubmitMarkers());
 
     if (hasComposingText || hasMediaAttachments) {
       // Setting returnValue to any string causes confirmation dialog.
@@ -396,7 +397,7 @@ class UI extends React.Component {
 
   componentDidMount () {
     this.hotkeys.__mousetrap__.stopCallback = (e, element) => {
-      return ['TEXTAREA', 'SELECT', 'INPUT'].includes(element.tagName);
+      return ['TEXTAREA', 'SELECT', 'INPUT'].includes(element.tagName) && !e.altKey;
     };
   }
 
@@ -453,6 +454,11 @@ class UI extends React.Component {
   handleHotkeyForceNew = e => {
     this.handleHotkeyNew(e);
     this.props.dispatch(resetCompose());
+  }
+
+  handleHotkeyToggleComposeSpoilers = e => {
+    e.preventDefault();
+    this.props.dispatch(changeComposeSpoilerness());
   }
 
   handleHotkeyFocusColumn = e => {
@@ -569,6 +575,7 @@ class UI extends React.Component {
       new: this.handleHotkeyNew,
       search: this.handleHotkeySearch,
       forceNew: this.handleHotkeyForceNew,
+      toggleComposeSpoilers: this.handleHotkeyToggleComposeSpoilers,
       focusColumn: this.handleHotkeyFocusColumn,
       back: this.handleHotkeyBack,
       goToHome: this.handleHotkeyGoToHome,

@@ -142,7 +142,7 @@ html {
 }
 
 .compose-form__autosuggest-wrapper,
-.poll__text input[type="text"],
+.poll__option input[type="text"],
 .compose-form .spoiler-input__input,
 .compose-form__poll-wrapper select,
 .search__input,
@@ -766,11 +766,4 @@ html {
 .page-header,
 .compose-form .compose-form__warning {
   box-shadow: none;
-}
-
-.audio-player .video-player__controls button,
-.audio-player .video-player__time-sep,
-.audio-player .video-player__time-current,
-.audio-player .video-player__time-total {
-  color: $primary-text-color;
 }

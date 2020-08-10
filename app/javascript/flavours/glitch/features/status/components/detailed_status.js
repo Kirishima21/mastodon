@@ -66,8 +66,8 @@ export default class DetailedStatus extends ImmutablePureComponent {
     e.stopPropagation();
   }
 
-  handleOpenVideo = (media, startTime) => {
-    this.props.onOpenVideo(media, startTime);
+  handleOpenVideo = (media, options) => {
+    this.props.onOpenVideo(media, options);
   }
 
   _measureHeight (heightJustChanged) {
@@ -142,8 +142,11 @@ export default class DetailedStatus extends ImmutablePureComponent {
             src={attachment.get('url')}
             alt={attachment.get('description')}
             duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
-            height={110}
-            preload
+            poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
+            backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
+            foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
+            accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
+            height={150}
           />
         );
         mediaIcon = 'music';
@@ -184,7 +187,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
         mediaIcon = 'picture-o';
       }
     } else if (status.get('card')) {
-      media = <Card onOpenMedia={this.props.onOpenMedia} card={status.get('card')} />;
+      media = <Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia} card={status.get('card')} />;
       mediaIcon = 'link';
     }
 

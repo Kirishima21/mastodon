@@ -17,12 +17,24 @@ import HeaderContainer from 'flavours/glitch/features/account_timeline/container
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import MissingIndicator from 'flavours/glitch/components/missing_indicator';
 import ScrollableList from 'flavours/glitch/components/scrollable_list';
+import TimelineHint from 'flavours/glitch/components/timeline_hint';
 
 const mapStateToProps = (state, props) => ({
+  remote: !!(state.getIn(['accounts', props.params.accountId, 'acct']) !== state.getIn(['accounts', props.params.accountId, 'username'])),
+  remoteUrl: state.getIn(['accounts', props.params.accountId, 'url']),
   isAccount: !!state.getIn(['accounts', props.params.accountId]),
   accountIds: state.getIn(['user_lists', 'following', props.params.accountId, 'items']),
   hasMore: !!state.getIn(['user_lists', 'following', props.params.accountId, 'next']),
+  isLoading: state.getIn(['user_lists', 'following', props.params.accountId, 'isLoading'], true),
 });
+
+const RemoteHint = ({ url }) => (
+  <TimelineHint url={url} resource={<FormattedMessage id='timeline_hint.resources.follows' defaultMessage='Follows' />} />
+);
+
+RemoteHint.propTypes = {
+  url: PropTypes.string.isRequired,
+};
 
 export default @connect(mapStateToProps)
 class Following extends ImmutablePureComponent {
@@ -32,7 +44,10 @@ class Following extends ImmutablePureComponent {
     dispatch: PropTypes.func.isRequired,
     accountIds: ImmutablePropTypes.list,
     hasMore: PropTypes.bool,
+    isLoading: PropTypes.bool,
     isAccount: PropTypes.bool,
+    remote: PropTypes.bool,
+    remoteUrl: PropTypes.string,
     multiColumn: PropTypes.bool,
   };
 
@@ -54,14 +69,6 @@ class Following extends ImmutablePureComponent {
     this.column.scrollTop();
   }
 
-  handleScroll = (e) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.target;
-
-    if (scrollTop === scrollHeight - clientHeight && this.props.hasMore) {
-      this.props.dispatch(expandFollowing(this.props.params.accountId));
-    }
-  }
-
   handleLoadMore = debounce(() => {
     this.props.dispatch(expandFollowing(this.props.params.accountId));
   }, 300, { leading: true });
@@ -71,7 +78,7 @@ class Following extends ImmutablePureComponent {
   }
 
   render () {
-    const { accountIds, hasMore, isAccount, multiColumn } = this.props;
+    const { accountIds, hasMore, isAccount, multiColumn, isLoading, remote, remoteUrl } = this.props;
 
     if (!isAccount) {
       return (
@@ -89,7 +96,15 @@ class Following extends ImmutablePureComponent {
       );
     }
 
-    const emptyMessage = <FormattedMessage id='account.follows.empty' defaultMessage="This user doesn't follow anyone yet." />;
+    let emptyMessage;
+
+    if (remote && accountIds.isEmpty()) {
+      emptyMessage = <RemoteHint url={remoteUrl} />;
+    } else {
+      emptyMessage = <FormattedMessage id='account.follows.empty' defaultMessage="This user doesn't follow anyone yet." />;
+    }
+
+    const remoteMessage = remote ? <RemoteHint url={remoteUrl} /> : null;
 
     return (
       <Column ref={this.setRef}>
@@ -98,9 +113,11 @@ class Following extends ImmutablePureComponent {
         <ScrollableList
           scrollKey='following'
           hasMore={hasMore}
+          isLoading={isLoading}
           onLoadMore={this.handleLoadMore}
           prepend={<HeaderContainer accountId={this.props.params.accountId} hideTabs />}
           alwaysPrepend
+          append={remoteMessage}
           emptyMessage={emptyMessage}
           bindToDocument={!multiColumn}
         >

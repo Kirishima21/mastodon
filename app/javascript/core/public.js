@@ -1,6 +1,5 @@
 //  This file will be loaded on public pages, regardless of theme.
 
-import createHistory from 'history/createBrowserHistory';
 import ready from '../mastodon/ready';
 
 const { delegate } = require('@rails/ujs');
@@ -11,20 +10,6 @@ delegate(document, '.webapp-btn', 'click', ({ target, button }) => {
     return true;
   }
   window.location.href = target.href;
-  return false;
-});
-
-delegate(document, '.status__content__spoiler-link', 'click', function() {
-  const contentEl = this.parentNode.parentNode.querySelector('.e-content');
-
-  if (contentEl.style.display === 'block') {
-    contentEl.style.display = 'none';
-    this.parentNode.style.marginBottom = 0;
-  } else {
-    contentEl.style.display = 'block';
-    this.parentNode.style.marginBottom = null;
-  }
-
   return false;
 });
 

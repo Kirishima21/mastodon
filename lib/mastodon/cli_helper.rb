@@ -7,9 +7,14 @@ ActiveRecord::Base.logger    = dev_null
 ActiveJob::Base.logger       = dev_null
 HttpLog.configuration.logger = dev_null
 Paperclip.options[:log]      = false
+Chewy.logger                 = dev_null
 
 module Mastodon
   module CLIHelper
+    def dry_run?
+      options[:dry_run]
+    end
+
     def create_progress_bar(total = nil)
       ProgressBar.create(total: total, format: '%c/%u |%b%i| %e')
     end
