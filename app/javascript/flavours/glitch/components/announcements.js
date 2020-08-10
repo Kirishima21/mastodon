@@ -159,6 +159,7 @@ class Announcements extends React.PureComponent {
 			  [large=2x]倍角文字[/large]<br />
 			  [flip=vertical]縦反転[/flip]<br />
 			  [flip=horizontal]横反転[/flip]<br />
+        [rotatez=45]右に45°回転[/rotatez]<br />
         [marq=lateral]横移動[/marq]<br />
 			  [b]太字[/b]<br />
 			  [i]斜体[/i]<br />
