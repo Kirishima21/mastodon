@@ -58,6 +58,33 @@ iframe {
     animation-direction: alternate;
 }
 
+@for $i from 0 through 999 {
+  .fa-rotatez#{$i} {
+    transform: rotateZ(#{$i}deg);
+    -moz-transform: rotateZ(#{$i}deg);
+    -webkit-transform: rotateZ(#{$i}deg);
+    -o-transform: rotateZ(#{$i}deg);
+    -ms-transform: rotateZ(#{$i}deg);
+  }
+}
+
+
+@for $i from 0 through 1 {
+  @for $j from 0 through 1 {
+    @for $k from 0 through 1 {
+      @for $l from 0 through 999 {
+        .fa-rotate#{$i}-#{$j}-#{$k}-#{$l} {
+          transform: rotate3d(#{$i},#{$j},#{$k},#{$l}deg);
+          -moz-transform: rotate3d(#{$i},#{$j},#{$k},#{$l}deg);
+          -webkit-transform: rotate3d(#{$i},#{$j},#{$k},#{$l}deg);
+          -o-transform: rotate3d(#{$i},#{$j},#{$k},#{$l}deg);
+          -ms-transform: rotate3d(#{$i},#{$j},#{$k},#{$l}deg);
+        }
+      }
+    }
+  }
+}
+
 .marquee {
   width: 100%;
   padding: 0.5em 0;

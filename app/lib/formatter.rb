@@ -529,6 +529,20 @@ class Formatter
           :allow_quick_param => true, :allow_between_as_param => false,
           :quick_param_format => /([a-zA-Z]+)/i,
           :param_tokens => [{:token => :color}]},
+        :rotate => {
+          :html_open => '<span class="fa fa-rotate%rotate%">', :html_close => '</span>',
+          :description => 'transform rotate of the text',
+          :example => '[rotate=1-1-1-180]rotate 1, 1, 1, 180[/rotate]',
+          :allow_quick_param => true, :allow_between_as_param => false,
+          :quick_param_format => /((-1|0|1)-(-1|0|1)-(-1|0|1)-([0-9]{1,3}))/,
+          :param_tokens => [{:token => :rotate}]},
+        :rotatez => {
+            :html_open => '<span class="fa fa-rotatez%rotatez%">', :html_close => '</span>',
+            :description => 'transform rotate of the text',
+            :example => '[rotatez=90]rotate 90 deg[/rotatez]',
+            :allow_quick_param => true, :allow_between_as_param => false,
+            :quick_param_format => /([0-9]{1,3})/,
+            :param_tokens => [{:token => :rotatez}]},
         :colorhex => {
           :html_open => '<span style="color: #%colorcode%">', :html_close => '</span>',
           :description => 'Use color code',
@@ -554,7 +568,7 @@ class Formatter
             { :token => :width, :optional => true, :default => 400 },
             { :token => :height, :optional => true, :default => 320 }
           ]},
-      }, :enable, :i, :b, :quote, :code, :u, :s, :spin, :pulse, :flip, :large, :colorhex, :faicon, :youtube, :marq)
+      }, :enable, :i, :b, :quote, :code, :u, :s, :spin, :pulse, :flip, :large, :colorhex, :faicon, :youtube, :marq, :rotate, :rotatez)
     rescue Exception => e
     end
     html
