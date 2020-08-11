@@ -22,7 +22,7 @@ import LivePreview from './live_preview';
 import { Spring } from 'react-spring/renderprops';
 
 const isMathjaxifyable = str =>
-      [ /\$\$([\s\S]+?)\$\$/g, /\$([\s\S]+?)\$/g, /\\\(([\s\S]+?)\\\)/g, /\\\[([\s\S]+?)\\\]/g]
+      [ /\$\$([\s\S]+?)\$\$/g, /\$([\s\S]+?)\$/g ]
       .map( r => str.match(r))
       .reduce((prev, elem) => prev || elem, false);
 
