@@ -190,7 +190,7 @@ class Announcements extends React.PureComponent {
                 〜〜〜〜コードブロック〜〜〜〜<br /><br />
                 `コード`<br /><br />
                 〜〜〜〜〜〜引用〜〜〜〜〜〜<br /><br />
-                >引用文<br />
+                &gt;引用文<br />
                 (半角)<br />
                 ここから先は引用が切れます<br />
                 引用は複数回重ねることが可能です。<br /><br />
