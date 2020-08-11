@@ -327,6 +327,15 @@ class ComposeForm extends ImmutablePureComponent {
 
     const countText = `${spoilerText}${countableText(text)}${advancedOptions && advancedOptions.get('do_not_federate') ? ' 👁️' : ''}`;
 
+    const regexp = /\$\$?(.|\s|\f|\n)*\$\$?/;
+    let liveView
+    if (regexp.test(this.props.text)) {
+      liveView = (
+        <div className='compose-form__live-preview'>
+          <LivePreview text={text} />
+        </div>
+      )
+    }
 
     return (
       <div className='composer'>
@@ -406,9 +415,7 @@ class ComposeForm extends ImmutablePureComponent {
           handleSideArmLocalSubmit={handleSideArmLocalSubmit}
         />
 
-        <div className='compose-form__live-preview'>
-          <LivePreview text={text} />
-        </div>
+        {liveView}
 
       </div>
     );
