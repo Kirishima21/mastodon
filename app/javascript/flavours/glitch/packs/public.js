@@ -14,39 +14,6 @@ function main() {
   const Rellax = require('rellax');
   const { createBrowserHistory } = require('history');
 
-  loadScript('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function () {
-    const options = {
-      tex2jax: {
-	    inlineMath: [ ['$','$'], ['\\(','\\)'] ]
-      },
-      TeX: {
-        extensions: ["AMScd.js"]
-      },
-      skipStartupTypeset: true,
-      showProcessingMessages: false,
-      messageStyle: "none",
-      showMathMenu: true,
-      showMathMenuMSIE: true,
-      "SVG": {
-	    font:
-	    "TeX"
-	    // "STIX-Web"
-	    // "Asana-Math"
-	    // "Neo-Euler"
-	    // "Gyre-Pagella"
-	    // "Gyre-Termes"
-	    // "Latin-Modern"
-      },
-      "HTML-CSS": {
-	    availableFonts: ["TeX"],
-	    preferredFont: "TeX",
-	    webFont: "TeX"
-      }
-    };
-    MathJax.Hub.Config(options);
-    MathJax.Hub.Queue(["Typeset", MathJax.Hub, ""]);
-  });
-
   const scrollToDetailedStatus = () => {
     const history = createBrowserHistory();
     const detailedStatuses = document.querySelectorAll('.public-layout .detailed-status');
@@ -130,15 +97,6 @@ function main() {
 
     delegate(document, '.custom-emoji', 'mouseover', getEmojiAnimationHandler('data-original'));
     delegate(document, '.custom-emoji', 'mouseout', getEmojiAnimationHandler('data-static'));
-
-    delegate(document, '#account_note', 'input', ({ target }) => {
-      const noteCounter = document.querySelector('.note-counter');
-  
-      if (noteCounter) {
-        noteCounter.textContent = 160 - length(target.value);
-      }
-    });
-  
 
     delegate(document, '.status__content__spoiler-link', 'click', function() {
       const statusEl = this.parentNode.parentNode;

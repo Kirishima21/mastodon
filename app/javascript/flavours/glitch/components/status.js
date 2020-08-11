@@ -22,12 +22,6 @@ import { displayMedia } from 'flavours/glitch/util/initial_state';
 // to use the progress bar to show download progress
 import Bundle from '../features/ui/components/bundle';
 
-const isMathjaxifyable = str => {
-  return [ /\$\$(.*?)\$\$/g, /\$(.*?)\$/g]
-    .map( r => str.match(r))
-    .reduce((prev, elem) => prev || elem, null);
-}
-
 export const textForScreenReader = (intl, status, rebloggedByText = false, expanded = false) => {
   const displayName = status.getIn(['account', 'display_name']);
 
@@ -702,7 +696,6 @@ class Status extends ImmutablePureComponent {
       'status__wrapper-reply': !!status.get('in_reply_to_id'),
       read: unread === false,
       muted,
-      mathjaxified__content: isMathjaxifyable(status.get('content')),
     }, 'focusable');
 
     return (
