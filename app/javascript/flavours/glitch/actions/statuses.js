@@ -239,3 +239,25 @@ export function unmuteStatusFail(id, error) {
     error,
   };
 };
+
+export function hideStatus(ids) {
+  if (!Array.isArray(ids)) {
+    ids = [ids];
+  }
+
+  return {
+    type: STATUS_HIDE,
+    ids,
+  };
+};
+
+export function revealStatus(ids) {
+  if (!Array.isArray(ids)) {
+    ids = [ids];
+  }
+
+  return {
+    type: STATUS_REVEAL,
+    ids,
+  };
+};
