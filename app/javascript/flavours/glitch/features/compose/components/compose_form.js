@@ -21,6 +21,11 @@ import CharacterCounter from './character_counter';
 import LivePreview from './live_preview';
 import { Spring } from 'react-spring/renderprops';
 
+const isMathjaxifyable = str =>
+      [ /\$\$([\s\S]+?)\$\$/g, /\$([\s\S]+?)\$/g ]
+      .map( r => str.match(r))
+      .reduce((prev, elem) => prev || elem, false);
+
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
   missingDescriptionMessage: {  id: 'confirmations.missing_media_description.message',
@@ -326,6 +331,7 @@ class ComposeForm extends ImmutablePureComponent {
 
     const countText = `${spoilerText}${countableText(text)}${advancedOptions && advancedOptions.get('do_not_federate') ? ' 👁️' : ''}`;
 
+    const flag = isMathjaxifyable(text);
 
     return (
       <div className='composer'>
@@ -404,7 +410,15 @@ class ComposeForm extends ImmutablePureComponent {
           showSideArmLocalSecondary={showSideArmLocalSecondary}
           handleSideArmLocalSubmit={handleSideArmLocalSubmit}
         />
-
+        <Spring
+          config={{tension: 273, friction: 17, mass: 0.8 }}
+          from={{ opacity: flag ? 0 : 1, transform: flag ? 'scale(0)' : 'scale(1)' }}
+          to=  {{ opacity: flag ? 1 : 0, transform: flag ? 'scale(1)' : 'scale(0)' }}>
+          {props => <div style={props} className='compose-form__live-preview'>
+                      <LivePreview text={text} />
+                    </div>
+          }
+        </Spring>
       </div>
     );
   }
