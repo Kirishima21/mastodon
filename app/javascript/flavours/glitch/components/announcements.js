@@ -145,7 +145,7 @@ class Announcements extends React.PureComponent {
                   :起床Chance:<br />
                   :入眠Rush:<br />
                   :眠気襲来:<br />
-                  :MySweetHomeAstarte:<br />
+                  :みぷ:<br />
                   :全裸報告:<br />
                   :NFC襲来:<br />
                   :椅子転発生:<br />

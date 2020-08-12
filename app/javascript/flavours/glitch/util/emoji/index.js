@@ -109,13 +109,13 @@ const emojify_astarte = (str, customEmojis = {}) => [
   {re: /:ありがとう:/g, file: 'arigatou.gif', attrs: 'class="astarte-stamp"'},
   {re: /:ルーレット:/g, file: 'roulette.gif', attrs: 'class="astarte-stamp"'},
   {re: /:働きたくない:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
-  {re: /:起床Chance:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
-  {re: /:入眠Rush:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
-  {re: /:眠気襲来:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
-  {re: /:MySweetHomeAstarte:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
-  {re: /:全裸報告:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
-  {re: /:NFC襲来:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
-  {re: /:椅子転発生:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:起床Chance:/g, file: '750746c7bd3a0edc.png', attrs: 'class="astarte-stamp"'},
+  {re: /:入眠Rush:/g, file: '80bff0490a51d517.png', attrs: 'class="astarte-stamp"'},
+  {re: /:眠気襲来:/g, file: '45bec8a22a29e958.png', attrs: 'class="astarte-stamp"'},
+  {re: /:みぷ:/g, file: 'd000e5d479ce618c.png', attrs: 'class="astarte-stamp"'},
+  {re: /:全裸報告:/g, file: '2f18e130e4bfb19b.png', attrs: 'class="astarte-stamp"'},
+  {re: /:NFC襲来:/g, file: '6537d027313fd066.png', attrs: 'class="astarte-stamp"'},
+  {re: /:椅子転発生:/g, file: '889f2f40ede5d058.png', attrs: 'class="astarte-stamp"'},
 ].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="/emoji/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
 
 export default emojify_astarte;
