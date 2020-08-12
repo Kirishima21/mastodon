@@ -18,6 +18,10 @@ import TextareaIcons from './textarea_icons';
 import { maxChars } from 'flavours/glitch/util/initial_state';
 import CharacterCounter from './character_counter';
 
+import LivePreview from './live_preview';
+import { Spring } from 'react-spring/renderprops';
+
+
 const messages = defineMessages({
   placeholder: { id: 'compose_form.placeholder', defaultMessage: 'What is on your mind?' },
   missingDescriptionMessage: {  id: 'confirmations.missing_media_description.message',
@@ -323,6 +327,16 @@ class ComposeForm extends ImmutablePureComponent {
 
     const countText = `${spoilerText}${countableText(text)}${advancedOptions && advancedOptions.get('do_not_federate') ? ' 👁️' : ''}`;
 
+    const regexp = /\$\$?(.|\s|\f|\n)*\$\$?/;
+    let liveView
+    if (regexp.test(this.props.text)) {
+      liveView = (
+        <div className='compose-form__live-preview'>
+          <LivePreview text={text} />
+        </div>
+      )
+    }
+
     return (
       <div className='composer'>
         <WarningContainer />
@@ -400,6 +414,9 @@ class ComposeForm extends ImmutablePureComponent {
           showSideArmLocalSecondary={showSideArmLocalSecondary}
           handleSideArmLocalSubmit={handleSideArmLocalSubmit}
         />
+
+        {liveView}
+
       </div>
     );
   }
