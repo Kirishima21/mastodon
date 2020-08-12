@@ -151,7 +151,7 @@ class MediaAttachment < ApplicationRecord
   }.freeze
 
   IMAGE_LIMIT = (ENV['MAX_IMAGE_SIZE'] || 30.megabytes).to_i
-  VIDEO_LIMIT = (ENV['MAX_VIDEO_SIZE'] || 150.megabytes).to_i
+  VIDEO_LIMIT = (ENV['MAX_VIDEO_SIZE'] || 200.megabytes).to_i
 
   MAX_VIDEO_MATRIX_LIMIT = 2_304_000 # 1920x1200px
   MAX_VIDEO_FRAME_RATE   = 60
