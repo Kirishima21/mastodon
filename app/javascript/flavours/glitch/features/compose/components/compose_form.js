@@ -88,25 +88,6 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onChange(e.target.value);
   }
 
-  handleKeyDown = ({ ctrlKey, keyCode, metaKey, altKey, shiftKey }) => {
-    const { onChangeLocal } = this.props;
-
-    // Shift + Enter + x = Local
-    if (shiftKey && keyCode === 13 && (ctrlKey || metaKey || altKey)) {
-      onChangeLocal(true);
-    }
-
-    //  We submit the status on control/meta + enter.
-    if (keyCode === 13 && (ctrlKey || metaKey)) {
-      this.handleSubmit();
-    }
-
-    // Submit the status with secondary visibility on alt + enter.
-    if (keyCode === 13 && altKey) {
-      this.handleSecondarySubmit();
-    }
-  }
-
   handleSubmit = (overriddenVisibility = null) => {
     const { textarea: { value }, uploadForm } = this;
     const {
@@ -196,6 +177,13 @@ class ComposeForm extends ImmutablePureComponent {
   }
 
   handleKeyDown = (e) => {
+
+    const { onChangeLocal } = this.props;
+
+    if (e.shiftKey && e.keyCode === 13 && (e.ctrlKey || e.metaKey || e.altKey)) {
+      onChangeLocal(true);
+    }
+
     if (e.keyCode === 13 && (e.ctrlKey || e.metaKey)) {
       this.handleSubmit();
     }
