@@ -12,7 +12,7 @@
   "account.domain_blocked": "ドメインブロック中",
   "account.edit_profile": "プロフィール編集",
   "account.endorse": "プロフィールで紹介する",
-  "account.follow": "フォロー",
+  "account.follows": "フォロー",
   "account.followers": "フォロワー",
   "account.followers.empty": "まだ誰もフォローしていません。",
   "account.followers_counter": "{counter} フォロワー",
