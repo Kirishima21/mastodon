@@ -229,8 +229,8 @@ export default class StatusContent extends React.PureComponent {
         };
         MathJax.Hub.Config(options);
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, node]);
-        }
-      });
+      }
+    });
   }
 
   _updateStatusEmojis () {

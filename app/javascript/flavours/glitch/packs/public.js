@@ -13,6 +13,7 @@ function main() {
   const ReactDOM = require('react-dom');
   const Rellax = require('rellax');
   const { createBrowserHistory } = require('history');
+  const loadScript = require('load-script-once');
 
   loadScript('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-AMS-MML_HTMLorMML', function () {
     const options = {
