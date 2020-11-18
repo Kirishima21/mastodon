@@ -18,6 +18,7 @@ import classNames from 'classnames';
 import PollContainer from 'flavours/glitch/containers/poll_container';
 import Icon from 'flavours/glitch/components/icon';
 import AnimatedNumber from 'flavours/glitch/components/animated_number';
+import PictureInPicturePlaceholder from 'flavours/glitch/components/picture_in_picture_placeholder';
 
 export default class DetailedStatus extends ImmutablePureComponent {
 
@@ -37,6 +38,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
     domain: PropTypes.string.isRequired,
     compact: PropTypes.bool,
     showMedia: PropTypes.bool,
+    usingPiP: PropTypes.bool,
     onToggleMediaVisibility: PropTypes.func,
   };
 
@@ -109,7 +111,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
 
   render () {
     const status = (this.props.status && this.props.status.get('reblog')) ? this.props.status.get('reblog') : this.props.status;
-    const { expanded, onToggleHidden, settings } = this.props;
+    const { expanded, onToggleHidden, settings, usingPiP } = this.props;
     const outerStyle = { boxSizing: 'border-box' };
     const { compact } = this.props;
 
@@ -131,6 +133,9 @@ export default class DetailedStatus extends ImmutablePureComponent {
     if (status.get('poll')) {
       media = <PollContainer pollId={status.get('poll')} />;
       mediaIcon = 'tasks';
+    } else if (usingPiP) {
+      media = <PictureInPicturePlaceholder />;
+      mediaIcon = 'video-camera';
     } else if (status.get('media_attachments').size > 0) {
       if (status.get('media_attachments').some(item => item.get('type') === 'unknown')) {
         media = <AttachmentList media={status.get('media_attachments')} />;
@@ -192,8 +197,10 @@ export default class DetailedStatus extends ImmutablePureComponent {
     }
 
     if (status.get('application')) {
-      applicationLink = <span> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></span>;
+      applicationLink = <React.Fragment> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></React.Fragment>;
     }
+
+    const visibilityLink = <React.Fragment> · <VisibilityIcon visibility={status.get('visibility')} /></React.Fragment>;
 
     if (status.get('visibility') === 'direct') {
       reblogIcon = 'envelope';
@@ -205,21 +212,27 @@ export default class DetailedStatus extends ImmutablePureComponent {
       reblogLink = null;
     } else if (this.context.router) {
       reblogLink = (
-        <Link to={`/statuses/${status.get('id')}/reblogs`} className='detailed-status__link'>
-          <Icon id={reblogIcon} />
-          <span className='detailed-status__reblogs'>
-            <AnimatedNumber value={status.get('reblogs_count')} />
-          </span>
-        </Link>
+        <React.Fragment>
+          <React.Fragment> · </React.Fragment>
+          <Link to={`/statuses/${status.get('id')}/reblogs`} className='detailed-status__link'>
+            <Icon id={reblogIcon} />
+            <span className='detailed-status__reblogs'>
+              <AnimatedNumber value={status.get('reblogs_count')} />
+            </span>
+          </Link>
+        </React.Fragment>
       );
     } else {
       reblogLink = (
-        <a href={`/interact/${status.get('id')}?type=reblog`} className='detailed-status__link' onClick={this.handleModalLink}>
-          <Icon id={reblogIcon} />
-          <span className='detailed-status__reblogs'>
-            <AnimatedNumber value={status.get('reblogs_count')} />
-          </span>
-        </a>
+        <React.Fragment>
+          <React.Fragment> · </React.Fragment>
+          <a href={`/interact/${status.get('id')}?type=reblog`} className='detailed-status__link' onClick={this.handleModalLink}>
+            <Icon id={reblogIcon} />
+            <span className='detailed-status__reblogs'>
+              <AnimatedNumber value={status.get('reblogs_count')} />
+            </span>
+          </a>
+        </React.Fragment>
       );
     }
 
@@ -245,7 +258,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
 
     return (
       <div style={outerStyle}>
-        <div ref={this.setRef} className={classNames('detailed-status', { compact })} data-status-by={status.getIn(['account', 'acct'])}>
+        <div ref={this.setRef} className={classNames('detailed-status', `detailed-status-${status.get('visibility')}`, { compact })} data-status-by={status.getIn(['account', 'acct'])}>
           <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} className='detailed-status__display-name'>
             <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={48} /></div>
             <DisplayName account={status.get('account')} localDomain={this.props.domain} />
@@ -268,7 +281,7 @@ export default class DetailedStatus extends ImmutablePureComponent {
           <div className='detailed-status__meta'>
             <a className='detailed-status__datetime' href={status.get('url')} target='_blank' rel='noopener noreferrer'>
               <FormattedDate value={new Date(status.get('created_at'))} hour12={false} year='numeric' month='short' day='2-digit' hour='2-digit' minute='2-digit' />
-            </a>{applicationLink} {!!reblogLink && ['·', reblogLink]} · {favouriteLink} · <VisibilityIcon visibility={status.get('visibility')} />
+            </a>{visibilityLink}{applicationLink}{reblogLink} · {favouriteLink}
           </div>
         </div>
       </div>

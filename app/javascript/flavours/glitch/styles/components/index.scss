@@ -153,6 +153,7 @@
   cursor: pointer;
   transition: all 100ms ease-in;
   transition-property: background-color, color;
+  text-decoration: none;
 
   &:hover,
   &:active,
@@ -225,6 +226,20 @@
     &:hover {
       background: rgba($base-overlay-background, 0.9);
     }
+  }
+
+  &--with-counter {
+    display: inline-flex;
+    align-items: center;
+    width: auto !important;
+  }
+
+  &__counter {
+    display: inline-block;
+    width: 14px;
+    margin-left: 4px;
+    font-size: 12px;
+    font-weight: 500;
   }
 }
 
@@ -360,23 +375,7 @@
   }
 
   strong {
-    height: 18px;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 18px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-
-  span {
     display: block;
-    height: 18px;
-    font-size: 15px;
-    line-height: 18px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
   }
 
   > a:hover {
@@ -426,6 +425,20 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+  }
+
+  &::-webkit-scrollbar,
+  *::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent; /* Chrome/Safari/Webkit */
+  }
 
   .image-loader__preview-canvas {
     max-width: $media-modal-media-max-width;
@@ -480,6 +493,7 @@
   padding: 4px 0;
   border-radius: 4px;
   box-shadow: 2px 4px 15px rgba($base-shadow-color, 0.4);
+  z-index: 9999;
 
   ul {
     list-style: none;
@@ -722,6 +736,17 @@
     font-weight: 500;
     line-height: 14px;
     color: $primary-text-color;
+  }
+
+  &__issue-badge {
+    position: absolute;
+    left: 11px;
+    bottom: 1px;
+    display: block;
+    background: $error-red;
+    border-radius: 50%;
+    width: 0.625rem;
+    height: 0.625rem;
   }
 }
 
@@ -1372,7 +1397,6 @@ button.icon-button.active i.fa-retweet {
 }
 
 .setting-toggle__label,
-.setting-radio__label,
 .setting-meta__label {
   color: $darker-text-color;
   display: inline-block;
@@ -1381,25 +1405,8 @@ button.icon-button.active i.fa-retweet {
   vertical-align: middle;
 }
 
-.setting-radio {
+.column-settings__row .radio-button {
   display: block;
-  line-height: 18px;
-}
-
-.setting-radio__label {
-  margin-bottom: 0;
-}
-
-.column-settings__row legend {
-  color: $darker-text-color;
-  cursor: default;
-  display: block;
-  font-weight: 500;
-  margin-top: 10px;
-}
-
-.setting-radio__input {
-  vertical-align: middle;
 }
 
 .setting-meta__label {

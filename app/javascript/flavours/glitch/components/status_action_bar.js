@@ -8,6 +8,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { me, isStaff } from 'flavours/glitch/util/initial_state';
 import RelativeTimestamp from './relative_timestamp';
 import { accountAdminLink, statusAdminLink } from 'flavours/glitch/util/backend_links';
+import classNames from 'classnames';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -21,7 +22,8 @@ const messages = defineMessages({
   more: { id: 'status.more', defaultMessage: 'More' },
   replyAll: { id: 'status.replyAll', defaultMessage: 'Reply to thread' },
   reblog: { id: 'status.reblog', defaultMessage: 'Boost' },
-  reblog_private: { id: 'status.reblog_private', defaultMessage: 'Boost to original audience' },
+  reblog_private: { id: 'status.reblog_private', defaultMessage: 'Boost with original visibility' },
+  cancel_reblog_private: { id: 'status.cancel_reblog_private', defaultMessage: 'Unboost' },
   cannot_reblog: { id: 'status.cannot_reblog', defaultMessage: 'This post cannot be boosted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favourite' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
@@ -37,16 +39,6 @@ const messages = defineMessages({
   copy: { id: 'status.copy', defaultMessage: 'Copy link to status' },
   hide: { id: 'status.hide', defaultMessage: 'Hide toot' },
 });
-
-const obfuscatedCount = count => {
-  if (count < 0) {
-    return 0;
-  } else if (count <= 1) {
-    return count;
-  } else {
-    return '1+';
-  }
-};
 
 export default @injectIntl
 class StatusActionBar extends ImmutablePureComponent {
@@ -204,8 +196,6 @@ class StatusActionBar extends ImmutablePureComponent {
     const mutingConversation = status.get('muted');
     const anonymousAccess    = !me;
     const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
-    const reblogDisabled     = status.get('visibility') === 'direct' || (status.get('visibility') === 'private' && me !== status.getIn(['account', 'id']));
-    const reblogMessage      = status.get('visibility') === 'private' ? messages.reblog_private : messages.reblog;
 
     let menu = [];
     let reblogIcon = 'retweet';
@@ -284,18 +274,35 @@ class StatusActionBar extends ImmutablePureComponent {
     );
     if (showReplyCount) {
       replyButton = (
-        <div className='status__action-bar__counter'>
-          {replyButton}
-          <span className='status__action-bar__counter__label' >{obfuscatedCount(status.get('replies_count'))}</span>
-        </div>
+        <IconButton
+          className='status__action-bar-button'
+          title={replyTitle}
+          icon={replyIcon}
+          onClick={this.handleReplyClick}
+          counter={status.get('replies_count')}
+          obfuscateCount
+        />
       );
+    }
+
+    const reblogPrivate = status.getIn(['account', 'id']) === me && status.get('visibility') === 'private';
+
+    let reblogTitle = '';
+    if (status.get('reblogged')) {
+      reblogTitle = intl.formatMessage(messages.cancel_reblog_private);
+    } else if (publicStatus) {
+      reblogTitle = intl.formatMessage(messages.reblog);
+    } else if (reblogPrivate) {
+      reblogTitle = intl.formatMessage(messages.reblog_private);
+    } else {
+      reblogTitle = intl.formatMessage(messages.cannot_reblog);
     }
 
     return (
       <div className='status__action-bar'>
         {replyButton}
         {!directMessage && [
-          <IconButton key='reblog-button' className='status__action-bar-button' disabled={reblogDisabled} active={status.get('reblogged')} pressed={status.get('reblogged')} title={reblogDisabled ? intl.formatMessage(messages.cannot_reblog) : intl.formatMessage(reblogMessage)} icon={reblogIcon} onClick={this.handleReblogClick} />,
+          <IconButton key='reblog-button' className={classNames('status__action-bar-button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} pressed={status.get('reblogged')} title={reblogTitle} icon={reblogIcon} onClick={this.handleReblogClick} />,
           <IconButton key='favourite-button' className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} />,
           shareButton,
           <IconButton key='bookmark-button' className='status__action-bar-button bookmark-icon' disabled={anonymousAccess} active={status.get('bookmarked')} pressed={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} />,

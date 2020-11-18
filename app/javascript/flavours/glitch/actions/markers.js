@@ -60,7 +60,7 @@ export const synchronouslySubmitMarkers = () => (dispatch, getState) => {
 const _buildParams = (state) => {
   const params = {};
 
-  const lastHomeId         = state.getIn(['timelines', 'home', 'items', 0]);
+  const lastHomeId         = state.getIn(['timelines', 'home', 'items']).find(item => item !== null);
   const lastNotificationId = state.getIn(['notifications', 'lastReadId']);
 
   if (lastHomeId && compareId(lastHomeId, state.getIn(['markers', 'home'])) > 0) {
@@ -100,20 +100,24 @@ export function submitMarkersSuccess({ home, notifications }) {
   };
 };
 
-export function submitMarkers() {
-  return (dispatch, getState) => debouncedSubmitMarkers(dispatch, getState);
+export function submitMarkers(params = {}) {
+  const result = (dispatch, getState) => debouncedSubmitMarkers(dispatch, getState);
+  if (params.immediate === true) {
+    debouncedSubmitMarkers.flush();
+  }
+  return result;
 };
 
 export const fetchMarkers = () => (dispatch, getState) => {
-    const params = { timeline: ['notifications'] };
+  const params = { timeline: ['notifications'] };
 
-    dispatch(fetchMarkersRequest());
+  dispatch(fetchMarkersRequest());
 
-    api(getState).get('/api/v1/markers', { params }).then(response => {
-      dispatch(fetchMarkersSuccess(response.data));
-    }).catch(error => {
-      dispatch(fetchMarkersFail(error));
-    });
+  api(getState).get('/api/v1/markers', { params }).then(response => {
+    dispatch(fetchMarkersSuccess(response.data));
+  }).catch(error => {
+    dispatch(fetchMarkersFail(error));
+  });
 };
 
 export function fetchMarkersRequest() {

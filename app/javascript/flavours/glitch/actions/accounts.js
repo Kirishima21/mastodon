@@ -125,15 +125,17 @@ export function fetchAccountFail(id, error) {
   };
 };
 
-export function followAccount(id, reblogs = true) {
+export function followAccount(id, options = { reblogs: true }) {
   return (dispatch, getState) => {
     const alreadyFollowing = getState().getIn(['relationships', id, 'following']);
-    dispatch(followAccountRequest(id));
+    const locked = getState().getIn(['accounts', id, 'locked'], false);
 
-    api(getState).post(`/api/v1/accounts/${id}/follow`, { reblogs }).then(response => {
+    dispatch(followAccountRequest(id, locked));
+
+    api(getState).post(`/api/v1/accounts/${id}/follow`, options).then(response => {
       dispatch(followAccountSuccess(response.data, alreadyFollowing));
     }).catch(error => {
-      dispatch(followAccountFail(error));
+      dispatch(followAccountFail(error, locked));
     });
   };
 };
@@ -150,10 +152,12 @@ export function unfollowAccount(id) {
   };
 };
 
-export function followAccountRequest(id) {
+export function followAccountRequest(id, locked) {
   return {
     type: ACCOUNT_FOLLOW_REQUEST,
     id,
+    locked,
+    skipLoading: true,
   };
 };
 
@@ -162,13 +166,16 @@ export function followAccountSuccess(relationship, alreadyFollowing) {
     type: ACCOUNT_FOLLOW_SUCCESS,
     relationship,
     alreadyFollowing,
+    skipLoading: true,
   };
 };
 
-export function followAccountFail(error) {
+export function followAccountFail(error, locked) {
   return {
     type: ACCOUNT_FOLLOW_FAIL,
     error,
+    locked,
+    skipLoading: true,
   };
 };
 
@@ -176,6 +183,7 @@ export function unfollowAccountRequest(id) {
   return {
     type: ACCOUNT_UNFOLLOW_REQUEST,
     id,
+    skipLoading: true,
   };
 };
 
@@ -184,6 +192,7 @@ export function unfollowAccountSuccess(relationship, statuses) {
     type: ACCOUNT_UNFOLLOW_SUCCESS,
     relationship,
     statuses,
+    skipLoading: true,
   };
 };
 
@@ -191,6 +200,7 @@ export function unfollowAccountFail(error) {
   return {
     type: ACCOUNT_UNFOLLOW_FAIL,
     error,
+    skipLoading: true,
   };
 };
 
@@ -263,11 +273,11 @@ export function unblockAccountFail(error) {
 };
 
 
-export function muteAccount(id, notifications) {
+export function muteAccount(id, notifications, duration=0) {
   return (dispatch, getState) => {
     dispatch(muteAccountRequest(id));
 
-    api(getState).post(`/api/v1/accounts/${id}/mute`, { notifications }).then(response => {
+    api(getState).post(`/api/v1/accounts/${id}/mute`, { notifications, duration }).then(response => {
       // Pass in entire statuses map so we can use it to filter stuff in different parts of the reducers
       dispatch(muteAccountSuccess(response.data, getState().get('statuses')));
     }).catch(error => {

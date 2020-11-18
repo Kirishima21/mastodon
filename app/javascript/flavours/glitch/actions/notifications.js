@@ -16,8 +16,10 @@ import { getFiltersRegex } from 'flavours/glitch/selectors';
 import { usePendingItems as preferPendingItems } from 'flavours/glitch/util/initial_state';
 import compareId from 'flavours/glitch/util/compare_id';
 import { searchTextFromRawStatus } from 'flavours/glitch/actions/importer/normalizer';
+import { requestNotificationPermission } from 'flavours/glitch/util/notifications';
 
 export const NOTIFICATIONS_UPDATE = 'NOTIFICATIONS_UPDATE';
+export const NOTIFICATIONS_UPDATE_NOOP = 'NOTIFICATIONS_UPDATE_NOOP';
 
 // tracking the notif cleaning request
 export const NOTIFICATIONS_DELETE_MARKED_REQUEST = 'NOTIFICATIONS_DELETE_MARKED_REQUEST';
@@ -45,6 +47,13 @@ export const NOTIFICATIONS_UNMOUNT = 'NOTIFICATIONS_UNMOUNT';
 
 export const NOTIFICATIONS_SET_VISIBILITY = 'NOTIFICATIONS_SET_VISIBILITY';
 
+
+export const NOTIFICATIONS_MARK_AS_READ = 'NOTIFICATIONS_MARK_AS_READ';
+
+export const NOTIFICATIONS_SET_BROWSER_SUPPORT        = 'NOTIFICATIONS_SET_BROWSER_SUPPORT';
+export const NOTIFICATIONS_SET_BROWSER_PERMISSION     = 'NOTIFICATIONS_SET_BROWSER_PERMISSION';
+export const NOTIFICATIONS_DISMISS_BROWSER_PERMISSION = 'NOTIFICATIONS_DISMISS_BROWSER_PERMISSION';
+
 defineMessages({
   mention: { id: 'notification.mention', defaultMessage: '{name} mentioned you' },
 });
@@ -70,7 +79,7 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
 
     let filtered = false;
 
-    if (notification.type === 'mention') {
+    if (['mention', 'status'].includes(notification.type)) {
       const dropRegex   = filters[0];
       const regex       = filters[1];
       const searchIndex = searchTextFromRawStatus(notification.status);
@@ -318,3 +327,52 @@ export function setFilter (filterType) {
     dispatch(saveSettings());
   };
 };
+
+export function markNotificationsAsRead() {
+  return {
+    type: NOTIFICATIONS_MARK_AS_READ,
+  };
+};
+
+// Browser support
+export function setupBrowserNotifications() {
+  return dispatch => {
+    dispatch(setBrowserSupport('Notification' in window));
+    if ('Notification' in window) {
+      dispatch(setBrowserPermission(Notification.permission));
+    }
+
+    if ('Notification' in window && 'permissions' in navigator) {
+      navigator.permissions.query({ name: 'notifications' }).then((status) => {
+        status.onchange = () => dispatch(setBrowserPermission(Notification.permission));
+      });
+    }
+  };
+}
+
+export function requestBrowserPermission(callback = noOp) {
+  return dispatch => {
+    requestNotificationPermission((permission) => {
+      dispatch(setBrowserPermission(permission));
+      callback(permission);
+    });
+  };
+};
+
+export function setBrowserSupport (value) {
+  return {
+    type: NOTIFICATIONS_SET_BROWSER_SUPPORT,
+    value,
+  };
+}
+
+export function setBrowserPermission (value) {
+  return {
+    type: NOTIFICATIONS_SET_BROWSER_PERMISSION,
+    value,
+  };
+}
+
+export const dismissBrowserPermission = () => ({
+  type: NOTIFICATIONS_DISMISS_BROWSER_PERMISSION,
+});

@@ -12,6 +12,8 @@ class HTMLRenderer < Redcarpet::Render::HTML
   def autolink(link, link_type)
     return link if link_type == :email
     Formatter.instance.link_url(link)
+  rescue Addressable::URI::InvalidURIError, IDN::Idna::IdnaError
+    encode(link)
   end
 
   private
@@ -237,6 +239,7 @@ class Formatter
     end
   end
 
+  # rubocop:disable Metrics/BlockNesting
   def encode_custom_emojis(html, emojis, animate = false)
     return html if emojis.empty?
 
@@ -291,6 +294,7 @@ class Formatter
 
     html
   end
+  # rubocop:enable Metrics/BlockNesting
 
   def rewrite(text, entities, keep_html = false)
     text = text.to_s
