@@ -130,6 +130,7 @@
     "prop-types": "^15.5.10",
     "punycode": "^2.1.0",
     "react": "^16.14.0",
+    "react-decoration": "^2.1.0",
     "react-dom": "^16.14.0",
     "react-hotkeys": "^1.1.4",
     "react-immutable-proptypes": "^2.2.0",
