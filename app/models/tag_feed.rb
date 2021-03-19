@@ -24,7 +24,7 @@ class TagFeed < PublicFeed
   # @param [Integer] min_id
   # @return [Array<Status>]
   def get(limit, max_id = nil, since_id = nil, min_id = nil)
-    scope = public_scope
+    scope = hashtag_scope
 
     scope.merge!(without_local_only_scope) unless local_account?
     scope.merge!(tagged_with_any_scope)
