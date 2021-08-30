@@ -50,7 +50,6 @@ class AccountTimeline extends ImmutablePureComponent {
   static propTypes = {
     params: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    shouldUpdateScroll: PropTypes.func,
     statusIds: ImmutablePropTypes.list,
     featuredStatusIds: ImmutablePropTypes.list,
     isLoading: PropTypes.bool,
@@ -115,7 +114,7 @@ class AccountTimeline extends ImmutablePureComponent {
   }
 
   render () {
-    const { shouldUpdateScroll, statusIds, featuredStatusIds, isLoading, hasMore, blockedBy, suspended, isAccount, multiColumn, remote, remoteUrl } = this.props;
+    const { statusIds, featuredStatusIds, isLoading, hasMore, blockedBy, suspended, isAccount, multiColumn, remote, remoteUrl } = this.props;
 
     if (!isAccount) {
       return (
@@ -136,7 +135,9 @@ class AccountTimeline extends ImmutablePureComponent {
 
     let emptyMessage;
 
-    if (suspended || blockedBy) {
+    if (suspended) {
+      emptyMessage = <FormattedMessage id='empty_column.account_suspended' defaultMessage='Account suspended' />;
+    } else if (blockedBy) {
       emptyMessage = <FormattedMessage id='empty_column.account_unavailable' defaultMessage='Profile unavailable' />;
     } else if (remote && statusIds.isEmpty()) {
       emptyMessage = <RemoteHint url={remoteUrl} />;
@@ -160,7 +161,6 @@ class AccountTimeline extends ImmutablePureComponent {
           isLoading={isLoading}
           hasMore={hasMore}
           onLoadMore={this.handleLoadMore}
-          shouldUpdateScroll={shouldUpdateScroll}
           emptyMessage={emptyMessage}
           bindToDocument={!multiColumn}
           timelineId='account'

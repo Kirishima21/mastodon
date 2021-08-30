@@ -1,6 +1,6 @@
 import api, { getLinks } from 'flavours/glitch/util/api';
 import IntlMessageFormat from 'intl-messageformat';
-import { fetchRelationships } from './accounts';
+import { fetchFollowRequests, fetchRelationships } from './accounts';
 import {
   importFetchedAccount,
   importFetchedAccounts,
@@ -50,9 +50,8 @@ export const NOTIFICATIONS_SET_VISIBILITY = 'NOTIFICATIONS_SET_VISIBILITY';
 
 export const NOTIFICATIONS_MARK_AS_READ = 'NOTIFICATIONS_MARK_AS_READ';
 
-export const NOTIFICATIONS_SET_BROWSER_SUPPORT        = 'NOTIFICATIONS_SET_BROWSER_SUPPORT';
-export const NOTIFICATIONS_SET_BROWSER_PERMISSION     = 'NOTIFICATIONS_SET_BROWSER_PERMISSION';
-export const NOTIFICATIONS_DISMISS_BROWSER_PERMISSION = 'NOTIFICATIONS_DISMISS_BROWSER_PERMISSION';
+export const NOTIFICATIONS_SET_BROWSER_SUPPORT    = 'NOTIFICATIONS_SET_BROWSER_SUPPORT';
+export const NOTIFICATIONS_SET_BROWSER_PERMISSION = 'NOTIFICATIONS_SET_BROWSER_PERMISSION';
 
 defineMessages({
   mention: { id: 'notification.mention', defaultMessage: '{name} mentioned you' },
@@ -89,6 +88,10 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
       }
 
       filtered = regex && regex.test(searchIndex);
+    }
+
+    if (['follow_request'].includes(notification.type)) {
+      dispatch(fetchFollowRequests());
     }
 
     dispatch(submitMarkers());
@@ -345,7 +348,7 @@ export function setupBrowserNotifications() {
     if ('Notification' in window && 'permissions' in navigator) {
       navigator.permissions.query({ name: 'notifications' }).then((status) => {
         status.onchange = () => dispatch(setBrowserPermission(Notification.permission));
-      });
+      }).catch(console.warn);
     }
   };
 }
@@ -372,7 +375,3 @@ export function setBrowserPermission (value) {
     value,
   };
 }
-
-export const dismissBrowserPermission = () => ({
-  type: NOTIFICATIONS_DISMISS_BROWSER_PERMISSION,
-});

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
-import { fromJS, is } from 'immutable';
+import { is } from 'immutable';
 import { throttle, debounce } from 'lodash';
 import classNames from 'classnames';
 import { isFullscreen, requestFullscreen, exitFullscreen } from 'flavours/glitch/util/fullscreen';
@@ -98,6 +98,7 @@ class Video extends React.PureComponent {
 
   static propTypes = {
     preview: PropTypes.string,
+    frameRate: PropTypes.string,
     src: PropTypes.string.isRequired,
     alt: PropTypes.string,
     width: PropTypes.number,
@@ -119,10 +120,14 @@ class Video extends React.PureComponent {
     deployPictureInPicture: PropTypes.func,
     preventPlayback: PropTypes.bool,
     blurhash: PropTypes.string,
-    link: PropTypes.node,
     autoPlay: PropTypes.bool,
     volume: PropTypes.number,
     muted: PropTypes.bool,
+    componetIndex: PropTypes.number,
+  };
+
+  static defaultProps = {
+    frameRate: '25',
   };
 
   state = {
@@ -182,10 +187,7 @@ class Video extends React.PureComponent {
     this.volume = c;
   }
 
-  handleMouseDownRoot = e => {
-    e.preventDefault();
-    e.stopPropagation();
-  }
+  handleClickRoot = e => e.stopPropagation();
 
   handlePlay = () => {
     this.setState({ paused: false });
@@ -278,6 +280,81 @@ class Video extends React.PureComponent {
       });
     }
   }, 15);
+
+  seekBy (time) {
+    const currentTime = this.video.currentTime + time;
+
+    if (!isNaN(currentTime)) {
+      this.setState({ currentTime }, () => {
+        this.video.currentTime = currentTime;
+      });
+    }
+  }
+
+  handleVideoKeyDown = e => {
+    // On the video element or the seek bar, we can safely use the space bar
+    // for playback control because there are no buttons to press
+
+    if (e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.togglePlay();
+    }
+  }
+
+  handleKeyDown = e => {
+    const frameTime = 1 / this.getFrameRate();
+
+    switch(e.key) {
+    case 'k':
+      e.preventDefault();
+      e.stopPropagation();
+      this.togglePlay();
+      break;
+    case 'm':
+      e.preventDefault();
+      e.stopPropagation();
+      this.toggleMute();
+      break;
+    case 'f':
+      e.preventDefault();
+      e.stopPropagation();
+      this.toggleFullscreen();
+      break;
+    case 'j':
+      e.preventDefault();
+      e.stopPropagation();
+      this.seekBy(-10);
+      break;
+    case 'l':
+      e.preventDefault();
+      e.stopPropagation();
+      this.seekBy(10);
+      break;
+    case ',':
+      e.preventDefault();
+      e.stopPropagation();
+      this.seekBy(-frameTime);
+      break;
+    case '.':
+      e.preventDefault();
+      e.stopPropagation();
+      this.seekBy(frameTime);
+      break;
+    }
+
+    // If we are in fullscreen mode, we don't want any hotkeys
+    // interacting with the UI that's not visible
+
+    if (this.state.fullscreen) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.key === 'Escape') {
+        exitFullscreen();
+      }
+    }
+  }
 
   togglePlay = () => {
     if (this.state.paused) {
@@ -433,25 +510,14 @@ class Video extends React.PureComponent {
   }
 
   handleOpenVideo = () => {
-    const { src, preview, width, height, alt } = this.props;
+    this.video.pause();
 
-    const media = fromJS({
-      type: 'video',
-      url: src,
-      preview_url: preview,
-      description: alt,
-      width,
-      height,
-    });
-
-    const options = {
+    this.props.onOpenVideo({
       startTime: this.video.currentTime,
       autoPlay: !this.state.paused,
       defaultVolume: this.state.volume,
-    };
-
-    this.video.pause();
-    this.props.onOpenVideo(media, options);
+      componetIndex: this.props.componetIndex,
+    });
   }
 
   handleCloseVideo = () => {
@@ -459,8 +525,19 @@ class Video extends React.PureComponent {
     this.props.onCloseVideo();
   }
 
+  getFrameRate () {
+    if (this.props.frameRate && isNaN(this.props.frameRate)) {
+      // The frame rate is returned as a fraction string so we
+      // need to convert it to a number
+
+      return this.props.frameRate.split('/').reduce((p, c) => p / c);
+    }
+
+    return this.props.frameRate || 25;
+  }
+
   render () {
-    const { preview, src, inline, onOpenVideo, onCloseVideo, intl, alt, letterbox, fullwidth, detailed, sensitive, link, editable, blurhash } = this.props;
+    const { preview, src, inline, onOpenVideo, onCloseVideo, intl, alt, letterbox, fullwidth, detailed, sensitive, editable, blurhash } = this.props;
     const { containerWidth, currentTime, duration, volume, buffer, dragging, paused, fullscreen, hovered, muted, revealed } = this.state;
     const progress = Math.min((currentTime / duration) * 100, 100);
     const playerStyle = {};
@@ -503,7 +580,8 @@ class Video extends React.PureComponent {
         ref={this.setPlayerRef}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
-        onMouseDown={this.handleMouseDownRoot}
+        onClick={this.handleClickRoot}
+        onKeyDown={this.handleKeyDown}
         tabIndex={0}
       >
         <Blurhash
@@ -528,6 +606,7 @@ class Video extends React.PureComponent {
           height={height}
           volume={volume}
           onClick={this.togglePlay}
+          onKeyDown={this.handleVideoKeyDown}
           onPlay={this.handlePlay}
           onPause={this.handlePause}
           onLoadedData={this.handleLoadedData}
@@ -550,6 +629,7 @@ class Video extends React.PureComponent {
               className={classNames('video-player__seek__handle', { active: dragging })}
               tabIndex='0'
               style={{ left: `${progress}%` }}
+              onKeyDown={this.handleVideoKeyDown}
             />
           </div>
 
@@ -575,8 +655,6 @@ class Video extends React.PureComponent {
                   <span className='video-player__time-total'>{formatTime(Math.floor(duration))}</span>
                 </span>
               )}
-
-              {link && <span className='video-player__link'>{link}</span>}
             </div>
 
             <div className='video-player__buttons right'>

@@ -55,18 +55,22 @@ export default class ModalRoot extends React.PureComponent {
     onClose: PropTypes.func.isRequired,
   };
 
-  getSnapshotBeforeUpdate () {
-    return { visible: !!this.props.type };
-  }
+  state = {
+    backgroundColor: null,
+  };
 
-  componentDidUpdate (prevProps, prevState, { visible }) {
-    if (visible) {
+  componentDidUpdate () {
+    if (!!this.props.type) {
       document.body.classList.add('with-modals--active');
       document.documentElement.style.marginRight = `${getScrollbarWidth()}px`;
     } else {
       document.body.classList.remove('with-modals--active');
       document.documentElement.style.marginRight = 0;
     }
+  }
+
+  setBackgroundColor = color => {
+    this.setState({ backgroundColor: color });
   }
 
   renderLoading = modalId => () => {
@@ -79,15 +83,33 @@ export default class ModalRoot extends React.PureComponent {
     return <BundleModalError {...props} onClose={onClose} />;
   }
 
+  handleClose = () => {
+    const { onClose } = this.props;
+    let message = null;
+    try {
+      message = this._modal?.getWrappedInstance?.().getCloseConfirmationMessage?.();
+    } catch (_) {
+      // injectIntl defines `getWrappedInstance` but errors out if `withRef`
+      // isn't set.
+      // This would be much smoother with react-intl 3+ and `forwardRef`.
+    }
+    onClose(message);
+  }
+
+  setModalRef = (c) => {
+    this._modal = c;
+  }
+
   render () {
-    const { type, props, onClose } = this.props;
+    const { type, props } = this.props;
+    const { backgroundColor } = this.state;
     const visible = !!type;
 
     return (
-      <Base onClose={onClose} noEsc={props ? props.noEsc : false}>
+      <Base backgroundColor={backgroundColor} onClose={this.handleClose} noEsc={props ? props.noEsc : false}>
         {visible && (
           <BundleContainer fetchComponent={MODAL_COMPONENTS[type]} loading={this.renderLoading(type)} error={this.renderError} renderDelay={200}>
-            {(SpecificComponent) => <SpecificComponent {...props} onClose={onClose} />}
+            {(SpecificComponent) => <SpecificComponent {...props} onChangeBackgroundColor={this.setBackgroundColor} onClose={this.handleClose} ref={this.setModalRef} />}
           </BundleContainer>
         )}
       </Base>

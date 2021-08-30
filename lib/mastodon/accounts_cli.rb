@@ -54,7 +54,8 @@ module Mastodon
 
     option :email, required: true
     option :confirmed, type: :boolean
-    option :role, default: 'user'
+    option :role, default: 'user', enum: %w(user moderator admin)
+    option :skip_sign_in_token, type: :boolean
     option :reattach, type: :boolean
     option :force, type: :boolean
     desc 'create USERNAME', 'Create a new user'
@@ -68,6 +69,9 @@ module Mastodon
       With the --role option one of  "user", "admin" or "moderator"
       can be supplied. Defaults to "user"
 
+      With the --skip-sign-in-token option, you can ensure that
+      the user is never asked for an e-mailed security code.
+
       With the --reattach option, the new user will be reattached
       to a given existing username of an old account. If the old
       account is still in use by someone else, you can supply
@@ -77,7 +81,7 @@ module Mastodon
     def create(username)
       account  = Account.new(username: username)
       password = SecureRandom.hex
-      user     = User.new(email: options[:email], password: password, agreement: true, approved: true, admin: options[:role] == 'admin', moderator: options[:role] == 'moderator', confirmed_at: options[:confirmed] ? Time.now.utc : nil)
+      user     = User.new(email: options[:email], password: password, agreement: true, approved: true, admin: options[:role] == 'admin', moderator: options[:role] == 'moderator', confirmed_at: options[:confirmed] ? Time.now.utc : nil, bypass_invite_request_check: true, skip_sign_in_token: options[:skip_sign_in_token])
 
       if options[:reattach]
         account = Account.find_local(username) || Account.new(username: username)
@@ -113,7 +117,7 @@ module Mastodon
       end
     end
 
-    option :role
+    option :role, enum: %w(user moderator admin)
     option :email
     option :confirm, type: :boolean
     option :enable, type: :boolean
@@ -121,6 +125,7 @@ module Mastodon
     option :disable_2fa, type: :boolean
     option :approve, type: :boolean
     option :reset_password, type: :boolean
+    option :skip_sign_in_token, type: :boolean
     desc 'modify USERNAME', 'Modify a user'
     long_desc <<-LONG_DESC
       Modify a user account.
@@ -142,6 +147,9 @@ module Mastodon
 
       With the --reset-password option, the user's password is replaced by
       a randomly-generated one, printed in the output.
+
+      With the --skip-sign-in-token option, you can ensure that
+      the user is never asked for an e-mailed security code.
     LONG_DESC
     def modify(username)
       user = Account.find_local(username)&.user
@@ -163,6 +171,7 @@ module Mastodon
       user.disabled = true if options[:disable]
       user.approved = true if options[:approve]
       user.otp_required_for_login = false if options[:disable_2fa]
+      user.skip_sign_in_token = options[:skip_sign_in_token] unless options[:skip_sign_in_token].nil?
       user.confirm if options[:confirm]
 
       if user.save
@@ -194,6 +203,65 @@ module Mastodon
       say("Deleting user with #{account.statuses_count} statuses, this might take a while...")
       DeleteAccountService.new.call(account, reserve_email: false)
       say('OK', :green)
+    end
+
+    option :force, type: :boolean, aliases: [:f], description: 'Override public key check'
+    desc 'merge FROM TO', 'Merge two remote accounts into one'
+    long_desc <<-LONG_DESC
+      Merge two remote accounts specified by their username@domain
+      into one, whereby the TO account is the one being merged into
+      and kept, while the FROM one is removed. It is primarily meant
+      to fix duplicates caused by other servers changing their domain.
+
+      The command by default only works if both accounts have the same
+      public key to prevent mistakes. To override this, use the --force.
+    LONG_DESC
+    def merge(from_acct, to_acct)
+      username, domain = from_acct.split('@')
+      from_account = Account.find_remote(username, domain)
+
+      if from_account.nil? || from_account.local?
+        say("No such account (#{from_acct})", :red)
+        exit(1)
+      end
+
+      username, domain = to_acct.split('@')
+      to_account = Account.find_remote(username, domain)
+
+      if to_account.nil? || to_account.local?
+        say("No such account (#{to_acct})", :red)
+        exit(1)
+      end
+
+      if from_account.public_key != to_account.public_key && !options[:force]
+        say("Accounts don't have the same public key, might not be duplicates!", :red)
+        say('Override with --force', :red)
+        exit(1)
+      end
+
+      to_account.merge_with!(from_account)
+      from_account.destroy
+
+      say('OK', :green)
+    end
+
+    desc 'fix-duplicates', 'Find duplicate remote accounts and merge them'
+    option :dry_run, type: :boolean
+    long_desc <<-LONG_DESC
+      Merge known remote accounts sharing an ActivityPub actor identifier.
+
+      Such duplicates can occur when a remote server admin misconfigures their
+      domain configuration.
+    LONG_DESC
+    def fix_duplicates
+      Account.remote.select(:uri, 'count(*)').group(:uri).having('count(*) > 1').pluck(:uri).each do |uri|
+        say("Duplicates found for #{uri}")
+        begin
+          ActivityPub::FetchRemoteAccountService.new.call(uri) unless options[:dry_run]
+        rescue => e
+          say("Error processing #{uri}: #{e}", :red)
+        end
+      end
     end
 
     desc 'backup USERNAME', 'Request a backup for a user'
@@ -325,7 +393,7 @@ module Mastodon
       end
 
       processed, = parallelize_with_progress(Account.local.without_suspended) do |account|
-        FollowService.new.call(account, target_account)
+        FollowService.new.call(account, target_account, bypass_limit: true)
       end
 
       say("OK, followed target from #{processed} accounts", :green)
@@ -335,14 +403,15 @@ module Mastodon
     option :verbose, type: :boolean, aliases: [:v]
     desc 'unfollow ACCT', 'Make all local accounts unfollow account specified by ACCT'
     def unfollow(acct)
-      target_account = Account.find_remote(*acct.split('@'))
+      username, domain = acct.split('@')
+      target_account = Account.find_remote(username, domain)
 
       if target_account.nil?
         say('No such account', :red)
         exit(1)
       end
 
-      parallelize_with_progress(target_account.followers.local) do |account|
+      processed, = parallelize_with_progress(target_account.followers.local) do |account|
         UnfollowService.new.call(account, target_account)
       end
 

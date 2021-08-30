@@ -33,6 +33,12 @@ class SearchResults extends ImmutablePureComponent {
     }
   }
 
+  componentDidUpdate () {
+    if (this.props.searchTerm === '') {
+      this.props.fetchSuggestions();
+    }
+  }
+
   handleLoadMoreAccounts = () => this.props.expandSearch('accounts');
 
   handleLoadMoreStatuses = () => this.props.expandSearch('statuses');
@@ -42,7 +48,7 @@ class SearchResults extends ImmutablePureComponent {
   render () {
     const { intl, results, suggestions, dismissSuggestion, searchTerm } = this.props;
 
-    if (results.isEmpty() && !suggestions.isEmpty()) {
+    if (searchTerm === '' && !suggestions.isEmpty()) {
       return (
         <div className='drawer--results'>
           <div className='trends'>
@@ -51,12 +57,12 @@ class SearchResults extends ImmutablePureComponent {
               <FormattedMessage id='suggestions.header' defaultMessage='You might be interested in…' />
             </div>
 
-            {suggestions && suggestions.map(accountId => (
+            {suggestions && suggestions.map(suggestion => (
               <AccountContainer
-                key={accountId}
-                id={accountId}
-                actionIcon='times'
-                actionTitle={intl.formatMessage(messages.dismissSuggestion)}
+                key={suggestion.get('account')}
+                id={suggestion.get('account')}
+                actionIcon={suggestion.get('source') === 'past_interaction' ? 'times' : null}
+                actionTitle={suggestion.get('source') === 'past_interaction' ? intl.formatMessage(messages.dismissSuggestion) : null}
                 onActionClick={dismissSuggestion}
               />
             ))}
@@ -65,7 +71,7 @@ class SearchResults extends ImmutablePureComponent {
       );
     } else if(results.get('statuses') && results.get('statuses').size === 0 && !searchEnabled && !(searchTerm.startsWith('@') || searchTerm.startsWith('#') || searchTerm.includes(' '))) {
       statuses = (
-        <section>
+        <section className='search-results__section'>
           <h5><Icon id='quote-right' fixedWidth /><FormattedMessage id='search_results.statuses' defaultMessage='Toots' /></h5>
 
           <div className='search-results__info'>
@@ -81,7 +87,7 @@ class SearchResults extends ImmutablePureComponent {
     if (results.get('accounts') && results.get('accounts').size > 0) {
       count   += results.get('accounts').size;
       accounts = (
-        <section>
+        <section className='search-results__section'>
           <h5><Icon id='users' fixedWidth /><FormattedMessage id='search_results.accounts' defaultMessage='People' /></h5>
 
           {results.get('accounts').map(accountId => <AccountContainer id={accountId} key={accountId} />)}
@@ -94,7 +100,7 @@ class SearchResults extends ImmutablePureComponent {
     if (results.get('statuses') && results.get('statuses').size > 0) {
       count   += results.get('statuses').size;
       statuses = (
-        <section>
+        <section className='search-results__section'>
           <h5><Icon id='quote-right' fixedWidth /><FormattedMessage id='search_results.statuses' defaultMessage='Toots' /></h5>
 
           {results.get('statuses').map(statusId => <StatusContainer id={statusId} key={statusId}/>)}
@@ -107,7 +113,7 @@ class SearchResults extends ImmutablePureComponent {
     if (results.get('hashtags') && results.get('hashtags').size > 0) {
       count += results.get('hashtags').size;
       hashtags = (
-        <section>
+        <section className='search-results__section'>
           <h5><Icon id='hashtag' fixedWidth /><FormattedMessage id='search_results.hashtags' defaultMessage='Hashtags' /></h5>
 
           {results.get('hashtags').map(hashtag => <Hashtag key={hashtag.get('name')} hashtag={hashtag} />)}
@@ -125,11 +131,9 @@ class SearchResults extends ImmutablePureComponent {
           <FormattedMessage id='search_results.total' defaultMessage='{count, number} {count, plural, one {result} other {results}}' values={{ count }} />
         </header>
 
-        <div className='search-results__contents'>
-          {accounts}
-          {statuses}
-          {hashtags}
-        </div>
+        {accounts}
+        {statuses}
+        {hashtags}
       </div>
     );
   };

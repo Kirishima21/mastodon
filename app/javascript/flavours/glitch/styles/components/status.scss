@@ -70,6 +70,7 @@
   p, pre, blockquote {
     margin-bottom: 20px;
     white-space: pre-wrap;
+    unicode-bidi: plaintext;
 
     &:last-child {
       margin-bottom: 0;
@@ -155,6 +156,7 @@
   a {
     color: $secondary-text-color;
     text-decoration: none;
+    unicode-bidi: isolate;
 
     &:hover {
       text-decoration: underline;
@@ -210,7 +212,7 @@
   display: inline-block;
   border-radius: 2px;
   background: lighten($ui-base-color, 30%);
-  border: none;
+  border: 0;
   color: $inverted-text-color;
   font-weight: 500;
   font-size: 11px;
@@ -390,8 +392,10 @@
       &:after {
         content: "";
         position: absolute;
-        top: 0; bottom: 0;
-        left: 0; right: 0;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
         background: linear-gradient(rgba($ui-base-color, 0), rgba($ui-base-color, 1));
         pointer-events: none;
       }
@@ -1094,6 +1098,7 @@ a.status-card.compact:hover {
     &__account {
       display: flex;
       text-decoration: none;
+      overflow: hidden;
     }
 
     .account__avatar {
@@ -1120,21 +1125,6 @@ a.status-card.compact:hover {
   .video-player,
   .audio-player {
     border-radius: 0;
-  }
-
-  @media screen and (max-width: 415px) {
-    width: 210px;
-    bottom: 10px;
-    right: 10px;
-
-    &__footer {
-      display: none;
-    }
-
-    .video-player,
-    .audio-player {
-      border-radius: 0 0 4px 4px;
-    }
   }
 }
 

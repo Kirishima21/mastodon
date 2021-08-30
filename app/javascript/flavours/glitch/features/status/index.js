@@ -30,8 +30,9 @@ import { muteStatus, unmuteStatus, deleteStatus } from 'flavours/glitch/actions/
 import { initMuteModal } from 'flavours/glitch/actions/mutes';
 import { initBlockModal } from 'flavours/glitch/actions/blocks';
 import { initReport } from 'flavours/glitch/actions/reports';
+import { initBoostModal } from 'flavours/glitch/actions/boosts';
 import { makeGetStatus } from 'flavours/glitch/selectors';
-import { ScrollContainer } from 'react-router-scroll-4';
+import ScrollContainer from 'flavours/glitch/containers/scroll_container';
 import ColumnBackButton from 'flavours/glitch/components/column_back_button';
 import ColumnHeader from '../../components/column_header';
 import StatusContainer from 'flavours/glitch/containers/status_container';
@@ -262,13 +263,13 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  handleModalReblog = (status) => {
+  handleModalReblog = (status, privacy) => {
     const { dispatch } = this.props;
 
     if (status.get('reblogged')) {
       dispatch(unreblog(status));
     } else {
-      dispatch(reblog(status));
+      dispatch(reblog(status, privacy));
     }
   }
 
@@ -276,11 +277,11 @@ class Status extends ImmutablePureComponent {
     const { settings, dispatch } = this.props;
 
     if (settings.get('confirm_boost_missing_media_description') && status.get('media_attachments').some(item => !item.get('description')) && !status.get('reblogged')) {
-      dispatch(openModal('BOOST', { status, onReblog: this.handleModalReblog, missingMediaDescription: true }));
+      dispatch(initBoostModal({ status, onReblog: this.handleModalReblog, missingMediaDescription: true }));
     } else if ((e && e.shiftKey) || !boostModal) {
       this.handleModalReblog(status);
     } else {
-      dispatch(openModal('BOOST', { status, onReblog: this.handleModalReblog }));
+      dispatch(initBoostModal({ status, onReblog: this.handleModalReblog }));
     }
   }
 
@@ -315,11 +316,11 @@ class Status extends ImmutablePureComponent {
   }
 
   handleOpenMedia = (media, index) => {
-    this.props.dispatch(openModal('MEDIA', { media, index }));
+    this.props.dispatch(openModal('MEDIA', { statusId: this.props.status.get('id'), media, index }));
   }
 
   handleOpenVideo = (media, options) => {
-    this.props.dispatch(openModal('VIDEO', { media, options }));
+    this.props.dispatch(openModal('VIDEO', { statusId: this.props.status.get('id'), media, options }));
   }
 
   handleHotkeyOpenMedia = e => {
@@ -328,9 +329,7 @@ class Status extends ImmutablePureComponent {
     e.preventDefault();
 
     if (status.get('media_attachments').size > 0) {
-      if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
-        // TODO: toggle play/paused?
-      } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
+      if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
         this.handleOpenVideo(status.getIn(['media_attachments', 0]), { startTime: 0 });
       } else {
         this.handleOpenMedia(status.get('media_attachments'), 0);
@@ -508,11 +507,6 @@ class Status extends ImmutablePureComponent {
     this.setState({ fullscreen: isFullscreen() });
   }
 
-  shouldUpdateScroll = (prevRouterProps, { location }) => {
-    if ((((prevRouterProps || {}).location || {}).state || {}).mastodonModalOpen) return false;
-    return !(location.state && location.state.mastodonModalOpen);
-  }
-
   render () {
     let ancestors, descendants;
     const { setExpansion } = this;
@@ -563,7 +557,7 @@ class Status extends ImmutablePureComponent {
           )}
         />
 
-        <ScrollContainer scrollKey='thread' shouldUpdateScroll={this.shouldUpdateScroll}>
+        <ScrollContainer scrollKey='thread'>
           <div className={classNames('scrollable', 'detailed-status__wrapper', { fullscreen })} ref={this.setRef}>
             {ancestors}
 

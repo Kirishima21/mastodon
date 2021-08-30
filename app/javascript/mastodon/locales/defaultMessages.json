@@ -242,7 +242,7 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "Hide {number, plural, one {image} other {images}}",
+        "defaultMessage": "{number, plural, one {Hide image} other {Hide images}}",
         "id": "media_gallery.toggle_visible"
       },
       {
@@ -653,6 +653,10 @@
   {
     "descriptors": [
       {
+        "defaultMessage": "Account suspended",
+        "id": "empty_column.account_suspended"
+      },
+      {
         "defaultMessage": "Profile unavailable",
         "id": "empty_column.account_unavailable"
       }
@@ -711,6 +715,10 @@
       {
         "defaultMessage": "Older toots",
         "id": "timeline_hint.resources.statuses"
+      },
+      {
+        "defaultMessage": "Account suspended",
+        "id": "empty_column.account_suspended"
       },
       {
         "defaultMessage": "Profile unavailable",
@@ -901,6 +909,10 @@
       {
         "defaultMessage": "Group",
         "id": "account.badges.group"
+      },
+      {
+        "defaultMessage": "Joined {date}",
+        "id": "account.joined"
       }
     ],
     "path": "app/javascript/mastodon/features/account/components/header.json"
@@ -1063,10 +1075,6 @@
         "id": "emoji_button.search"
       },
       {
-        "defaultMessage": "No emojos!! (╯°□°）╯︵ ┻━┻",
-        "id": "emoji_button.not_found"
-      },
-      {
         "defaultMessage": "Custom",
         "id": "emoji_button.custom"
       },
@@ -1109,6 +1117,10 @@
       {
         "defaultMessage": "Flags",
         "id": "emoji_button.flags"
+      },
+      {
+        "defaultMessage": "No matching emojis found",
+        "id": "emoji_button.not_found"
       }
     ],
     "path": "app/javascript/mastodon/features/compose/components/emoji_picker_dropdown.json"
@@ -1619,6 +1631,40 @@
   {
     "descriptors": [
       {
+        "defaultMessage": "Follow",
+        "id": "account.follow"
+      },
+      {
+        "defaultMessage": "Unfollow",
+        "id": "account.unfollow"
+      }
+    ],
+    "path": "app/javascript/mastodon/features/follow_recommendations/components/account.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Follow people you'd like to see posts from! Here are some suggestions.",
+        "id": "follow_recommendations.heading"
+      },
+      {
+        "defaultMessage": "Posts from people you follow will show up in chronological order on your home feed. Don't be afraid to make mistakes, you can unfollow people just as easily any time!",
+        "id": "follow_recommendations.lead"
+      },
+      {
+        "defaultMessage": "Looks like no suggestions could be generated for you. You can try using search to look for people you might know or explore trending hashtags.",
+        "id": "empty_column.follow_recommendations"
+      },
+      {
+        "defaultMessage": "Done",
+        "id": "follow_recommendations.done"
+      }
+    ],
+    "path": "app/javascript/mastodon/features/follow_recommendations/index.json"
+  },
+  {
+    "descriptors": [
+      {
         "defaultMessage": "Authorize",
         "id": "follow_request.authorize"
       },
@@ -1881,88 +1927,15 @@
         "id": "home.hide_announcements"
       },
       {
-        "defaultMessage": "Your home timeline is empty! Visit {public} or use search to get started and meet other users.",
+        "defaultMessage": "Your home timeline is empty! Follow more people to fill it up. {suggestions}",
         "id": "empty_column.home"
       },
       {
-        "defaultMessage": "the public timeline",
-        "id": "empty_column.home.public_timeline"
+        "defaultMessage": "See some suggestions",
+        "id": "empty_column.home.suggestions"
       }
     ],
     "path": "app/javascript/mastodon/features/home_timeline/index.json"
-  },
-  {
-    "descriptors": [
-      {
-        "defaultMessage": "First steps",
-        "id": "introduction.welcome.headline"
-      },
-      {
-        "defaultMessage": "Welcome to the fediverse! In a few moments, you'll be able to broadcast messages and talk to your friends across a wide variety of servers. But this server, {domain}, is special—it hosts your profile, so remember its name.",
-        "id": "introduction.welcome.text"
-      },
-      {
-        "defaultMessage": "Let's go!",
-        "id": "introduction.welcome.action"
-      },
-      {
-        "defaultMessage": "Home",
-        "id": "introduction.federation.home.headline"
-      },
-      {
-        "defaultMessage": "Posts from people you follow will appear in your home feed. You can follow anyone on any server!",
-        "id": "introduction.federation.home.text"
-      },
-      {
-        "defaultMessage": "Local",
-        "id": "introduction.federation.local.headline"
-      },
-      {
-        "defaultMessage": "Public posts from people on the same server as you will appear in the local timeline.",
-        "id": "introduction.federation.local.text"
-      },
-      {
-        "defaultMessage": "Federated",
-        "id": "introduction.federation.federated.headline"
-      },
-      {
-        "defaultMessage": "Public posts from other servers of the fediverse will appear in the federated timeline.",
-        "id": "introduction.federation.federated.text"
-      },
-      {
-        "defaultMessage": "Next",
-        "id": "introduction.federation.action"
-      },
-      {
-        "defaultMessage": "Reply",
-        "id": "introduction.interactions.reply.headline"
-      },
-      {
-        "defaultMessage": "You can reply to other people's and your own toots, which will chain them together in a conversation.",
-        "id": "introduction.interactions.reply.text"
-      },
-      {
-        "defaultMessage": "Boost",
-        "id": "introduction.interactions.reblog.headline"
-      },
-      {
-        "defaultMessage": "You can share other people's toots with your followers by boosting them.",
-        "id": "introduction.interactions.reblog.text"
-      },
-      {
-        "defaultMessage": "Favourite",
-        "id": "introduction.interactions.favourite.headline"
-      },
-      {
-        "defaultMessage": "You can save a toot for later, and let the author know that you liked it, by favouriting it.",
-        "id": "introduction.interactions.favourite.text"
-      },
-      {
-        "defaultMessage": "Finish toot-orial!",
-        "id": "introduction.interactions.action"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/introduction/index.json"
   },
   {
     "descriptors": [
@@ -2161,15 +2134,15 @@
       },
       {
         "defaultMessage": "Any followed user",
-        "id": "lists.replies_policy.all_replies"
+        "id": "lists.replies_policy.followed"
       },
       {
         "defaultMessage": "No one",
-        "id": "lists.replies_policy.no_replies"
+        "id": "lists.replies_policy.none"
       },
       {
         "defaultMessage": "Members of the list",
-        "id": "lists.replies_policy.list_replies"
+        "id": "lists.replies_policy.list"
       },
       {
         "defaultMessage": "Edit list",
@@ -2273,6 +2246,14 @@
         "id": "notifications.permission_denied"
       },
       {
+        "defaultMessage": "Desktop notifications are unavailable because the required permission has not been granted.",
+        "id": "notifications.permission_required"
+      },
+      {
+        "defaultMessage": "Unread notification markers",
+        "id": "notifications.column_settings.unread_markers.category"
+      },
+      {
         "defaultMessage": "Quick filter bar",
         "id": "notifications.column_settings.filter_bar.category"
       },
@@ -2356,6 +2337,15 @@
   {
     "descriptors": [
       {
+        "defaultMessage": "Grant permission.",
+        "id": "notifications.grant_permission"
+      }
+    ],
+    "path": "app/javascript/mastodon/features/notifications/components/grant_permission_button.json"
+  },
+  {
+    "descriptors": [
+      {
         "defaultMessage": "{name} favourited your status",
         "id": "notification.favourite"
       },
@@ -2388,6 +2378,10 @@
   },
   {
     "descriptors": [
+      {
+        "defaultMessage": "Close",
+        "id": "lightbox.close"
+      },
       {
         "defaultMessage": "Never miss a thing",
         "id": "notifications_permission_banner.title"
@@ -2431,7 +2425,7 @@
         "id": "notifications.mark_as_read"
       },
       {
-        "defaultMessage": "You don't have any notifications yet. Interact with others to start the conversation.",
+        "defaultMessage": "You don't have any notifications yet. When other people interact with you, you will see it here.",
         "id": "empty_column.notifications"
       }
     ],
@@ -2474,9 +2468,22 @@
       {
         "defaultMessage": "Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?",
         "id": "confirmations.reply.message"
+      },
+      {
+        "defaultMessage": "Expand this status",
+        "id": "status.open"
       }
     ],
     "path": "app/javascript/mastodon/features/picture_in_picture/components/footer.json"
+  },
+  {
+    "descriptors": [
+      {
+        "defaultMessage": "Close",
+        "id": "lightbox.close"
+      }
+    ],
+    "path": "app/javascript/mastodon/features/picture_in_picture/components/header.json"
   },
   {
     "descriptors": [
@@ -2754,15 +2761,6 @@
   {
     "descriptors": [
       {
-        "defaultMessage": "View context",
-        "id": "lightbox.view_context"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/ui/components/audio_modal.json"
-  },
-  {
-    "descriptors": [
-      {
         "defaultMessage": "Are you sure you want to block {name}?",
         "id": "confirmations.block.message"
       },
@@ -3036,10 +3034,6 @@
       {
         "defaultMessage": "Next",
         "id": "lightbox.next"
-      },
-      {
-        "defaultMessage": "View context",
-        "id": "lightbox.view_context"
       }
     ],
     "path": "app/javascript/mastodon/features/ui/components/media_modal.json"
@@ -3204,15 +3198,6 @@
       }
     ],
     "path": "app/javascript/mastodon/features/ui/components/upload_area.json"
-  },
-  {
-    "descriptors": [
-      {
-        "defaultMessage": "View context",
-        "id": "lightbox.view_context"
-      }
-    ],
-    "path": "app/javascript/mastodon/features/ui/components/video_modal.json"
   },
   {
     "descriptors": [

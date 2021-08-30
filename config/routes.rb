@@ -3,14 +3,12 @@
 require 'sidekiq_unique_jobs/web'
 require 'sidekiq-scheduler/web'
 
-Sidekiq::Web.set :session_secret, Rails.application.secrets[:secret_key_base]
-
 Rails.application.routes.draw do
   root 'home#index'
 
   mount LetterOpenerWeb::Engine, at: 'letter_opener' if Rails.env.development?
 
-  health_check_routes
+  get 'health', to: 'health#show'
 
   authenticate :user, lambda { |u| u.admin? } do
     mount Sidekiq::Web, at: 'sidekiq', as: :sidekiq
@@ -99,8 +97,6 @@ Rails.application.routes.draw do
   post '/interact/:id', to: 'remote_interaction#create'
 
   get '/explore', to: 'directories#index', as: :explore
-  get '/explore/:id', to: 'directories#show', as: :explore_hashtag
-
   get '/settings', to: redirect('/settings/profile')
 
   namespace :settings do
@@ -125,6 +121,7 @@ Rails.application.routes.draw do
       resources :mutes, only: :index, controller: :muted_accounts
       resources :lists, only: :index, controller: :lists
       resources :domain_blocks, only: :index, controller: :blocked_domains
+      resources :bookmarks, only: :index, controller: :bookmarks
     end
 
     resources :two_factor_authentication_methods, only: [:index] do
@@ -169,6 +166,7 @@ Rails.application.routes.draw do
     resources :aliases, only: [:index, :create, :destroy]
     resources :sessions, only: [:destroy]
     resources :featured_tags, only: [:index, :create, :destroy]
+    resources :login_activities, only: [:index]
   end
 
   resources :media, only: [:show] do
@@ -180,6 +178,7 @@ Rails.application.routes.draw do
   resources :invites, only: [:index, :create, :destroy]
   resources :filters, except: [:show]
   resource :relationships, only: [:show, :update]
+  resource :statuses_cleanup, controller: :statuses_cleanup, only: [:show, :update]
 
   get '/public', to: 'public_timelines#show', as: :public_timeline
   get '/media_proxy/:id/(*any)', to: 'media_proxy#show', as: :media_proxy
@@ -220,7 +219,15 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :instances, only: [:index, :show], constraints: { id: /[^\/]+/ }
+    resources :instances, only: [:index, :show], constraints: { id: /[^\/]+/ } do
+      member do
+        post :clear_delivery_errors
+        post :restart_delivery
+        post :stop_delivery
+      end
+    end
+
+    resources :rules
 
     resources :reports, only: [:index, :show] do
       member do
@@ -279,6 +286,7 @@ Rails.application.routes.draw do
 
     resources :users, only: [] do
       resource :two_factor_authentication, only: [:destroy]
+      resource :sign_in_token_authentication, only: [:create, :destroy]
     end
 
     resources :custom_emojis, only: [:index, :new, :create] do
@@ -294,6 +302,7 @@ Rails.application.routes.draw do
     end
 
     resources :account_moderation_notes, only: [:create, :destroy]
+    resource :follow_recommendations, only: [:show, :update]
 
     resources :tags, only: [:index, :show, :update] do
       collection do
@@ -404,9 +413,14 @@ Rails.application.routes.draw do
 
       resources :apps, only: [:create]
 
+      namespace :emails do
+        resources :confirmations, only: [:create]
+      end
+
       resource :instance, only: [:show] do
         resources :peers, only: [:index], controller: 'instances/peers'
         resource :activity, only: [:show], controller: 'instances/activity'
+        resources :rules, only: [:index], controller: 'instances/rules'
       end
 
       resource :domain_blocks, only: [:show, :create, :destroy]
@@ -434,6 +448,7 @@ Rails.application.routes.draw do
         get :verify_credentials, to: 'credentials#show'
         patch :update_credentials, to: 'credentials#update'
         resource :search, only: :show, controller: :search
+        resource :lookup, only: :show, controller: :lookup
         resources :relationships, only: :index
       end
 
@@ -505,6 +520,7 @@ Rails.application.routes.draw do
     namespace :v2 do
       resources :media, only: [:create]
       get '/search', to: 'search#index', as: :search
+      resources :suggestions, only: [:index]
     end
 
     namespace :web do

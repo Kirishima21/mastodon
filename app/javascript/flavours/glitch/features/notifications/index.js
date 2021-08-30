@@ -37,10 +37,16 @@ const messages = defineMessages({
   markAsRead : { id: 'notifications.mark_as_read', defaultMessage: 'Mark every notification as read' },
 });
 
+const getExcludedTypes = createSelector([
+  state => state.getIn(['settings', 'notifications', 'shows']),
+], (shows) => {
+  return ImmutableList(shows.filter(item => !item).keys());
+});
+
 const getNotifications = createSelector([
   state => state.getIn(['settings', 'notifications', 'quickFilter', 'show']),
   state => state.getIn(['settings', 'notifications', 'quickFilter', 'active']),
-  state => ImmutableList(state.getIn(['settings', 'notifications', 'shows']).filter(item => !item).keys()),
+  getExcludedTypes,
   state => state.getIn(['notifications', 'items']),
 ], (showFilterBar, allowedType, excludedTypes, notifications) => {
   if (!showFilterBar || allowedType === 'all') {
@@ -61,9 +67,9 @@ const mapStateToProps = state => ({
   hasMore: state.getIn(['notifications', 'hasMore']),
   numPending: state.getIn(['notifications', 'pendingItems'], ImmutableList()).size,
   notifCleaningActive: state.getIn(['notifications', 'cleaningMode']),
-  lastReadId: state.getIn(['local_settings', 'notifications', 'show_unread']) ? state.getIn(['notifications', 'readMarkerId']) : '0',
-  canMarkAsRead: state.getIn(['local_settings', 'notifications', 'show_unread']) && state.getIn(['notifications', 'readMarkerId']) !== '0' && getNotifications(state).some(item => item !== null && compareId(item.get('id'), state.getIn(['notifications', 'readMarkerId'])) > 0),
-  needsNotificationPermission: state.getIn(['settings', 'notifications', 'alerts']).includes(true) && state.getIn(['notifications', 'browserSupport']) && state.getIn(['notifications', 'browserPermission']) === 'default',
+  lastReadId: state.getIn(['settings', 'notifications', 'showUnread']) ? state.getIn(['notifications', 'readMarkerId']) : '0',
+  canMarkAsRead: state.getIn(['settings', 'notifications', 'showUnread']) && state.getIn(['notifications', 'readMarkerId']) !== '0' && getNotifications(state).some(item => item !== null && compareId(item.get('id'), state.getIn(['notifications', 'readMarkerId'])) > 0),
+  needsNotificationPermission: state.getIn(['settings', 'notifications', 'alerts']).includes(true) && state.getIn(['notifications', 'browserSupport']) && state.getIn(['notifications', 'browserPermission']) === 'default' && !state.getIn(['settings', 'notifications', 'dismissPermissionBanner']),
 });
 
 /* glitch */
@@ -93,7 +99,6 @@ class Notifications extends React.PureComponent {
     notifications: ImmutablePropTypes.list.isRequired,
     showFilterBar: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired,
-    shouldUpdateScroll: PropTypes.func,
     intl: PropTypes.object.isRequired,
     isLoading: PropTypes.bool,
     isUnread: PropTypes.bool,
@@ -214,11 +219,11 @@ class Notifications extends React.PureComponent {
   }
 
   render () {
-    const { intl, notifications, shouldUpdateScroll, isLoading, isUnread, columnId, multiColumn, hasMore, numPending, showFilterBar, lastReadId, canMarkAsRead, needsNotificationPermission } = this.props;
+    const { intl, notifications, isLoading, isUnread, columnId, multiColumn, hasMore, numPending, showFilterBar, lastReadId, canMarkAsRead, needsNotificationPermission } = this.props;
     const { notifCleaning, notifCleaningActive } = this.props;
     const { animatingNCD } = this.state;
     const pinned = !!columnId;
-    const emptyMessage = <FormattedMessage id='empty_column.notifications' defaultMessage="You don't have any notifications yet. Interact with others to start the conversation." />;
+    const emptyMessage = <FormattedMessage id='empty_column.notifications' defaultMessage="You don't have any notifications yet. When other people interact with you, you will see it here." />;
 
     let scrollableContent = null;
 
@@ -267,7 +272,6 @@ class Notifications extends React.PureComponent {
         onLoadPending={this.handleLoadPending}
         onScrollToTop={this.handleScrollToTop}
         onScroll={this.handleScroll}
-        shouldUpdateScroll={shouldUpdateScroll}
         bindToDocument={!multiColumn}
       >
         {scrollableContent}

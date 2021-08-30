@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import 'wicg-inert';
 import { createBrowserHistory } from 'history';
+import { multiply } from 'color-blend';
 
 export default class ModalRoot extends React.PureComponent {
   static contextTypes = {
@@ -11,14 +12,15 @@ export default class ModalRoot extends React.PureComponent {
   static propTypes = {
     children: PropTypes.node,
     onClose: PropTypes.func.isRequired,
+    backgroundColor: PropTypes.shape({
+      r: PropTypes.number,
+      g: PropTypes.number,
+      b: PropTypes.number,
+    }),
     noEsc: PropTypes.bool,
   };
 
-  state = {
-    revealed: !!this.props.children,
-  };
-
-  activeElement = this.state.revealed ? document.activeElement : null;
+  activeElement = this.props.children ? document.activeElement : null;
 
   handleKeyUp = (e) => {
     if ((e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27)
@@ -59,8 +61,6 @@ export default class ModalRoot extends React.PureComponent {
       this.activeElement = document.activeElement;
 
       this.getSiblings().forEach(sibling => sibling.setAttribute('inert', true));
-    } else if (!nextProps.children) {
-      this.setState({ revealed: false });
     }
   }
 
@@ -74,17 +74,15 @@ export default class ModalRoot extends React.PureComponent {
       Promise.resolve().then(() => {
         this.activeElement.focus({ preventScroll: true });
         this.activeElement = null;
-      }).catch((error) => {
-        console.error(error);
-      });
+      }).catch(console.error);
 
-      this.handleModalClose();
+      this._handleModalClose();
+    }
+    if (this.props.children && !prevProps.children) {
+      this._handleModalOpen();
     }
     if (this.props.children) {
-      requestAnimationFrame(() => {
-        this.setState({ revealed: true });
-      });
-      if (!prevProps.children) this.handleModalOpen();
+      this._ensureHistoryBuffer();
     }
   }
 
@@ -93,22 +91,29 @@ export default class ModalRoot extends React.PureComponent {
     window.removeEventListener('keydown', this.handleKeyDown);
   }
 
-  handleModalClose () {
+  _handleModalOpen () {
+    this._modalHistoryKey = Date.now();
+    this.unlistenHistory = this.history.listen((_, action) => {
+      if (action === 'POP') {
+        this.props.onClose();
+      }
+    });
+  }
+
+  _handleModalClose () {
     this.unlistenHistory();
 
-    const state = this.history.location.state;
-    if (state && state.mastodonModalOpen) {
+    const { state } = this.history.location;
+    if (state && state.mastodonModalKey === this._modalHistoryKey) {
       this.history.goBack();
     }
   }
 
-  handleModalOpen () {
-    const history = this.history;
-    const state   = {...history.location.state, mastodonModalOpen: true};
-    history.push(history.location.pathname, state);
-    this.unlistenHistory = history.listen(() => {
-      this.props.onClose();
-    });
+  _ensureHistoryBuffer () {
+    const { pathname, state } = this.history.location;
+    if (!state || state.mastodonModalKey !== this._modalHistoryKey) {
+      this.history.push(pathname, { ...state, mastodonModalKey: this._modalHistoryKey });
+    }
   }
 
   getSiblings = () => {
@@ -121,7 +126,6 @@ export default class ModalRoot extends React.PureComponent {
 
   render () {
     const { children, onClose } = this.props;
-    const { revealed } = this.state;
     const visible = !!children;
 
     if (!visible) {
@@ -130,10 +134,16 @@ export default class ModalRoot extends React.PureComponent {
       );
     }
 
+    let backgroundColor = null;
+
+    if (this.props.backgroundColor) {
+      backgroundColor = multiply({ ...this.props.backgroundColor, a: 1 }, { r: 0, g: 0, b: 0, a: 0.7 });
+    }
+
     return (
-      <div className='modal-root' ref={this.setRef} style={{ opacity: revealed ? 1 : 0 }}>
+      <div className='modal-root' ref={this.setRef}>
         <div style={{ pointerEvents: visible ? 'auto' : 'none' }}>
-          <div role='presentation' className='modal-root__overlay' onClick={onClose} />
+          <div role='presentation' className='modal-root__overlay' onClick={onClose} style={{ backgroundColor: backgroundColor ? `rgba(${backgroundColor.r}, ${backgroundColor.g}, ${backgroundColor.b}, 0.7)` : null }} />
           <div role='dialog' className='modal-root__container'>{children}</div>
         </div>
       </div>

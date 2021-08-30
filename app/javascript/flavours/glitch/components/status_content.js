@@ -1,7 +1,6 @@
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
-import { isRtl } from 'flavours/glitch/util/rtl';
 import { FormattedMessage } from 'react-intl';
 import Permalink from './permalink';
 import classnames from 'classnames';
@@ -233,35 +232,38 @@ export default class StatusContent extends React.PureComponent {
     });
   }
 
-  _updateStatusEmojis () {
-    const node = this.node;
-
-    if (!node || autoPlayGif) {
+  handleMouseEnter = ({ currentTarget }) => {
+    if (autoPlayGif) {
       return;
     }
 
-    const emojis = node.querySelectorAll('.custom-emoji');
+    const emojis = currentTarget.querySelectorAll('.custom-emoji');
 
     for (var i = 0; i < emojis.length; i++) {
       let emoji = emojis[i];
-      if (emoji.classList.contains('status-emoji')) {
-        continue;
-      }
-      emoji.classList.add('status-emoji');
+      emoji.src = emoji.getAttribute('data-original');
+    }
+  }
 
-      emoji.addEventListener('mouseenter', this.handleEmojiMouseEnter, false);
-      emoji.addEventListener('mouseleave', this.handleEmojiMouseLeave, false);
+  handleMouseLeave = ({ currentTarget }) => {
+    if (autoPlayGif) {
+      return;
+    }
+
+    const emojis = currentTarget.querySelectorAll('.custom-emoji');
+
+    for (var i = 0; i < emojis.length; i++) {
+      let emoji = emojis[i];
+      emoji.src = emoji.getAttribute('data-static');
     }
   }
 
   componentDidMount () {
     this._updateStatusLinks();
-    this._updateStatusEmojis();
   }
 
   componentDidUpdate () {
     this._updateStatusLinks();
-    this._updateStatusEmojis();
     if (this.props.onUpdate) this.props.onUpdate();
   }
 
@@ -285,14 +287,6 @@ export default class StatusContent extends React.PureComponent {
     }
   }
 
-  handleEmojiMouseEnter = ({ target }) => {
-    target.src = target.getAttribute('data-original');
-  }
-
-  handleEmojiMouseLeave = ({ target }) => {
-    target.src = target.getAttribute('data-static');
-  }
-
   handleMouseDown = (e) => {
     this.startXY = [e.clientX, e.clientY];
   }
@@ -308,8 +302,8 @@ export default class StatusContent extends React.PureComponent {
     const [ deltaX, deltaY ] = [Math.abs(e.clientX - startX), Math.abs(e.clientY - startY)];
 
     let element = e.target;
-    while (element) {
-      if (['button', 'video', 'a', 'label', 'canvas'].includes(element.localName)) {
+    while (element !== e.currentTarget) {
+      if (['button', 'video', 'a', 'label', 'canvas'].includes(element.localName) || element.getAttribute('role') === 'button') {
         return;
       }
       element = element.parentNode;
@@ -332,10 +326,6 @@ export default class StatusContent extends React.PureComponent {
     }
   }
 
-  setRef = (c) => {
-    this.node = c;
-  }
-
   setContentsRef = (c) => {
     this.contentsNode = c;
   }
@@ -355,15 +345,10 @@ export default class StatusContent extends React.PureComponent {
 
     const content = { __html: status.get('contentHtml') };
     const spoilerContent = { __html: status.get('spoilerHtml') };
-    const directionStyle = { direction: 'ltr' };
     const classNames = classnames('status__content', {
       'status__content--with-action': parseClick && !disabled,
       'status__content--with-spoiler': status.get('spoiler_text').length > 0,
     });
-
-    if (isRtl(status.get('search_index'))) {
-      directionStyle.direction = 'rtl';
-    }
 
     if (status.get('spoiler_text').length > 0) {
       let mentionsPlaceholder = '';
@@ -407,11 +392,11 @@ export default class StatusContent extends React.PureComponent {
       }
 
       return (
-        <div className={classNames} tabIndex='0' onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} ref={this.setRef}>
+        <div className={classNames} tabIndex='0' onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp}>
           <p
             style={{ marginBottom: hidden && status.get('mentions').isEmpty() ? '0px' : null }}
           >
-            <span dangerouslySetInnerHTML={spoilerContent} />
+            <span dangerouslySetInnerHTML={spoilerContent} className='translate' />
             {' '}
             <button tabIndex='0' className='status__content__spoiler-link' onClick={this.handleSpoilerClick}>
               {toggleText}
@@ -424,10 +409,11 @@ export default class StatusContent extends React.PureComponent {
             <div
               ref={this.setContentsRef}
               key={`contents-${tagLinks}`}
-              style={directionStyle}
               tabIndex={!hidden ? 0 : null}
               dangerouslySetInnerHTML={content}
-              className='status__content__text'
+              className='status__content__text translate'
+              onMouseEnter={this.handleMouseEnter}
+              onMouseLeave={this.handleMouseLeave}
             />
             {media}
           </div>
@@ -438,18 +424,18 @@ export default class StatusContent extends React.PureComponent {
       return (
         <div
           className={classNames}
-          style={directionStyle}
           onMouseDown={this.handleMouseDown}
           onMouseUp={this.handleMouseUp}
           tabIndex='0'
-          ref={this.setRef}
         >
           <div
             ref={this.setContentsRef}
             key={`contents-${tagLinks}-${rewriteMentions}`}
             dangerouslySetInnerHTML={content}
-            className='status__content__text'
+            className='status__content__text translate'
             tabIndex='0'
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
           />
           {media}
         </div>
@@ -458,11 +444,17 @@ export default class StatusContent extends React.PureComponent {
       return (
         <div
           className='status__content'
-          style={directionStyle}
           tabIndex='0'
-          ref={this.setRef}
         >
-          <div ref={this.setContentsRef} key={`contents-${tagLinks}`} className='status__content__text' dangerouslySetInnerHTML={content} tabIndex='0' />
+          <div
+            ref={this.setContentsRef}
+            key={`contents-${tagLinks}`}
+            className='status__content__text translate'
+            dangerouslySetInnerHTML={content}
+            tabIndex='0'
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
+          />
           {media}
         </div>
       );

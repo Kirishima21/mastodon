@@ -2,7 +2,6 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 import configureStore from 'flavours/glitch/store/configureStore';
-import { showOnboardingOnce } from 'flavours/glitch/actions/onboarding';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { ScrollContext } from 'react-router-scroll-4';
 import UI from 'flavours/glitch/features/ui';
@@ -36,7 +35,6 @@ export default class Mastodon extends React.PureComponent {
 
   componentDidMount() {
     this.disconnect = store.dispatch(connectUserStream());
-    store.dispatch(showOnboardingOnce());
   }
 
   componentWillUnmount () {
@@ -47,7 +45,7 @@ export default class Mastodon extends React.PureComponent {
   }
 
   shouldUpdateScroll (_, { location }) {
-    return !(location.state && location.state.mastodonModalOpen);
+    return !(location.state?.mastodonModalKey);
   }
 
   render () {

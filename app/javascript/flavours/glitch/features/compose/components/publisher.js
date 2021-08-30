@@ -53,7 +53,7 @@ class Publisher extends ImmutablePureComponent {
 
     const diff = maxChars - length(countText || '');
     const computedClass = classNames('composer--publisher', {
-      disabled: disabled || diff < 0,
+      disabled: disabled,
       over: diff < 0,
     });
 
@@ -85,7 +85,7 @@ class Publisher extends ImmutablePureComponent {
         {sideArm && sideArm !== 'none' ? (
           <Button
             className='side_arm'
-            disabled={disabled || diff < 0}
+            disabled={disabled}
             onClick={onSecondarySubmit}
             style={{ padding: null }}
             text={
@@ -163,7 +163,7 @@ class Publisher extends ImmutablePureComponent {
           }()}
           title={`${intl.formatMessage(messages.publish)}: ${intl.formatMessage({ id: `privacy.${privacy}.short` })}`}
           onClick={this.handleSubmit}
-          disabled={disabled || diff < 0}
+          disabled={disabled}
         />
       </div>
     );
