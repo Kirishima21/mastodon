@@ -2,7 +2,6 @@
 
 require 'singleton'
 require_relative './formatter_markdown'
-require_relative './sanitize_config'
 
 class HTMLRenderer < Redcarpet::Render::HTML
   def block_code(code, language)
@@ -64,7 +63,7 @@ class Formatter
     html = avoid_bbcode(html)
     html.gsub!(/(\A|[^\(])(https?:\/\/([^\n<>"\[\] 　]+))/){"#{$1}[#{$3[0, 20]}](#{$2})"} if status.content_type == 'text/markdown'
 
-    mdFormatter = Formatter_Markdown.new(html)
+    mdFormatter = FormatterMarkdown.new(html)
 
     html = "RT @#{prepend_reblog} #{html}" if prepend_reblog    
     html = mdFormatter.formatted if status.content_type == 'text/markdown'

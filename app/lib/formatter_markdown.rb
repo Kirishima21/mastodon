@@ -2,7 +2,7 @@ require 'uri'
 require 'redcarpet'
 require 'redcarpet/render_strip'
 
-class Formatter_Markdown
+class FormatterMarkdown
     def initialize(html)
         @html = html.dup
     end
