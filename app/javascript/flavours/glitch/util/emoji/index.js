@@ -115,6 +115,23 @@ const emojify_astarte = (str, customEmojis = {}) => [
   {re: /:全裸報告:/g, file: '2f18e130e4bfb19b.png', attrs: 'class="astarte-stamp"'},
   {re: /:NFC襲来:/g, file: '6537d027313fd066.png', attrs: 'class="astarte-stamp"'},
   {re: /:椅子転発生:/g, file: '889f2f40ede5d058.png', attrs: 'class="astarte-stamp"'},
+  {re: /:ねれない:/g, file: 'nerenine.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:配信します:/g, file: 'haishin.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:ぴえん:/g, file: 'pien.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:踊る:/g, file: 'odoru.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:わびる:/g, file: 'wabiru.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:よろこぶ:/g, file: 'yorokobu.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:とどかない:/g, file: 'todokanai.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:こしかける:/g, file: 'kosikakeru.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:52000rpm:/g, file: '52000rpm.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:花束:/g, file: 'hanataba.png', attrs: 'class="astarte-stamp"'},
+  {re: /:花束2:/g, file: 'hanataba2.png', attrs: 'class="astarte-stamp"'},
+  {re: /:花束3:/g, file: 'hanataba3.png', attrs: 'class="astarte-stamp"'},
+  {re: /:4周年:/g, file: '4years.png', attrs: 'class="astarte-stamp"'},
+  {re: /:4周年1:/g, file: '4years1.png', attrs: 'class="astarte-stamp"'},
+  {re: /:4周年2:/g, file: '4years2.png', attrs: 'class="astarte-stamp"'},
+  {re: /:4周年3:/g, file: '4years3.png', attrs: 'class="astarte-stamp"'},
+  {re: /:スクワット:/g, file: 'sukuwatto.jpg', attrs: 'class="astarte-stamp"'},
 ].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="/emoji/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
 
 export default emojify_astarte;
