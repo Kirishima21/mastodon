@@ -21,7 +21,7 @@
 #
 
 class CustomEmoji < ApplicationRecord
-  LOCAL_LIMIT = (ENV['MAX_EMOJI_SIZE'] || 50.kilobytes).to_i
+  LOCAL_LIMIT = (ENV['MAX_EMOJI_SIZE'] || 150.kilobytes).to_i
   LIMIT       = [LOCAL_LIMIT, (ENV['MAX_REMOTE_EMOJI_SIZE'] || 200.kilobytes).to_i].max
 
   SHORTCODE_RE_FRAGMENT = '[a-zA-Z0-9_]{2,}'
