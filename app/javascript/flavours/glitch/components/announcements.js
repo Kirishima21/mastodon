@@ -117,7 +117,7 @@ class Announcements extends React.PureComponent {
           </div>
         </li>
         <li>
-          <Collapsable isVisible={this.state.showId === 'stamp'} fullHeight={920} minHeight={22} >
+          <Collapsable isVisible={this.state.showId === 'stamp'} fullHeight={860} minHeight={22} >
             <div className='announcements__astarte__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.stamp, { domain: document.title }))}<br />
                 <br />
@@ -174,7 +174,7 @@ class Announcements extends React.PureComponent {
           </div>
         </li>
         <li>
-          <Collapsable isVisible={this.state.showId === 'bbcode'} fullHeight={380} minHeight={20} >
+          <Collapsable isVisible={this.state.showId === 'bbcode'} fullHeight={420} minHeight={20} >
             <div className='announcements__astarte__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.bbcode, { domain: document.title }))}<br />
                 <br />
@@ -192,8 +192,9 @@ class Announcements extends React.PureComponent {
 			  [colorhex=A55A4A]色変更02[/colorhex]<br />
 			  [code]コード[/code]<br />
 			  [quote]引用[/quote]<br />
-        [youtube]動画ID[/youtube]<br />
         [faicon]coffee[/faicon](<span class='fa fa-coffee' />の例)<br />
+        ~~~~~~~~特殊~~~~~~~<br/ >
+        [flower]TEXT[/flower]<br />
                 <a href='https://yuzulabo.github.io/generate-faicon/' target='_blank'>faiconを生成</a>
                 <a href='https://fontawesome.com/v4.7.0/icons/' target='_blank'>faicon アイコン一覧</a><br /><br />
               </p>

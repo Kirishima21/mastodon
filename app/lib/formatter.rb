@@ -557,7 +557,11 @@ class Formatter
             { :token => :width, :optional => true, :default => 400 },
             { :token => :height, :optional => true, :default => 320 }
           ]},
-      }, :enable, :i, :b, :quote, :code, :u, :s, :spin, :pulse, :flip, :large, :colorhex, :faicon, :youtube, :marq, :rotate, :rotatez)
+        :flower => {
+          :html_open => '<span class="fa-flower-gift">', :html_close => '</span>',
+          :description => 'Make text flower gift',
+          :example => 'This is [flower]spin[/flower].'},
+      }, :enable, :i, :b, :quote, :code, :u, :s, :spin, :pulse, :flip, :large, :colorhex, :faicon, :youtube, :marq, :rotate, :rotatez, :flower)
     rescue Exception => e
     end
     html

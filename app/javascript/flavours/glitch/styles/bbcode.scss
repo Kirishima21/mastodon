@@ -91,15 +91,15 @@ iframe {
   overflow: hidden;
   margin-bottom: 0px;
   position: relative;
-  }
+}
   
-  .marquee .bbcode-marq-lateral:after {
+.marquee .bbcode-marq-lateral:after {
   content:"";
   white-space: nowrap;
   padding-right: 0px;
-  }
+}
   
-  .marquee .bbcode-marq-lateral {
+.marquee .bbcode-marq-lateral {
   margin: 0;
   padding-left: 100%;
   display: inline-block;
@@ -124,24 +124,30 @@ iframe {
     animation-timing-function:linear;
     animation-duration:10s;
     animation-iteration-count:infinite;
-  }
-  @-webkit-keyframes marquee {
-    from   { -webkit-transform: translate(0%);}
-    99%,to { -webkit-transform: translate(-100%);}
-  }
-  @-moz-keyframes marquee {
-    from   { -moz-transform: translate(0%);}
-    99%,to { -moz-transform: translate(-100%);}
-  }
-  @-ms-keyframes marquee {
-    from   { -ms-transform: translate(0%);}
-    99%,to { -ms-transform: translate(-100%);}
-  }
-  @-o-keyframes marquee {
-    from   { -o-transform: translate(0%);}
-    99%,to { -o-transform: translate(-100%);}
-  }
-  @keyframes marquee {
-    from   { transform: translate(0%);}
-    99%,to { transform: translate(-100%);}
-  }
+}
+@-webkit-keyframes marquee {
+  from   { -webkit-transform: translate(0%);}
+  99%,to { -webkit-transform: translate(-100%);}
+}
+@-moz-keyframes marquee {
+  from   { -moz-transform: translate(0%);}
+  99%,to { -moz-transform: translate(-100%);}
+}
+@-ms-keyframes marquee {
+  from   { -ms-transform: translate(0%);}
+  99%,to { -ms-transform: translate(-100%);}
+}
+@-o-keyframes marquee {
+  from   { -o-transform: translate(0%);}
+  99%,to { -o-transform: translate(-100%);}
+}
+@keyframes marquee {
+  from   { transform: translate(0%);}
+  99%,to { transform: translate(-100%);}
+}
+
+.fa-flower-gift {
+  position: absolute;
+  right: 30px;
+  top: 70px;
+}
