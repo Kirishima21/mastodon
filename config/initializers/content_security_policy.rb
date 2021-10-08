@@ -7,6 +7,7 @@ if Rails.env.production?
   data_hosts = [assets_host]
   cloudflarecdn = 'https://cdnjs.cloudflare.com'
   mathjax = 'https://cdn.mathjax.org'
+  cdn_hosts = 'https://media-astarte.global.ssl.fastly.net'
 
   if ENV['S3_ENABLED'] == 'true'
     attachments_host = "https://#{ENV['S3_ALIAS_HOST'] || ENV['S3_CLOUDFRONT_HOST'] || ENV['S3_HOSTNAME'] || "s3-#{ENV['S3_REGION'] || 'us-east-1'}.amazonaws.com"}"
@@ -37,7 +38,7 @@ if Rails.env.production?
     p.font_src        :self, assets_host, cloudflarecdn
     p.img_src         :self, :data, :https, :blob, *data_hosts, cloudflarecdn, mathjax
     p.style_src       :self, :unsafe_inline, assets_host, cloudflarecdn, mathjax
-    p.media_src       :self, :https, :http, :data, *data_hosts, cloudflarecdn, mathjax
+    p.media_src       :self, :https, :http, :data, *data_hosts, cloudflarecdn, mathjax, cdn_hosts
     p.frame_src       :self, :https
     p.child_src       :self, :blob, assets_host
     p.worker_src      :self, :blob, assets_host
