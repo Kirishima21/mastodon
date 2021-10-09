@@ -34,10 +34,10 @@ if Rails.env.production?
     p.base_uri        :none
     p.default_src     :none
     p.frame_ancestors :none
-    p.script_src      :self, :unsafe_inline, assets_host, cloudflarecdn, mathjax
+    p.script_src      :self, :unsafe-inline, assets_host, cloudflarecdn, mathjax
     p.font_src        :self, assets_host, cloudflarecdn
     p.img_src         :self, :data, :https, :blob, *data_hosts, cloudflarecdn, mathjax
-    p.style_src       :self, :unsafe_inline, assets_host, cloudflarecdn, mathjax
+    p.style_src       :self, :unsafe-inline, assets_host, cloudflarecdn, mathjax
     p.media_src       :self, :https, :http, :data, *data_hosts, cloudflarecdn, mathjax, cdn_hosts
     p.frame_src       :self, :https
     p.child_src       :self, :blob, assets_host
