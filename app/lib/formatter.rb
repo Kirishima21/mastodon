@@ -512,7 +512,7 @@ class Formatter
           :quick_param_format_description => 'The size parameter \'%param%\' is incorrect, a number is expected',
           :param_tokens => [{:token => :size}]},
         :color => {
-          :html_open => '<span style="color: %color%;">', :html_close => '</span>',
+          :html_open => '<span style="color: %color% !important;">', :html_close => '</span>',
           :description => 'Change the color of the text',
           :example => '[color=red]This is red[/color]',
           :allow_quick_param => true, :allow_between_as_param => false,
@@ -533,7 +533,7 @@ class Formatter
             :quick_param_format => /([0-9]{1,3})/,
             :param_tokens => [{:token => :rotatez}]},
         :colorhex => {
-          :html_open => '<span style="color: #%colorcode%">', :html_close => '</span>',
+          :html_open => '<span style="color: #%colorcode% !important">', :html_close => '</span>',
           :description => 'Use color code',
           :example => '[colorhex=ffffff]White text[/colorhex]',
           :allow_quick_param => true, :allow_between_as_param => false,
