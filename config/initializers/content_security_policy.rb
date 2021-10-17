@@ -35,14 +35,14 @@ if Rails.env.production?
     p.default_src     :none
     p.frame_ancestors :none
     p.script_src      :self, :unsafe_inline, assets_host, cloudflarecdn, mathjax
-    p.font_src        :self, assets_host, cloudflarecdn
-    p.img_src         :self, :data, :https, :blob, *data_hosts, cloudflarecdn, mathjax
+    p.font_src        :self, :unsafe_inline, assets_host, cloudflarecdn
+    p.img_src         :self, :unsafe_inline, :data, :https, :blob, *data_hosts, cloudflarecdn, mathjax
     p.style_src       :self, :unsafe_inline, assets_host, cloudflarecdn, mathjax
-    p.media_src       :self, :https, :http, :data, *data_hosts, cloudflarecdn, mathjax, cdn_hosts
+    p.media_src       :self, :unsafe_inline, :https, :http, :data, *data_hosts, cloudflarecdn, mathjax, cdn_hosts
     p.frame_src       :self, :https
-    p.child_src       :self, :blob, assets_host
+    p.child_src       :self, :unsafe_inline, :blob, assets_host
     p.worker_src      :self, :blob, assets_host
-    p.connect_src     :self, :blob, :data, Rails.configuration.x.streaming_api_base_url, *data_hosts, cloudflarecdn, mathjax
+    p.connect_src     :self, :unsafe_inline, :blob, :data, Rails.configuration.x.streaming_api_base_url, *data_hosts, cloudflarecdn, mathjax
     p.manifest_src    :self, assets_host
   end
 end
