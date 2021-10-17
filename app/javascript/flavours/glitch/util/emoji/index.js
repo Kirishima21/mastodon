@@ -88,7 +88,7 @@ const emojify = (str, customEmojis = {}) => {
 
 const emojify_astarte = (str, customEmojis = {}) => [
   {re: /5,?000\s*兆円/g, file: '5000tyoen.svg', attrs: 'style="height: 1.8em !important;"'},
-  {re: /熱盛/g, file: 'atumori.svg', attrs: 'style="height: 2.5em !important;"'}, 
+  {re: /熱盛/g, file: 'atumori.svg', attrs: 'style="height: 2.5em !important;"'},
   {re: /バジリスク\s*タイム/g, file: 'basilisktime.svg', attrs: 'style="height: 2.5em !important;"'},
   {re: /欲しい！/g, file: 'hosii.svg', attrs: 'style="height: 1.7em !important;"'},
   {re: /ささやき(たいまー|タイマー)/g, file: 'in_to_the_dark.svg', attrs: 'class="astarte-stamp"'},
@@ -132,7 +132,14 @@ const emojify_astarte = (str, customEmojis = {}) => [
   {re: /:4周年2:/g, file: '4years2.png', attrs: 'class="astarte-stamp"'},
   {re: /:4周年3:/g, file: '4years3.png', attrs: 'class="astarte-stamp"'},
   {re: /:スクワット:/g, file: 'sukuwatto.jpg', attrs: 'class="astarte-stamp"'},
-].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="/emoji/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
+  {re: /:(筋|キン|きん)(トレ|とれ):/g, file: 'kintore.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:懸垂:/g, file: 'kensui.png', attrs: 'class="astarte-stamp"'},
+  {re: /:ベンチプレス:/g, file: 'bentipuresu.png', attrs: 'class="astarte-stamp"'},
+  {re: /:アームカール:/g, file: 'a-muka-ru.png', attrs: 'class="astarte-stamp"'},
+  {re: /:プロテイン:/g, file: 'syakasyaka2.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:プロテイン1:/g, file: 'syakasyaka.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:ポージング:/g, file: 'guttu.png', attrs: 'class="astarte-stamp"'},
+].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="https://astarte.global.ssl.fastly.net/emoji/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
 
 export default emojify_astarte;
 
