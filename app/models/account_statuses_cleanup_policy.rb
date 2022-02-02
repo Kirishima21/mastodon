@@ -4,8 +4,8 @@
 #
 # Table name: account_statuses_cleanup_policies
 #
-#  id                 :bigint           not null, primary key
-#  account_id         :bigint           not null
+#  id                 :bigint(8)        not null, primary key
+#  account_id         :bigint(8)        not null
 #  enabled            :boolean          default(TRUE), not null
 #  min_status_age     :integer          default(1209600), not null
 #  keep_direct        :boolean          default(TRUE), not null
@@ -164,8 +164,8 @@ class AccountStatusesCleanupPolicy < ApplicationRecord
 
   def without_popular_scope
     scope = Status.left_joins(:status_stat)
-    scope = scope.where('COALESCE(status_stats.reblogs_count, 0) <= ?', min_reblogs) unless min_reblogs.nil?
-    scope = scope.where('COALESCE(status_stats.favourites_count, 0) <= ?', min_favs) unless min_favs.nil?
+    scope = scope.where('COALESCE(status_stats.reblogs_count, 0) < ?', min_reblogs) unless min_reblogs.nil?
+    scope = scope.where('COALESCE(status_stats.favourites_count, 0) < ?', min_favs) unless min_favs.nil?
     scope
   end
 end
