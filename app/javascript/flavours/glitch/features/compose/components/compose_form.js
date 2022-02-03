@@ -413,7 +413,7 @@ class ComposeForm extends ImmutablePureComponent {
           handleSideArmLocalSubmit={handleSideArmLocalSubmit}
         />
 
-        {liveView}
+        {/* {liveView} */}
 
       </div>
     );
