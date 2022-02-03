@@ -139,7 +139,7 @@ const emojify_astarte = (str, customEmojis = {}) => [
   {re: /:プロテイン:/g, file: 'syakasyaka2.gif', attrs: 'class="astarte-stamp"'},
   {re: /:プロテイン1:/g, file: 'syakasyaka.gif', attrs: 'class="astarte-stamp"'},
   {re: /:ポージング:/g, file: 'guttu.png', attrs: 'class="astarte-stamp"'},
-  {re: /:(よし|ヨシ)(!|！):/g, file: 'guttu.png', attrs: 'class="astarte-stamp"'},
+  {re: /:(よし|ヨシ)(!|！):/g, file: '120703.gif', attrs: 'class="astarte-stamp"'},
 ].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="https://astarte.global.ssl.fastly.net/emoji/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
 
 export default emojify_astarte;
