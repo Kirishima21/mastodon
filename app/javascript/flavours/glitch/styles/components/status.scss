@@ -433,7 +433,25 @@
   color: $action-button-color;
 
   .status__media-icon,
-  .status__visibility-icon,
+  .fa.status__visibility-icon.fa-fw {
+    &.fa-lock {
+      // ここに fa-lock を持つ要素のスタイルを追加します
+      color: #e0a800;
+    }
+
+    &.fa-unlock {
+      color: #28a745;
+    }
+
+    &.fa-envelope {
+      color: #e4606d;
+    }
+
+    &.fa-globe {
+      // ここに fa-globe を持つ要素のスタイルを追加します
+      color: #5bc0de;
+    }
+  }
   .status__reply-icon,
   .text-icon {
     padding-inline-start: 2px;
