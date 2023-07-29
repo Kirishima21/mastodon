@@ -136,7 +136,68 @@ const emojify = (str, customEmojis = {}) => {
   return wrapper.innerHTML;
 };
 
-export default emojify;
+// export default emojify;
+
+const emojify_astarte = (str, customEmojis = {}) => [
+  {re: /5,?000\s*兆円/g, file: '5000tyoen.svg', attrs: 'style="height: 1.8em !important;"'},
+  {re: /熱盛/g, file: 'atumori.svg', attrs: 'style="height: 2.5em !important;"'},
+  {re: /バジリスク\s*タイム/g, file: 'basilisktime.svg', attrs: 'style="height: 2.5em !important;"'},
+  {re: /欲しい！/g, file: 'hosii.svg', attrs: 'style="height: 1.7em !important;"'},
+  {re: /ささやき(たいまー|タイマー)/g, file: 'in_to_the_dark.svg', attrs: 'class="astarte-stamp"'},
+  {re: /:ロケット:/g, file: 'rocket.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:おはよう:/g, file: 'morning.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:かえりたい:/g, file: 'kaeritai.jpeg', attrs: 'class="astarte-stamp"'},
+  {re: /:はらへり:/g, file: 'haraheri.png', attrs: 'class="astarte-stamp"'},
+  {re: /:かなしい:/g, file: 'kanashi.png', attrs: 'class="astarte-stamp"'},
+  {re: /:うれしい:/g, file: 'ureshi.png', attrs: 'class="astarte-stamp"'},
+  {re: /:大喜利:/g, file: 'ogiri.jpeg', attrs: 'class="astarte-stamp"'},
+  {re: /:ヘディング:/g, file: 'heading.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:ふたば_?おはよう:/g, file: 'hutaba.png', attrs: 'class="astarte-stamp"'},
+  {re: /:じゃんけん:/g, file: 'janken.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:おやすみ:/g, file: 'good_night.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:ごはん:/g, file: 'gohan.png', attrs: 'class="astarte-stamp"'},
+  {re: /:おそよう:/g, file: 'osoyou.png', attrs: 'class="astarte-stamp"'},
+  {re: /:ありがとう:/g, file: 'arigatou.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:ルーレット:/g, file: 'roulette.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:働きたくない:/g, file: 'notWork.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:起床Chance:/g, file: '750746c7bd3a0edc.png', attrs: 'class="astarte-stamp"'},
+  {re: /:入眠Rush:/g, file: '80bff0490a51d517.png', attrs: 'class="astarte-stamp"'},
+  {re: /:眠気襲来:/g, file: '45bec8a22a29e958.png', attrs: 'class="astarte-stamp"'},
+  {re: /:みぷ:/g, file: 'd000e5d479ce618c.png', attrs: 'class="astarte-stamp"'},
+  {re: /:全裸報告:/g, file: '2f18e130e4bfb19b.png', attrs: 'class="astarte-stamp"'},
+  {re: /:NFC襲来:/g, file: '6537d027313fd066.png', attrs: 'class="astarte-stamp"'},
+  {re: /:椅子転発生:/g, file: '889f2f40ede5d058.png', attrs: 'class="astarte-stamp"'},
+  {re: /:ねれない:/g, file: 'nerenine.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:配信します:/g, file: 'haishin.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:ぴえん:/g, file: 'pien.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:踊る:/g, file: 'odoru.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:わびる:/g, file: 'wabiru.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:よろこぶ:/g, file: 'yorokobu.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:とどかない:/g, file: 'todokanai.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:こしかける:/g, file: 'kosikakeru.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:52000rpm:/g, file: '52000rpm.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:花束:/g, file: 'hanataba.png', attrs: 'class="astarte-stamp"'},
+  {re: /:花束2:/g, file: 'hanataba2.png', attrs: 'class="astarte-stamp"'},
+  {re: /:花束3:/g, file: 'hanataba3.png', attrs: 'class="astarte-stamp"'},
+  {re: /:4周年:/g, file: '4years.png', attrs: 'class="astarte-stamp"'},
+  {re: /:4周年1:/g, file: '4years1.png', attrs: 'class="astarte-stamp"'},
+  {re: /:4周年2:/g, file: '4years2.png', attrs: 'class="astarte-stamp"'},
+  {re: /:4周年3:/g, file: '4years3.png', attrs: 'class="astarte-stamp"'},
+  {re: /:スクワット:/g, file: 'sukuwatto.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:(筋|キン|きん)(トレ|とれ):/g, file: 'kintore.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:懸垂:/g, file: 'kensui.png', attrs: 'class="astarte-stamp"'},
+  {re: /:ベンチプレス:/g, file: 'bentipuresu.png', attrs: 'class="astarte-stamp"'},
+  {re: /:アームカール:/g, file: 'a-muka-ru.png', attrs: 'class="astarte-stamp"'},
+  {re: /:プロテイン:/g, file: 'syakasyaka2.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:プロテイン1:/g, file: 'syakasyaka.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:ポージング:/g, file: 'guttu.png', attrs: 'class="astarte-stamp"'},
+  {re: /:(よし|ヨシ)(!|！):/g, file: '120703.gif', attrs: 'class="astarte-stamp"'},
+  {re: /:(おさけ|ぽしゃけ|D):/g, file: '134047.jpg', attrs: 'class="astarte-stamp"'},
+  {re: /:(どんぐり|おうち):/g, file: 'donguri.gif', attrs: 'class="astarte-stamp"'},
+].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="https://astarte.global.ssl.fastly.net/emoji/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
+
+export default emojify_astarte;
+
 export { unicodeMapping };
 
 export const buildCustomEmojis = (customEmojis) => {
