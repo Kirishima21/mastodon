@@ -107,8 +107,9 @@ class NavigationPanel extends Component {
         <div className='navigation-panel__legal'>
           <hr />
           <ColumnLink transparent to='/about' icon='ellipsis-h' text={intl.formatMessage(messages.about)} />
+          <ColumnLink transparent to='/publish' icon='pencil' text='New post' />
         </div>
-
+        
         <NavigationPortal />
       </div>
     );

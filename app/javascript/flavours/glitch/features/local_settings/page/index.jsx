@@ -238,7 +238,7 @@ class LocalSettingsPage extends PureComponent {
           id='mastodon-settings--side_arm_local_secondary'
           onChange={onChange}
         >
-          <FormattedMessage id='settings.side_arm_local_secondary' defaultMessage='セカンダリボタンの横に(セカンダリの)ローカル投稿ボタンを表示する' />
+          <FormattedMessage id='settings.side_arm_local_secondary' defaultMessage='セカンダリボタンの横に(セカンダリの)ローカル投稿ボタンを表示する¥n注意必ずセカンダリボタンの投稿範囲を設定後にチェックを入れてください。先に入れてしまった場合キャッシュとクッキーを削除する必要があります' />
         </LocalSettingsPageItem>
         <LocalSettingsPageItem
           settings={settings}

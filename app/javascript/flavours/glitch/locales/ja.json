@@ -120,7 +120,7 @@
   "settings.side_arm_reply_mode.keep": "セカンダリートゥートボタンの設定を維持する",
   "settings.side_arm_reply_mode.restrict": "返信先の投稿範囲に制限する",
   "settings.side_arm_local_toot": "トゥートボタンの横にローカル投稿ボタンを表示する",
-  "settings.side_arm_local_secondary": "セカンダリボタンの横に(セカンダリの)ローカル投稿ボタンを表示する",
+  "settings.side_arm_local_secondary": "セカンダリボタンの横に(セカンダリの)ローカル投稿ボタンを表示する。[注意]必ずセカンダリボタンの投稿範囲を設定後にチェックを入れてください。先に入れてしまった場合キャッシュとクッキーを削除する必要があります",
   "settings.swipe_to_change_columns": "スワイプでカラムを切り替え可能にする（モバイルのみ）",
   "settings.tag_misleading_links": "誤解を招くリンクにタグをつける",
   "settings.tag_misleading_links.hint": "明示的に言及していないすべてのリンクに、リンクターゲットホストを含む視覚的な表示を追加します",
