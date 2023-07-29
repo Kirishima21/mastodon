@@ -617,6 +617,13 @@
 
     & > .side_arm {
       width: 36px;
+      margin-right: 2px;
+
+      &.is_local {
+        height: 36px;
+        width: initial;
+        padding: 0 4px !important;
+      }
     }
   }
 }

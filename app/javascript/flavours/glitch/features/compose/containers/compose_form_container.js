@@ -13,6 +13,7 @@ import {
   selectComposeSuggestion,
   submitCompose,
   uploadCompose,
+  changeComposeAdvancedOption,
 } from 'flavours/glitch/actions/compose';
 import { changeLocalSetting } from 'flavours/glitch/actions/local_settings';
 import {
@@ -67,6 +68,8 @@ function mapStateToProps (state) {
     preselectDate: state.getIn(['compose', 'preselectDate']),
     privacy: state.getIn(['compose', 'privacy']),
     sideArm: sideArmPrivacy,
+    showSideArmLocalToot: state.getIn(['local_settings', 'side_arm_local_toot']),
+    showSideArmLocalSecondary: state.getIn(['local_settings', 'side_arm_local_secondary']),
     sensitive: state.getIn(['compose', 'sensitive']),
     showSearch: state.getIn(['search', 'submitted']) && !state.getIn(['search', 'hidden']),
     spoiler: spoilersAlwaysOn || state.getIn(['compose', 'spoiler']),
@@ -145,6 +148,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
         onDoNotAsk: () => dispatch(changeLocalSetting(['confirm_missing_media_description'], false)),
       },
     }));
+  },
+
+  onChangeLocal(value) {
+    dispatch(changeComposeAdvancedOption('do_not_federate', value));
   },
 
 });

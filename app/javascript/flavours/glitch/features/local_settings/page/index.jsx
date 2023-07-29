@@ -226,6 +226,22 @@ class LocalSettingsPage extends PureComponent {
         </LocalSettingsPageItem>
         <LocalSettingsPageItem
           settings={settings}
+          item={['side_arm_local_toot']}
+          id='mastodon-settings--side_arm_local_toot'
+          onChange={onChange}
+        >
+          <FormattedMessage id='settings.side_arm_local_toot' defaultMessage='トゥートボタンの横にローカル投稿ボタンを表示する' />
+        </LocalSettingsPageItem>
+        <LocalSettingsPageItem
+          settings={settings}
+          item={['side_arm_local_secondary']}
+          id='mastodon-settings--side_arm_local_secondary'
+          onChange={onChange}
+        >
+          <FormattedMessage id='settings.side_arm_local_secondary' defaultMessage='セカンダリボタンの横に(セカンダリの)ローカル投稿ボタンを表示する' />
+        </LocalSettingsPageItem>
+        <LocalSettingsPageItem
+          settings={settings}
           item={['side_arm']}
           id='mastodon-settings--side_arm'
           options={[
