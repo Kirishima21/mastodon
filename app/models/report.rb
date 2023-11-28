@@ -48,7 +48,10 @@ class Report < ApplicationRecord
 
   validate :validate_rule_ids
 
-  # entries here needs to be kept in sync with app/javascript/mastodon/features/notifications/components/report.jsx
+  # entries here need to be kept in sync with the front-end:
+  # - app/javascript/mastodon/features/notifications/components/report.jsx
+  # - app/javascript/mastodon/features/report/category.jsx
+  # - app/javascript/mastodon/components/admin/ReportReasonSelector.jsx
   enum category: {
     other: 0,
     spam: 1_000,
@@ -138,6 +141,11 @@ class Report < ApplicationRecord
       Admin::ActionLog.where(
         target_type: 'Status',
         target_id: status_ids
+      ).unscope(:order).arel,
+
+      Admin::ActionLog.where(
+        target_type: 'AccountWarning',
+        target_id: AccountWarning.where(report_id: id).select(:id)
       ).unscope(:order).arel,
     ].reduce { |union, query| Arel::Nodes::UnionAll.new(union, query) }
 

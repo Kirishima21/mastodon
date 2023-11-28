@@ -104,7 +104,7 @@ class Request
 
   def perform
     begin
-      response = http_client.public_send(@verb, @url.to_s, @options.merge(headers: headers))
+      response = http_client.request(@verb, @url.to_s, @options.merge(headers: headers))
     rescue => e
       raise e.class, "#{e.message} on #{@url}", e.backtrace[0]
     end
@@ -327,7 +327,7 @@ class Request
       end
 
       def private_address_exceptions
-        @private_address_exceptions = (ENV['ALLOWED_PRIVATE_ADDRESSES'] || '').split(',').map { |addr| IPAddr.new(addr) }
+        @private_address_exceptions = (ENV['ALLOWED_PRIVATE_ADDRESSES'] || '').split(/(?:\s*,\s*|\s+)/).map { |addr| IPAddr.new(addr) }
       end
     end
   end

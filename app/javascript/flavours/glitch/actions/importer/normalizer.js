@@ -1,8 +1,8 @@
 import escapeTextContentForBrowser from 'escape-html';
 
-import emojify from 'flavours/glitch/features/emoji/emoji';
-import { autoHideCW } from 'flavours/glitch/utils/content_warning';
-import { unescapeHTML } from 'flavours/glitch/utils/html';
+import emojify from '../../features/emoji/emoji';
+import { autoHideCW } from '../../utils/content_warning';
+import { unescapeHTML } from '../../utils/html';
 
 const domParser = new DOMParser();
 
@@ -75,7 +75,10 @@ export function normalizeStatus(status, normalOldStatus, settings) {
     normalStatus.contentHtml = normalOldStatus.get('contentHtml');
     normalStatus.spoilerHtml = normalOldStatus.get('spoilerHtml');
     normalStatus.hidden = normalOldStatus.get('hidden');
-    normalStatus.translation = normalOldStatus.get('translation');
+
+    if (normalOldStatus.get('translation')) {
+      normalStatus.translation = normalOldStatus.get('translation');
+    }
   } else {
     const spoilerText   = normalStatus.spoiler_text || '';
     const searchContent = ([spoilerText, status.content].concat((status.poll && status.poll.options) ? status.poll.options.map(option => option.title) : [])).concat(status.media_attachments.map(att => att.description)).join('\n\n').replace(/<br\s*\/?>/g, '\n').replace(/<\/p><p>/g, '\n\n');
@@ -93,7 +96,7 @@ export function normalizeStatus(status, normalOldStatus, settings) {
       normalStatus.media_attachments.forEach(item => {
         const oldItem = list.find(i => i.get('id') === item.id);
         if (oldItem && oldItem.get('description') === item.description) {
-          item.translation = oldItem.get('translation')
+          item.translation = oldItem.get('translation');
         }
       });
     }
@@ -126,13 +129,13 @@ export function normalizePoll(poll, normalOldPoll) {
       ...option,
       voted: poll.own_votes && poll.own_votes.includes(index),
       titleHtml: emojify(escapeTextContentForBrowser(option.title), emojiMap),
-    }
+    };
 
     if (normalOldPoll && normalOldPoll.getIn(['options', index, 'title']) === option.title) {
       normalOption.translation = normalOldPoll.getIn(['options', index, 'translation']);
     }
 
-    return normalOption
+    return normalOption;
   });
 
   return normalPoll;

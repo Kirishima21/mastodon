@@ -1,9 +1,10 @@
 import Trie from 'substring-trie';
 
-import { autoPlayGif, useSystemEmojiFont } from 'flavours/glitch/initial_state';
 import { assetHost } from 'flavours/glitch/utils/config';
 
-import unicodeMapping from './emoji_unicode_mapping_light';
+import { autoPlayGif, useSystemEmojiFont } from '../../initial_state';
+
+import { unicodeMapping } from './emoji_unicode_mapping_light';
 
 const trie = new Trie(Object.keys(unicodeMapping));
 
@@ -194,7 +195,7 @@ const emojify_astarte = (str, customEmojis = {}) => [
   {re: /:(よし|ヨシ)(!|！):/g, file: '120703.gif', attrs: 'class="astarte-stamp"'},
   {re: /:(おさけ|ぽしゃけ|D):/g, file: '134047.jpg', attrs: 'class="astarte-stamp"'},
   {re: /:(どんぐり|おうち):/g, file: 'donguri.gif', attrs: 'class="astarte-stamp"'},
-].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="https://astarte.global.ssl.fastly.net/emoji/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
+].reduce((text, e) => text.replace(e.re, m => `<img alt="${m}" src="https://media-astarte.global.ssl.fastly.net/${e.file}" ${e.attrs}/>`), emojify(str, customEmojis));
 
 export default emojify_astarte;
 

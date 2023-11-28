@@ -82,6 +82,7 @@
  * @property {boolean} use_blurhash
  * @property {boolean=} use_pending_items
  * @property {string} version
+ * @property {string} sso_redirect
  * @property {boolean} translation_enabled
  * @property {string} status_page_url
  * @property {boolean} system_emoji_font
@@ -93,12 +94,14 @@ const initialPath = document.querySelector("head meta[name=initialPath]")?.getAt
 /** @type {boolean} */
 export const hasMultiColumnPath = initialPath === '/'
   || initialPath === '/getting-started'
+  || initialPath === '/home'
   || initialPath.startsWith('/deck');
 
 /**
  * @typedef InitialState
  * @property {Record<string, Account>} accounts
  * @property {InitialStateLanguage[]} languages
+ * @property {boolean=} critical_updates_pending
  * @property {InitialStateMeta} meta
  * @property {object} local_settings
  * @property {number} max_toot_chars
@@ -159,7 +162,9 @@ export const useBlurhash = getMeta('use_blurhash');
 export const usePendingItems = getMeta('use_pending_items');
 export const version = getMeta('version');
 export const languages = initialState?.languages;
+export const criticalUpdatesPending = initialState?.critical_updates_pending;
 export const statusPageUrl = getMeta('status_page_url');
+export const sso_redirect = getMeta('sso_redirect');
 
 // Glitch-soc-specific settings
 export const maxChars = (initialState && initialState.max_toot_chars) || 500;

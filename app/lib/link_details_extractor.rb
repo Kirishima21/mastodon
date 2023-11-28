@@ -36,7 +36,8 @@ class LinkDetailsExtractor
     end
 
     def language
-      json['inLanguage']
+      lang = json['inLanguage']
+      lang.is_a?(Hash) ? (lang['alternateName'] || lang['name']) : lang
     end
 
     def type
@@ -113,6 +114,7 @@ class LinkDetailsExtractor
       title: title || '',
       description: description || '',
       image_remote_url: image,
+      image_description: image_alt || '',
       type: type,
       link_type: link_type,
       width: width || 0,
@@ -166,6 +168,10 @@ class LinkDetailsExtractor
 
   def image
     valid_url_or_nil(opengraph_tag('og:image'))
+  end
+
+  def image_alt
+    opengraph_tag('og:image:alt')
   end
 
   def canonical_url

@@ -4,13 +4,20 @@ import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 
 import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
-import { NavLink } from 'react-router-dom';
+import { NavLink, withRouter } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
+import { ReactComponent as CheckIcon } from '@material-symbols/svg-600/outlined/check.svg';
+import { ReactComponent as LockIcon } from '@material-symbols/svg-600/outlined/lock.svg';
+import { ReactComponent as MoreHorizIcon } from '@material-symbols/svg-600/outlined/more_horiz.svg';
+import { ReactComponent as NotificationsIcon } from '@material-symbols/svg-600/outlined/notifications-fill.svg';
+import { ReactComponent as NotificationsActiveIcon } from '@material-symbols/svg-600/outlined/notifications_active.svg';
+
 import { Avatar } from 'mastodon/components/avatar';
-import Button from 'mastodon/components/button';
+import { Badge, AutomatedBadge, GroupBadge } from 'mastodon/components/badge';
+import { Button } from 'mastodon/components/button';
 import { FollowersCounter, FollowingCounter, StatusesCounter } from 'mastodon/components/counters';
 import { Icon }  from 'mastodon/components/icon';
 import { IconButton } from 'mastodon/components/icon_button';
@@ -18,6 +25,7 @@ import { ShortNumber } from 'mastodon/components/short_number';
 import DropdownMenuContainer from 'mastodon/containers/dropdown_menu_container';
 import { autoPlayGif, me, domain } from 'mastodon/initial_state';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
+import { WithRouterPropTypes } from 'mastodon/utils/react_router';
 
 import AccountNoteContainer from '../containers/account_note_container';
 import FollowRequestNoteContainer from '../containers/follow_request_note_container';
@@ -82,11 +90,6 @@ const dateFormatOptions = {
 
 class Header extends ImmutablePureComponent {
 
-  static contextTypes = {
-    identity: PropTypes.object,
-    router: PropTypes.object,
-  };
-
   static propTypes = {
     account: ImmutablePropTypes.map,
     identity_props: ImmutablePropTypes.list,
@@ -110,6 +113,11 @@ class Header extends ImmutablePureComponent {
     intl: PropTypes.object.isRequired,
     domain: PropTypes.string.isRequired,
     hidden: PropTypes.bool,
+    ...WithRouterPropTypes,
+  };
+
+  static contextTypes = {
+    identity: PropTypes.object,
   };
 
   setRef = c => {
@@ -172,25 +180,24 @@ class Header extends ImmutablePureComponent {
   };
 
   handleHashtagClick = e => {
-    const { router } = this.context;
+    const { history } = this.props;
     const value = e.currentTarget.textContent.replace(/^#/, '');
 
-    if (router && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
+    if (history && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      router.history.push(`/tags/${value}`);
+      history.push(`/tags/${value}`);
     }
   };
 
   handleMentionClick = e => {
-    const { router } = this.context;
-    const { onOpenURL } = this.props;
+    const { history, onOpenURL } = this.props;
 
-    if (router && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
+    if (history && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
       e.preventDefault();
 
       const link = e.currentTarget;
 
-      onOpenURL(link.href, router.history, () => {
+      onOpenURL(link.href, history, () => {
         window.location = link.href;
       });
     }
@@ -257,16 +264,16 @@ class Header extends ImmutablePureComponent {
     }
 
     if (account.getIn(['relationship', 'requested']) || account.getIn(['relationship', 'following'])) {
-      bellBtn = <IconButton icon={account.getIn(['relationship', 'notifying']) ? 'bell' : 'bell-o'} size={24} active={account.getIn(['relationship', 'notifying'])} title={intl.formatMessage(account.getIn(['relationship', 'notifying']) ? messages.disableNotifications : messages.enableNotifications, { name: account.get('username') })} onClick={this.props.onNotifyToggle} />;
+      bellBtn = <IconButton icon={account.getIn(['relationship', 'notifying']) ? 'bell' : 'bell-o'} iconComponent={account.getIn(['relationship', 'notifying']) ? NotificationsIcon : NotificationsActiveIcon}  size={24} active={account.getIn(['relationship', 'notifying'])} title={intl.formatMessage(account.getIn(['relationship', 'notifying']) ? messages.disableNotifications : messages.enableNotifications, { name: account.get('username') })} onClick={this.props.onNotifyToggle} />;
     }
 
     if (me !== account.get('id')) {
       if (signedIn && !account.get('relationship')) { // Wait until the relationship is loaded
         actionBtn = '';
       } else if (account.getIn(['relationship', 'requested'])) {
-        actionBtn = <Button className={classNames({ 'button--with-bell': bellBtn !== '' })} text={intl.formatMessage(messages.cancel_follow_request)} title={intl.formatMessage(messages.requested)} onClick={this.props.onFollow} />;
+        actionBtn = <Button text={intl.formatMessage(messages.cancel_follow_request)} title={intl.formatMessage(messages.requested)} onClick={this.props.onFollow} />;
       } else if (!account.getIn(['relationship', 'blocking'])) {
-        actionBtn = <Button disabled={account.getIn(['relationship', 'blocked_by'])} className={classNames({ 'button--destructive': account.getIn(['relationship', 'following']), 'button--with-bell': bellBtn !== '' })} text={intl.formatMessage(account.getIn(['relationship', 'following']) ? messages.unfollow : messages.follow)} onClick={signedIn ? this.props.onFollow : this.props.onInteractionModal} />;
+        actionBtn = <Button disabled={account.getIn(['relationship', 'blocked_by'])} className={classNames({ 'button--destructive': account.getIn(['relationship', 'following']) })} text={intl.formatMessage(account.getIn(['relationship', 'following']) ? messages.unfollow : messages.follow)} onClick={signedIn ? this.props.onFollow : this.props.onInteractionModal} />;
       } else if (account.getIn(['relationship', 'blocking'])) {
         actionBtn = <Button text={intl.formatMessage(messages.unblock, { name: account.get('username') })} onClick={this.props.onBlock} />;
       }
@@ -279,7 +286,7 @@ class Header extends ImmutablePureComponent {
     }
 
     if (account.get('locked')) {
-      lockedIcon = <Icon id='lock' title={intl.formatMessage(messages.account_locked)} />;
+      lockedIcon = <Icon id='lock' icon={LockIcon} title={intl.formatMessage(messages.account_locked)} />;
     }
 
     if (signedIn && account.get('id') !== me) {
@@ -373,28 +380,13 @@ class Header extends ImmutablePureComponent {
     const badges = [];
 
     if (account.get('bot')) {
-      badges.push(
-        <div key='bot-badge' className='account-role bot'>
-          <Icon id='cogs' /> { ' ' }
-          <FormattedMessage id='account.badges.bot' defaultMessage='Automated' />
-        </div>
-      );
+      badges.push(<AutomatedBadge key='bot-badge' />);
     } else if (account.get('group')) {
-      badges.push(
-        <div key='group-badge' className='account-role group'>
-          <Icon id='users' /> { ' ' }
-          <FormattedMessage id='account.badges.group' defaultMessage='Group' />
-        </div>
-      );
+      badges.push(<GroupBadge key='group-badge' />);
     }
 
     account.get('roles', []).forEach((role) => {
-      badges.push(
-        <div key={`role-badge-${role.get('id')}`} className={`account-role user-role-${account.getIn(['roles', 0, 'id'])}`}>
-          <Icon id='circle' /> { ' ' }
-          <span>{role.get('name')} ({domain})</span>
-        </div>
-      );
+      badges.push(<Badge key={`role-badge-${role.get('id')}`} label={<span>{role.get('name')}</span>} domain={domain} />);
     });
 
     return (
@@ -424,7 +416,7 @@ class Header extends ImmutablePureComponent {
                   </>
                 )}
 
-                <DropdownMenuContainer disabled={menu.length === 0} items={menu} icon='ellipsis-v' size={24} direction='right' />
+                <DropdownMenuContainer disabled={menu.length === 0} items={menu} icon='ellipsis-v' iconComponent={MoreHorizIcon} size={24} direction='right' />
               </div>
             )}
           </div>
@@ -462,7 +454,7 @@ class Header extends ImmutablePureComponent {
                       <dt dangerouslySetInnerHTML={{ __html: pair.get('name_emojified') }} title={pair.get('name')} className='translate' />
 
                       <dd className='translate' title={pair.get('value_plain')}>
-                        {pair.get('verified_at') && <span title={intl.formatMessage(messages.linkVerifiedOn, { date: intl.formatDate(pair.get('verified_at'), dateFormatOptions) })}><Icon id='check' className='verified__mark' /></span>} <span dangerouslySetInnerHTML={{ __html: pair.get('value_emojified') }} />
+                        {pair.get('verified_at') && <span title={intl.formatMessage(messages.linkVerifiedOn, { date: intl.formatDate(pair.get('verified_at'), dateFormatOptions) })}><Icon id='check' icon={CheckIcon} className='verified__mark' /></span>} <span dangerouslySetInnerHTML={{ __html: pair.get('value_emojified') }} />
                       </dd>
                     </dl>
                   ))}
@@ -506,4 +498,4 @@ class Header extends ImmutablePureComponent {
 
 }
 
-export default injectIntl(Header);
+export default withRouter(injectIntl(Header));

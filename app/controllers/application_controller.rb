@@ -12,6 +12,8 @@ class ApplicationController < ActionController::Base
   include DomainControlHelper
   include ThemingConcern
   include DatabaseHelper
+  include AuthorizedFetchHelper
+  include SelfDestructHelper
 
   helper_method :current_account
   helper_method :current_session
@@ -21,7 +23,7 @@ class ApplicationController < ActionController::Base
   helper_method :use_seamless_external_login?
   helper_method :omniauth_only?
   helper_method :sso_account_settings
-  helper_method :whitelist_mode?
+  helper_method :limited_federation_mode?
   helper_method :body_class_string
   helper_method :skip_csrf_meta_tags?
 
@@ -40,6 +42,8 @@ class ApplicationController < ActionController::Base
     service_unavailable
   end
 
+  before_action :check_self_destruct!
+
   before_action :store_referrer, except: :raise_not_found, if: :devise_controller?
   before_action :require_functional!, if: :user_signed_in?
 
@@ -52,10 +56,6 @@ class ApplicationController < ActionController::Base
   end
 
   private
-
-  def authorized_fetch_mode?
-    ENV['AUTHORIZED_FETCH'] == 'true' || Rails.configuration.x.whitelist_mode
-  end
 
   def public_fetch_mode?
     !authorized_fetch_mode?
@@ -169,6 +169,15 @@ class ApplicationController < ActionController::Base
         render "errors/#{code}", layout: 'error', status: code, formats: [:html]
       end
       format.json { render json: { error: Rack::Utils::HTTP_STATUS_CODES[code] }, status: code }
+    end
+  end
+
+  def check_self_destruct!
+    return unless self_destruct?
+
+    respond_to do |format|
+      format.any  { render 'errors/self_destruct', layout: 'auth', status: 410, formats: [:html] }
+      format.json { render json: { error: Rack::Utils::HTTP_STATUS_CODES[410] }, status: code }
     end
   end
 

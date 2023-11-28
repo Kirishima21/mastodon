@@ -719,15 +719,16 @@
   }
 
   .button.button-secondary {
-    border-color: $ui-button-secondary-border-color;
-    color: $ui-button-secondary-color;
+    border-color: $inverted-text-color;
+    color: $inverted-text-color;
     flex: 0 0 auto;
 
     &:hover,
     &:focus,
     &:active {
-      border-color: $ui-button-secondary-focus-background-color;
-      color: $ui-button-secondary-focus-color;
+      background: transparent;
+      border-color: $ui-button-background-color;
+      color: $ui-button-background-color;
     }
   }
 
@@ -1409,6 +1410,44 @@ img.modal-warning {
 
     &.expanded &__input {
       border-radius: 4px 4px 0 0;
+    }
+  }
+
+  &__choices {
+    display: flex;
+    gap: 40px;
+
+    &__choice {
+      flex: 1;
+      box-sizing: border-box;
+
+      h3 {
+        margin-bottom: 20px;
+      }
+
+      p {
+        color: $darker-text-color;
+        margin-bottom: 20px;
+        font-size: 15px;
+      }
+
+      .button {
+        margin-bottom: 10px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: $no-gap-breakpoint - 1px) {
+    &__choices {
+      flex-direction: column;
+
+      &__choice {
+        margin-top: 40px;
+      }
     }
   }
 

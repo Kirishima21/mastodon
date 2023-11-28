@@ -3,7 +3,7 @@ import { Component } from 'react';
 
 import { defineMessages, injectIntl } from 'react-intl';
 
-import NavigationPortal from 'flavours/glitch/components/navigation_portal';
+import { NavigationPortal } from 'flavours/glitch/components/navigation_portal';
 import { timelinePreview, trendsEnabled } from 'flavours/glitch/initial_state';
 import { transientSingleColumn } from 'flavours/glitch/is_mobile';
 import { preferencesLink } from 'flavours/glitch/utils/backend_links';
@@ -29,13 +29,13 @@ const messages = defineMessages({
   about: { id: 'navigation_bar.about', defaultMessage: 'About' },
   search: { id: 'navigation_bar.search', defaultMessage: 'Search' },
   advancedInterface: { id: 'navigation_bar.advanced_interface', defaultMessage: 'Open in advanced web interface' },
+  openedInClassicInterface: { id: 'navigation_bar.opened_in_classic_interface', defaultMessage: 'Posts, accounts, and other specific pages are opened by default in the classic web interface.' },
   app_settings: { id: 'navigation_bar.app_settings', defaultMessage: 'App settings' },
 });
 
 class NavigationPanel extends Component {
 
   static contextTypes = {
-    router: PropTypes.object.isRequired,
     identity: PropTypes.object.isRequired,
   };
 
@@ -52,16 +52,24 @@ class NavigationPanel extends Component {
     const { intl, onOpenSettings } = this.props;
     const { signedIn, disabledAccountId } = this.context.identity;
 
+    let banner = undefined;
+
+    if(transientSingleColumn)
+      banner = (<div className='switch-to-advanced'>
+        {intl.formatMessage(messages.openedInClassicInterface)}
+        {" "}
+        <a href={`/deck${location.pathname}`} className='switch-to-advanced__toggle'>
+          {intl.formatMessage(messages.advancedInterface)}
+        </a>
+      </div>);
+
     return (
       <div className='navigation-panel'>
-        {transientSingleColumn && (
-          <div className='navigation-panel__logo'>
-            <a href={`/deck${location.pathname}`} className='button button--block'>
-              {intl.formatMessage(messages.advancedInterface)}
-            </a>
-            <hr />
+        {banner &&
+          <div class='navigation-panel__banner'>
+            {banner}
           </div>
-        )}
+        }
 
         {signedIn && (
           <>
