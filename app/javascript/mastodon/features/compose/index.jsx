@@ -33,6 +33,7 @@ import ComposeFormContainer from './containers/compose_form_container';
 import NavigationContainer from './containers/navigation_container';
 import SearchContainer from './containers/search_container';
 import SearchResultsContainer from './containers/search_results_container';
+import AnnouncementsContainer from './containers/announcements_container';
 
 const messages = defineMessages({
   start: { id: 'getting_started.heading', defaultMessage: 'Getting started' },
@@ -132,6 +133,7 @@ class Compose extends PureComponent {
               <NavigationContainer onClose={this.onBlur} />
 
               <ComposeFormContainer autoFocus={!isMobile(window.innerWidth)} />
+              <AnnouncementsContainer />
 
               <div className='drawer__inner__mastodon'>
                 <img alt='' draggable='false' src={mascot || elephantUIPlane} />
