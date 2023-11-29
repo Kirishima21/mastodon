@@ -102,6 +102,8 @@ gem 'rdf-normalize', '~> 0.5'
 
 gem 'private_address_check', '~> 0.5'
 
+gem 'ruby-bbcode'
+
 group :test do
   # Used to split testing into chunks in CI
   gem 'rspec_chunked', '~> 0.6'
