@@ -30,7 +30,7 @@ class Sanitize
       class_list.keep_if do |e|
         next true if /^(h|p|u|dt|e|bbcode)-/.match?(e) # microformats classes
         next true if /^(fa)/.match?(e) # microformats classes
-        next true if /^(mention|hashtag|marquee)$/.match?(e) # semantic classes
+        next true if /^(mention|hashtag|marquee|bbcode_FTL)$/.match?(e) # semantic classes
         next true if /^(ellipsis|invisible)$/.match?(e) # link formatting classes
       end
 

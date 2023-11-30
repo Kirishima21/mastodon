@@ -35,7 +35,8 @@ class AdvancedTextFormatter < TextFormatter
 
     @text = avoid_bbcode(text)
     @text = format_markdown(text) if content_type == 'text/markdown'
-    @text = format_bbcode(text)
+    @text = format_bbcode(@text)
+
   end
 
   # Differs from TextFormatter by not messing with newline after parsing

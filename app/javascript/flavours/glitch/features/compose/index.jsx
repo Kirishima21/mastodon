@@ -13,6 +13,7 @@ import spring from 'react-motion/lib/spring';
 import { mountCompose, unmountCompose, cycleElefriendCompose } from 'flavours/glitch/actions/compose';
 import Column from 'flavours/glitch/components/column';
 
+import AnnouncementsContainer from "flavours/glitch/containers/announcements_container";
 import { mascot } from '../../initial_state';
 import Motion from '../ui/util/optional_motion';
 
@@ -87,6 +88,8 @@ class Compose extends PureComponent {
               <NavigationContainer />
 
               <ComposeFormContainer />
+
+              <AnnouncementsContainer />
 
               <div className='drawer__inner__mastodon'>
                 {mascot ? <img alt='' draggable='false' src={mascot} /> : <button className='mastodon' onClick={onClickElefriend} />}

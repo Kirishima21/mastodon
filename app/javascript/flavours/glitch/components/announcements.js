@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import Link from 'react-router-dom/Link';
 import { defineMessages, injectIntl } from 'react-intl';
-import IconButton from '../../../components/announcement_icon_button';
+import IconButton from '../../../mastodon/components/announcement_icon_button';
 import Motion from 'react-motion/lib/Motion';
 import spring from 'react-motion/lib/spring';
 
@@ -68,22 +68,19 @@ class Announcements extends React.PureComponent {
     return (
       <ul className='announcements'>
         <li>
-          <Collapsable isVisible={this.state.showId === 'info'} fullHeight={300} minHeight={20} >
+          <Collapsable isVisible={this.state.showId === 'info'} fullHeight={280} minHeight={20} >
             <div className='announcements__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.info, { domain: document.title }))}<br />
               <br />
 			  アスタルテと関連のサービス<br />
 			  <br />
-			  ・MINECRAFT Server(休止中)<br />
-			  [address] mc.kirishima.cloud <br />
-			  [URL] http://mc.kirishima.cloud:8123 <br />
-        <a href="http://mc.kirishima.cloud:8123" target="_blank">マップを開く</a><br /><br />
-        ・Cutlsさんのサービス<br />
-        TheDeskはCutlsさんが製作している<br />アスタルテの公認クライアントです<br />
-        <a href="https://thedesk.top/" target="_blank">TheDeskホームページ</a><br /><br />
-        暇人ランキング<br />
-        暇人ランキングはアスタルテの投稿数で<br />ランキング付けされてます<br />
-        <a href="https://astarte.thedesk.top/" target="_blank">暇ラン</a>
+			  ・アスタロト<br />
+        霧島ひなたが運営しているmisskeyインスタンスです。<br />
+			  [URL] http://m.kirishima.cloud <br />
+        <a href="http://m.kirishima.cloud" target="_blank">アスタロトを開く</a><br /><br />
+        ・ネオアスタルテ<br />
+        アスタルテの開発者である霧島ひなたが個人開発しているSNSです。<br />専用クライアントatelier7を開く<br />
+        <a href="https://atelier7.krsm.me" target="_blank">atelier7</a><br /><br />
 			  <br />
 			  </p>
             </div>
@@ -93,14 +90,14 @@ class Announcements extends React.PureComponent {
           </div>
         </li>
         <li>
-          <Collapsable isVisible={this.state.showId === 'donation'} fullHeight={270} minHeight={20} >
+          <Collapsable isVisible={this.state.showId === 'donation'} fullHeight={240} minHeight={20} >
             <div className='announcements__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.donation, { domain: document.title }))}<br />
               <br />
 			  ・欲しいものリスト<br />
 			  [URL] http://amzn.asia/hJLmEbc <br />
         <a href="http://amzn.asia/hJLmEbc" target="_blank">欲しいものリストを開く</a><br />
-        ・Enty <br />
+        ・FANBOX <br />
 			  [URL] https://kirishima21.fanbox.cc <br />
         <a href="https://kirishima21.fanbox.cc" target="_blank">FANBOXのページを開く</a><br />
 			  寄付していただいた場合<br />
@@ -114,7 +111,7 @@ class Announcements extends React.PureComponent {
           </div>
         </li>
         <li>
-          <Collapsable isVisible={this.state.showId === 'bbcode'} fullHeight={380} minHeight={20} >
+          <Collapsable isVisible={this.state.showId === 'bbcode'} fullHeight={340} minHeight={20} >
             <div className='announcements__body'>
               <p>{ this.nl2br(intl.formatMessage(messages.bbcode, { domain: document.title }))}<br />
               <br />
@@ -127,11 +124,9 @@ class Announcements extends React.PureComponent {
 			  [i]斜体[/i]<br />
 			  [u]アンダーライン[/u]<br />
 			  [s]取り消し線[/s]<br />
-			  [size=5]サイズ変更[/size]<br />
 			  [colorhex=A55A4A]色変更02[/colorhex]<br />
 			  [code]コード[/code]<br />
 			  [quote]引用[/quote]<br />
-        [youtube]動画ID[/youtube]<br />
         [faicon]coffee[/faicon](<span class="fa fa-coffee"></span>の例)<br />
         <a href="https://yuzulabo.github.io/generate-faicon/" target="_blank">faiconを生成</a>
         <a href="https://fontawesome.com/v4.7.0/icons/" target="_blank">faicon アイコン一覧</a><br /><br />
