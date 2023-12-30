@@ -3,15 +3,10 @@ import PropTypes from 'prop-types';
 
 import { defineMessages, injectIntl } from 'react-intl';
 
-import classNames from 'classnames';
-
 import ImmutablePureComponent from 'react-immutable-pure-component';
-
-import { length } from 'stringz';
 
 import { Button } from 'flavours/glitch/components/button';
 import { Icon } from 'flavours/glitch/components/icon';
-import { maxChars } from 'flavours/glitch/initial_state';
 
 const messages = defineMessages({
   publish: {
@@ -32,11 +27,9 @@ const messages = defineMessages({
 class Publisher extends ImmutablePureComponent {
 
   static propTypes = {
-    countText: PropTypes.string,
     disabled: PropTypes.bool,
     intl: PropTypes.object.isRequired,
     onSecondarySubmit: PropTypes.func,
-    onSubmit: PropTypes.func,
     privacy: PropTypes.oneOf(['direct', 'private', 'unlisted', 'public']),
     sideArm: PropTypes.oneOf(['none', 'direct', 'private', 'unlisted', 'public']),
     showSideArmLocalToot: PropTypes.bool,
@@ -45,19 +38,9 @@ class Publisher extends ImmutablePureComponent {
     isEditing: PropTypes.bool,
   };
 
-  handleSubmit = () => {
-    this.props.onSubmit();
-  };
-
   render () {
-    const { countText, disabled, intl, onSecondarySubmit, privacy, sideArm, isEditing } = this.props;
-    const { showSideArmLocalToot, showSideArmLocalSecondary, handleSideArmLocalSubmit } = this.props;
-    const diff = maxChars - length(countText || '');
-    const computedClass = classNames('compose-form__publish', {
-      disabled: disabled,
-      over: diff < 0,
-    });
-
+    const { disabled, intl, onSecondarySubmit, privacy, sideArm, isEditing } = this.props;
+const { showSideArmLocalToot, showSideArmLocalSecondary, handleSideArmLocalSubmit } = this.props;
     const privacyIcons = { direct: 'envelope', private: 'lock', public: 'globe', unlisted: 'unlock' };
 
     let publishText;
@@ -90,32 +73,32 @@ class Publisher extends ImmutablePureComponent {
     };
 
     return (
-      <div className={computedClass}>
+      <div className='compose-form__publish'>
         {sideArm && sideArm !== 'none' && showSideArmLocalSecondary && (
           <div className='compose-form__publish-button-wrapper'>
             <Button
               className='side_arm is_local'
-              disabled={disabled || diff < 0}
+              disabled={disabled}
               onClick={() => handleSideArmLocalSubmit(sideArm)}
               text={
                 <span>
-                   <Icon
-                     id={{
-                       public: 'globe',
-                       unlisted: 'unlock',
-                       private: 'lock',
-                       direct: 'envelope',
-                     }[sideArm]}
-                     fixedWidth
-                   />
-                   <Icon id='home' fixedWidth />
-                 </span>
+                  <Icon
+                    id={{
+                      public: 'globe',
+                      unlisted: 'unlock',
+                      private: 'lock',
+                      direct: 'envelope',
+                    }[sideArm]}
+                    fixedWidth
+                  />
+                  <Icon id='home' fixedWidth />
+                </span>
               }
               title={`${intl.formatMessage(messages.publish)}: ${intl.formatMessage(privacyMessages[sideArm])} (${intl.formatMessage({ id: 'advanced_options.local-only.short' })})`}
             />
           </div>
         )}
-        {sideArm && !isEditing && sideArm !== 'none' ? (
+        {sideArm && !isEditing && sideArm !== 'none' && (
           <div className='compose-form__publish-button-wrapper'>
             <Button
               className='side_arm'
@@ -126,37 +109,37 @@ class Publisher extends ImmutablePureComponent {
               title={`${intl.formatMessage(messages.publish)}: ${intl.formatMessage(privacyNames[sideArm])}`}
             />
           </div>
-        ) : null}
+        )}
         {showSideArmLocalToot && (
           <div className='compose-form__publish-button-wrapper'>
             <Button
               className='side_arm is_local'
-              disabled={disabled || diff < 0}
+              disabled={disabled}
               onClick={() => handleSideArmLocalSubmit(privacy)}
               text={
                 <span>
-                   <Icon
-                     id={{
-                       public: 'globe',
-                       unlisted: 'unlock',
-                       private: 'lock',
-                       direct: 'envelope',
-                     }[privacy]}
-                     fixedWidth
-                   />
-                   <Icon id='home' fixedWidth />
-                 </span>
+                  <Icon
+                    id={{
+                      public: 'globe',
+                      unlisted: 'unlock',
+                      private: 'lock',
+                      direct: 'envelope',
+                    }[privacy]}
+                    fixedWidth
+                  />
+                  <Icon id='home' fixedWidth />
+                </span>
               }
-              title={`${intl.formatMessage(messages.publish)}: ${intl.formatMessage(privacyMessages[sideArm])} (${intl.formatMessage({ id: 'advanced_options.local-only.short' })})`}
+              title={`${intl.formatMessage(messages.publish)}: ${intl.formatMessage(privacyMessages[privacy])} (${intl.formatMessage({ id: 'advanced_options.local-only.short' })})`}
             />
           </div>
         )}
         <div className='compose-form__publish-button-wrapper'>
           <Button
             className='primary'
+            type='submit'
             text={publishText}
             title={`${intl.formatMessage(messages.publish)}: ${intl.formatMessage(privacyNames[privacy])}`}
-            onClick={this.handleSubmit}
             disabled={disabled}
           />
         </div>
