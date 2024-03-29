@@ -35,9 +35,9 @@ Rails.application.config.content_security_policy do |p|
   p.default_src     :none
   p.frame_ancestors :none
   p.font_src        :self, assets_host
-  p.img_src         :self, :data, :blob, *media_hosts
+  p.img_src         :self, :https, :data, :blob, *media_hosts
   p.style_src       :self, assets_host
-  p.media_src       :self, :data, *media_hosts
+  p.media_src       :self, :https, :data, *media_hosts
   p.frame_src       :self, :https
   p.manifest_src    :self, assets_host
 
