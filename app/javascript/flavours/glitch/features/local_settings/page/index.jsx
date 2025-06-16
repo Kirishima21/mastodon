@@ -227,7 +227,6 @@ class LocalSettingsPage extends PureComponent {
         </LocalSettingsPageItem>
         <LocalSettingsPageItem
           settings={settings}
-<<<<<<< HEAD:app/javascript/flavours/glitch/features/local_settings/page/index.js
           item={['side_arm_local_toot']}
           id='mastodon-settings--side_arm_local_toot'
           onChange={onChange}
@@ -241,13 +240,14 @@ class LocalSettingsPage extends PureComponent {
           onChange={onChange}
         >
           <FormattedMessage id='settings.side_arm_local_secondary' defaultMessage='セカンダリボタンの横に(セカンダリの)ローカル投稿ボタンを表示する' />
-=======
+        </LocalSettingsPageItem>
+        <LocalSettingsPageItem
+          settings={settings}
           item={['show_published_toast']}
           id='mastodon-settings--show_published_toast'
           onChange={onChange}
         >
           <FormattedMessage id='settings.show_published_toast' defaultMessage='Display toast when publishing/saving a post' />
->>>>>>> upstream:app/javascript/flavours/glitch/features/local_settings/page/index.jsx
         </LocalSettingsPageItem>
         <LocalSettingsPageItem
           settings={settings}
@@ -397,10 +397,6 @@ class LocalSettingsPage extends PureComponent {
     return <CurrentPage intl={intl} onChange={onChange} settings={settings} />;
   }
 
-<<<<<<< HEAD:app/javascript/flavours/glitch/features/local_settings/page/index.js
-}
-=======
 }
 
 export default injectIntl(LocalSettingsPage);
->>>>>>> upstream:app/javascript/flavours/glitch/features/local_settings/page/index.jsx

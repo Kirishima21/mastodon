@@ -89,7 +89,6 @@ export const activityApiEnabled = getMeta('activity_api_enabled');
 export const autoPlayGif = getMeta('auto_play_gif');
 export const boostModal = getMeta('boost_modal');
 export const deleteModal = getMeta('delete_modal');
-<<<<<<< HEAD
 export const me = getMeta('me');
 export const searchEnabled = getMeta('search_enabled');
 export const maxChars = (initialState && initialState.max_toot_chars) || 6229;
@@ -101,7 +100,6 @@ export const version = getMeta('version');
 export const mascot = getMeta('mascot');
 export const profile_directory = getMeta('profile_directory');
 export const isStaff = getMeta('is_staff');
-=======
 export const missingAltTextModal = getMeta('missing_alt_text_modal');
 export const disableSwiping = getMeta('disable_swiping');
 export const disableHoverCards = getMeta('disable_hover_cards');
@@ -109,7 +107,6 @@ export const disabledAccountId = getMeta('disabled_account_id');
 export const displayMedia = getMeta('display_media');
 export const domain = getMeta('domain');
 export const expandSpoilers = getMeta('expand_spoilers');
->>>>>>> upstream
 export const forceSingleColumn = !getMeta('advanced_layout');
 export const limitedFederationMode = getMeta('limited_federation_mode');
 export const mascot = getMeta('mascot');

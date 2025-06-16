@@ -4,7 +4,6 @@ ja:
     about_mastodon_html: Mastodonは、オープンなウェブプロトコルを採用した、自由でオープンソースなソーシャルネットワークです。電子メールのような分散型の仕組みを採っています。
     contact_missing: 未設定
     contact_unavailable: N/A
-<<<<<<< HEAD
     discover_users: ユーザーを見つける
     documentation: ドキュメント
     federation_hint_html: "%{instance} のアカウントひとつでどんなMastodon互換サーバーのユーザーでもフォローできるでしょう。"
@@ -38,10 +37,7 @@ ja:
     user_count_after: 人
     user_count_before: ユーザー数
     what_is_mastodon: Mastodon とは？
-=======
-    hosted_on: Mastodon hosted on %{domain}
     title: このサーバーについて
->>>>>>> upstream
   accounts:
     followers:
       other: フォロワー
@@ -865,7 +861,6 @@ ja:
           approved: 登録には承認が必要
           none: 誰にも許可しない
           open: 誰でも登録可
-<<<<<<< HEAD
         title: 新規登録
       show_known_fediverse_at_about_page:
         desc_html: チェックを外すと、ランディングページからリンクされた公開タイムラインにローカルの公開投稿のみ表示します。
@@ -899,7 +894,6 @@ ja:
       trends:
         desc_html: 現在トレンドになっている承認済みのハッシュタグを公開します
         title: トレンドタグを有効にする
-=======
         warning_hint: モデレーションチームがスパムや悪意のある登録を迅速に処理できる自信がない限り、サインアップを承認制にすることをお勧めします。
       security:
         authorized_fetch: 連合サーバーによる署名なしでの情報取得を拒否する
@@ -907,7 +901,6 @@ ja:
         authorized_fetch_overridden_hint: この設定は環境変数で指定されているため、ここでは変更できません。
         federation_authentication: 連合に署名を必須にする
       title: サーバー設定
->>>>>>> upstream
     site_uploads:
       delete: ファイルを削除
       destroyed_msg: ファイルを削除しました！

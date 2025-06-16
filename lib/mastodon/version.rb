@@ -20,17 +20,17 @@ module Mastodon
       'beta.1'
     end
 
-<<<<<<< HEAD
     def suffix
       '+ Astarte on Glitch'
-=======
+    end
+
     def prerelease
       version_configuration[:prerelease].presence || default_prerelease
     end
 
     def build_metadata
       version_configuration[:metadata]
->>>>>>> upstream
+    end
     end
 
     def to_a

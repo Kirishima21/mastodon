@@ -671,24 +671,13 @@ class Status extends ImmutablePureComponent {
       rebloggedByText = intl.formatMessage({ id: 'status.reblogged_by', defaultMessage: '{name} boosted' }, { name: account.get('acct') });
     }
 
-<<<<<<< HEAD:app/javascript/flavours/glitch/components/status.js
-    const computedClass = classNames('status', `status-${status.get('visibility')}`, {
-      collapsed: isCollapsed,
-      'has-background': isCollapsed && background,
-      'status__wrapper-reply': !!status.get('in_reply_to_id'),
-      unread,
-      muted,
-      mathjaxified__content: isMathjaxifyable(status.get('content')),
-    }, 'focusable');
-=======
     if (account === undefined || account === null) {
       statusAvatar = <Avatar account={status.get('account')} size={avatarSize} />;
     } else {
       statusAvatar = <AvatarOverlay account={status.get('account')} friend={account} />;
     }
 
-    const {statusContentProps, hashtagBar} = getHashtagBarForStatus(status);
->>>>>>> upstream:app/javascript/flavours/glitch/components/status.jsx
+    const { statusContentProps, hashtagBar } = getHashtagBarForStatus(status);
 
     return (
       <HotKeys handlers={handlers} tabIndex={unfocusable ? null : -1}>
@@ -704,8 +693,8 @@ class Status extends ImmutablePureComponent {
           {!skipPrepend && prepend}
 
           <div
-            className={
-              classNames('status', `status-${status.get('visibility')}`,
+              className={
+                classNames('status', `status-${status.get('visibility')}`,
               {
                 'status-reply': !!status.get('in_reply_to_id'),
                 'status--in-thread': !!rootId,
@@ -713,6 +702,7 @@ class Status extends ImmutablePureComponent {
                 muted: this.props.muted,
                 'status--is-quote': isQuotedPost,
                 'status--has-quote': !!status.get('quote'),
+                mathjaxified__content: isMathjaxifyable(status.get('content')),
               })
             }
             data-id={status.get('id')}

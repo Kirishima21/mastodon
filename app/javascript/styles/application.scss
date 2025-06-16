@@ -1,11 +1,9 @@
-@use 'mastodon/functions';
-@use 'mastodon/mixins';
-@use 'mastodon/variables';
-@use 'mastodon/css_variables';
-@use 'fonts/roboto';
-@use 'fonts/roboto-mono';
+@import 'mastodon/mixins';
+@import 'mastodon/variables';
+@import 'fonts/roboto';
+@import 'fonts/roboto-mono';
+@import 'fonts/montserrat';
 
-<<<<<<< HEAD
 @import 'mastodon/reset';
 @import 'mastodon/basics';
 @import 'mastodon/containers';
@@ -32,25 +30,3 @@
 @import 'bbcode';
 @import 'markdown';
 @import 'astarte';
-=======
-@use 'mastodon/reset';
-@use 'mastodon/basics';
-@use 'mastodon/branding';
-@use 'mastodon/containers';
-@use 'mastodon/lists';
-@use 'mastodon/widgets';
-@use 'mastodon/forms';
-@use 'mastodon/accounts';
-@use 'mastodon/components';
-@use 'mastodon/polls';
-@use 'mastodon/modal';
-@use 'mastodon/emoji_picker';
-@use 'mastodon/annual_reports';
-@use 'mastodon/about';
-@use 'mastodon/tables';
-@use 'mastodon/admin';
-@use 'mastodon/dashboard';
-@use 'mastodon/rtl';
-@use 'mastodon/accessibility';
-@use 'mastodon/rich_text';
->>>>>>> upstream

@@ -1,5 +1,6 @@
-<<<<<<< HEAD
 @use "sass:math";
+@use 'variables' as *;
+@use 'functions' as *;
 
 .hero-widget {
   margin-bottom: 10px;
@@ -276,10 +277,6 @@
     }
   }
 }
-=======
-@use 'variables' as *;
-@use 'functions' as *;
->>>>>>> upstream
 
 .directory {
   &__tag {
@@ -461,7 +458,6 @@
     }
   }
 }
-<<<<<<< HEAD
 
 .moved-account-widget,
 .memoriam-widget,
@@ -606,5 +602,3 @@ $fluid-breakpoint: $maximum-width + 20px;
     border-bottom: 1px solid lighten($ui-base-color, 4%);
   }
 }
-=======
->>>>>>> upstream

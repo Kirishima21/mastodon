@@ -14,14 +14,10 @@
     - SiteUpload::FAVICON_SIZES.each do |size|
       %link{ rel: 'icon', sizes: "#{size}x#{size}", href: favicon_path(size.to_i) || frontend_asset_path("icons/favicon-#{size}x#{size}.png"), type: 'image/png' }/
 
-<<<<<<< HEAD
     %audio{ id: 'kirishima-music' }
-
-    %title= content_for?(:page_title) ? safe_join([yield(:page_title).chomp.html_safe, title], ' - ') : title
-=======
     - SiteUpload::APPLE_ICON_SIZES.each do |size|
       %link{ rel: 'apple-touch-icon', sizes: "#{size}x#{size}", href: app_icon_path(size.to_i) || frontend_asset_path("icons/apple-touch-icon-#{size}x#{size}.png") }/
->>>>>>> upstream
+    %title= content_for?(:page_title) ? safe_join([yield(:page_title).chomp.html_safe, title], ' - ') : title
 
     - if use_mask_icon?
       %link{ rel: 'mask-icon', href: frontend_asset_path('images/logo-symbol-icon.svg'), color: '#6364FF' }/

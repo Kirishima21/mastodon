@@ -78,11 +78,8 @@ export const FOLLOW_REQUEST_REJECT_FAIL    = 'FOLLOW_REQUEST_REJECT_FAIL';
 
 export const ACCOUNT_REVEAL = 'ACCOUNT_REVEAL';
 
-<<<<<<< HEAD
-=======
 export * from './accounts_typed';
 
->>>>>>> upstream
 export function fetchAccount(id) {
   return (dispatch) => {
     dispatch(fetchRelationships([id]));

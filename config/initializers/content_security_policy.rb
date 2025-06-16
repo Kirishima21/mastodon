@@ -1,15 +1,12 @@
 # frozen_string_literal: true
 
-<<<<<<< HEAD
 if Rails.env.production?
   assets_host = Rails.configuration.action_controller.asset_host || "https://#{ENV['WEB_DOMAIN'] || ENV['LOCAL_DOMAIN']}"
   data_hosts = [assets_host]
   cloudflarecdn = 'https://cdnjs.cloudflare.com'
   mathjax = 'https://cdn.mathjax.org'
   cdn_hosts = 'https://media-astarte.global.ssl.fastly.net'
-=======
 # Be sure to restart your server when you modify this file.
->>>>>>> upstream
 
 # Define an application-wide content security policy.
 # See the Securing Rails Applications Guide for more information:
@@ -43,7 +40,6 @@ Rails.application.config.content_security_policy do |p|
     vite_public_host = ENV.fetch('VITE_DEV_SERVER_PUBLIC', "localhost:#{ViteRuby.config.port}")
     front_end_build_urls = %w(ws http).map { |protocol| "#{protocol}#{'s' if ViteRuby.config.https}://#{vite_public_host}" }
 
-<<<<<<< HEAD
   data_hosts.concat(ENV['EXTRA_DATA_HOSTS'].split('|')) if ENV['EXTRA_DATA_HOSTS']
 
   data_hosts.uniq!
@@ -62,7 +58,6 @@ Rails.application.config.content_security_policy do |p|
     p.worker_src      :self, :blob, assets_host
     p.connect_src     :self, :unsafe_inline, :blob, :data, Rails.configuration.x.streaming_api_base_url, *data_hosts, cloudflarecdn, mathjax
     p.manifest_src    :self, assets_host
-=======
     p.connect_src :self, :data, :blob, *media_hosts, Rails.configuration.x.streaming_api_base_url, *front_end_build_urls
     p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host
     p.frame_src   :self, :https, :http
@@ -72,7 +67,6 @@ Rails.application.config.content_security_policy do |p|
     p.script_src  :self, assets_host, "'wasm-unsafe-eval'"
     p.frame_src   :self, :https
     p.style_src   :self, assets_host
->>>>>>> upstream
   end
 end
 

@@ -451,8 +451,6 @@ RSpec.describe Account do
       expect(subject.match('https://example.com/?x=@alice')).to be_nil
     end
 
-<<<<<<< HEAD
-=======
     it 'matches usernames immediately following the letter ß' do
       expect(subject.match('Hello toß @alice from me')[1]).to eq 'alice'
     end
@@ -460,7 +458,6 @@ RSpec.describe Account do
     it 'matches usernames containing uppercase characters' do
       expect(subject.match('Hello to @aLice@Example.com from me')[1]).to eq 'aLice@Example.com'
     end
->>>>>>> upstream
   end
 
   describe 'Callbacks' do
