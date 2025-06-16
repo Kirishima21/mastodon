@@ -77,28 +77,19 @@
     "immutable": "^4.3.0",
     "intl-messageformat": "^10.7.16",
     "js-yaml": "^4.1.0",
-<<<<<<< HEAD
     "load-script": "^1.0.0",
     "load-script-once": "^2.0.1",
-=======
     "lande": "^1.0.10",
->>>>>>> upstream
     "lodash": "^4.17.21",
     "marky": "^1.2.5",
     "path-complete-extname": "^1.0.0",
     "postcss-preset-env": "^10.1.5",
     "prop-types": "^15.8.1",
-<<<<<<< HEAD
-    "punycode": "^2.1.0",
-    "react": "^16.14.0",
-    "react-decoration": "^2.1.0",
-    "react-dom": "^16.14.0",
-=======
     "punycode": "^2.3.0",
     "react": "^18.2.0",
+    "react-decoration": "^2.1.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
->>>>>>> upstream
     "react-hotkeys": "^1.1.4",
     "react-immutable-proptypes": "^2.2.0",
     "react-immutable-pure-component": "^2.2.2",

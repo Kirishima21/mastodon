@@ -30,37 +30,7 @@ const sideArmPrivacy = state => {
     sideArmPrivacy = sideArmRestrictedPrivacy;
     break;
   }
-<<<<<<< HEAD
-  sideArmPrivacy = sideArmPrivacy || sideArmBasePrivacy;
-  return {
-    advancedOptions: state.getIn(['compose', 'advanced_options']),
-    focusDate: state.getIn(['compose', 'focusDate']),
-    caretPosition: state.getIn(['compose', 'caretPosition']),
-    isSubmitting: state.getIn(['compose', 'is_submitting']),
-    isChangingUpload: state.getIn(['compose', 'is_changing_upload']),
-    isUploading: state.getIn(['compose', 'is_uploading']),
-    layout: state.getIn(['local_settings', 'layout']),
-    media: state.getIn(['compose', 'media_attachments']),
-    preselectDate: state.getIn(['compose', 'preselectDate']),
-    privacy: state.getIn(['compose', 'privacy']),
-    sideArm: sideArmPrivacy,
-    showSideArmLocalToot: state.getIn(['local_settings', 'side_arm_local_toot']),
-    showSideArmLocalSecondary: state.getIn(['local_settings', 'side_arm_local_secondary']),
-    sensitive: state.getIn(['compose', 'sensitive']),
-    showSearch: state.getIn(['search', 'submitted']) && !state.getIn(['search', 'hidden']),
-    spoiler: spoilersAlwaysOn || state.getIn(['compose', 'spoiler']),
-    spoilerText: state.getIn(['compose', 'spoiler_text']),
-    suggestions: state.getIn(['compose', 'suggestions']),
-    text: state.getIn(['compose', 'text']),
-    anyMedia: state.getIn(['compose', 'media_attachments']).size > 0,
-    spoilersAlwaysOn: spoilersAlwaysOn,
-    mediaDescriptionConfirmation: state.getIn(['local_settings', 'confirm_missing_media_description']),
-    preselectOnReply: state.getIn(['local_settings', 'preselect_on_reply']),
-    isInReply: state.getIn(['compose', 'in_reply_to']) !== null,
-  };
-=======
   return sideArmPrivacy || sideArmBasePrivacy;
->>>>>>> upstream
 };
 
 const mapStateToProps = state => ({

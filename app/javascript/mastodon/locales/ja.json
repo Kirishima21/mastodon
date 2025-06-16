@@ -30,9 +30,7 @@
   "account.edit_profile": "プロフィール編集",
   "account.enable_notifications": "@{name}さんの投稿時に通知",
   "account.endorse": "プロフィールで紹介する",
-<<<<<<< HEAD
   "account.follows": "フォロー",
-=======
   "account.familiar_followers_many": "{name1}、{name2}、他{othersCount, plural, one {one other you know} other {# others you know}}人のユーザーにフォローされています",
   "account.familiar_followers_one": "{name1} さんがフォローしています",
   "account.familiar_followers_two": "{name1} さんと {name2} さんもフォローしています",
@@ -43,7 +41,6 @@
   "account.featured_tags.last_status_never": "投稿がありません",
   "account.follow": "フォロー",
   "account.follow_back": "フォローバック",
->>>>>>> upstream
   "account.followers": "フォロワー",
   "account.followers.empty": "まだ誰もフォローしていません。",
   "account.followers_counter": "{count, plural, other {{counter} フォロワー}}",
@@ -198,12 +195,9 @@
   "compose.published.open": "開く",
   "compose.saved.body": "変更を保存しました。",
   "compose_form.direct_message_warning_learn_more": "もっと詳しく",
-<<<<<<< HEAD
   "compose_form.hashtag_warning": "投稿範囲がダイレクトや非公開に設定されているときハッシュタグの一覧に投稿は表示されません。公開や未収載はハッシュタグで検索できます。",
-=======
   "compose_form.encryption_warning": "Mastodonの投稿はエンドツーエンド暗号化に対応していません。安全に送受信されるべき情報をMastodonで共有しないでください。",
   "compose_form.hashtag_warning": "この投稿は公開設定ではないのでハッシュタグの一覧に表示されません。公開投稿だけがハッシュタグで検索できます。",
->>>>>>> upstream
   "compose_form.lock_disclaimer": "あなたのアカウントは{locked}になっていません。誰でもあなたをフォローすることができ、フォロワー限定の投稿を見ることができます。",
   "compose_form.lock_disclaimer.lock": "承認制",
   "compose_form.placeholder": "今なにしてる？",
@@ -403,20 +397,17 @@
   "footer.terms_of_service": "サービス利用規約",
   "generic.saved": "保存しました",
   "getting_started.heading": "スタート",
-<<<<<<< HEAD
   "getting_started.invite": "招待",
   "getting_started.open_source_notice": "Glitchsocは{Mastodon}によるフリーなオープンソースソフトウェアです。誰でもGitHub（{github}）から開発に參加したり、問題を報告したりできます。アスタルテの開発も同様に（{astarte}）で進んでいます。バグの報告はこちらからも受け付けています。",
   "getting_started.security": "アカウント設定",
   "getting_started.terms": "プライバシーポリシー",
   "hashtag.column_header.tag_mode.all": "と {additional}",
   "hashtag.column_header.tag_mode.any": "か {additional}",
-=======
   "hashtag.admin_moderation": "#{name}のモデレーション画面を開く",
   "hashtag.browse": "#{hashtag}が付いた投稿を閲覧する",
   "hashtag.browse_from_account": "#{hashtag}が付いた{name}の投稿を閲覧する",
   "hashtag.column_header.tag_mode.all": "と{additional}",
   "hashtag.column_header.tag_mode.any": "か{additional}",
->>>>>>> upstream
   "hashtag.column_header.tag_mode.none": "({additional} を除く)",
   "hashtag.column_settings.select.no_options_message": "提案はありません",
   "hashtag.column_settings.select.placeholder": "ハッシュタグを入力してください…",
@@ -488,15 +479,12 @@
   "keyboard_shortcuts.direct": "非公開の返信のカラムを開く",
   "keyboard_shortcuts.down": "カラム内一つ下に移動",
   "keyboard_shortcuts.enter": "投稿の詳細を表示",
-<<<<<<< HEAD
   "keyboard_shortcuts.favourite": "お気に入り",
   "keyboard_shortcuts.favourites": "お気に入り登録のリストを開く",
   "keyboard_shortcuts.federated": "パブリックタイムラインを開く",
-=======
   "keyboard_shortcuts.favourite": "お気に入りの投稿",
   "keyboard_shortcuts.favourites": "お気に入りリストを開く",
   "keyboard_shortcuts.federated": "連合タイムラインを開く",
->>>>>>> upstream
   "keyboard_shortcuts.heading": "キーボードショートカット",
   "keyboard_shortcuts.home": "ホームタイムラインを開く",
   "keyboard_shortcuts.hotkey": "ホットキー",
@@ -592,14 +580,11 @@
   "navigation_bar.personal": "個人用",
   "navigation_bar.pins": "固定した投稿",
   "navigation_bar.preferences": "ユーザー設定",
-<<<<<<< HEAD
   "navigation_bar.profile_directory": "ディレクトリ",
   "navigation_bar.public_timeline": "パブリックタイムライン",
   "navigation_bar.misc": "その他",
-=======
   "navigation_bar.public_timeline": "連合タイムライン",
   "navigation_bar.search": "検索",
->>>>>>> upstream
   "navigation_bar.security": "セキュリティ",
   "not_signed_in_indicator.not_signed_in": "この機能を使うにはログインする必要があります。",
   "notification.admin.report": "{name}さんが{target}さんを通報しました",

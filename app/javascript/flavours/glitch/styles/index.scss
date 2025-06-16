@@ -2,30 +2,7 @@
   update their implementation, as the previous `index.scss` has been renamed
   to `application.scss`. */
 
-<<<<<<< HEAD
-@import 'reset';
-@import 'basics';
-@import 'containers';
-@import 'lists';
-@import 'modal';
-@import 'footer';
-@import 'compact_header';
-@import 'widgets';
-@import 'forms';
-@import 'accounts';
-@import 'statuses';
-@import 'components/index';
-@import 'polls';
-@import 'about';
-@import 'tables';
-@import 'admin';
-@import 'accessibility';
-@import 'rtl';
-@import 'dashboard';
-
+@import 'application';
 @import 'bbcode';
 @import 'markdown';
 @import 'astarte';
-=======
-@import 'application';
->>>>>>> upstream

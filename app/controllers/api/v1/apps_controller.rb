@@ -4,21 +4,14 @@ class Api::V1::AppsController < Api::BaseController
   skip_before_action :require_authenticated_user!
 
   def create
-<<<<<<< HEAD
-    
     option = application_options
 
-    if option[:name].downcase.include?("tootdon")
-      render json: {},status: 403
+    if option[:name].downcase.include?('tootdon')
+      render json: {}, status: 403
     else
-      @app = Doorkeeper::Application.create!(application_options)
-      render json: @app, serializer: REST::ApplicationSerializer
+      @app = Doorkeeper::Application.create!(option)
+      render json: @app, serializer: REST::CredentialApplicationSerializer
     end
-
-=======
-    @app = Doorkeeper::Application.create!(application_options)
-    render json: @app, serializer: REST::CredentialApplicationSerializer
->>>>>>> upstream
   end
 
   private

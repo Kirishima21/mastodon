@@ -1,16 +1,11 @@
 @use '../variables' as *;
 
 .status__content a,
-<<<<<<< HEAD
-.reply-indicator__content a {
-  color: #1FBFF9;
-=======
 .reply-indicator__content a,
 .edit-indicator__content a,
 .link-footer a,
 .status__content__read-more-button,
 .status__content__translate-button {
->>>>>>> upstream
   text-decoration: underline;
 
   &:hover,

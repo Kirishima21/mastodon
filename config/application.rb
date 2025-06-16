@@ -67,7 +67,6 @@ module Mastodon
     # TODO: We should enable this eventually, but for now there are many things
     # in the wrong path from the perspective of zeitwerk.
 
-<<<<<<< HEAD
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
     # config.time_zone = 'Central Time (US & Canada)'
@@ -84,15 +83,6 @@ module Mastodon
     unless config.i18n.available_locales.include?(config.i18n.default_locale)
       config.i18n.default_locale = :en
     end
-=======
-    # Configuration for the application, engines, and railties goes here.
-    #
-    # These settings can be overridden in specific environments using the files
-    # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
->>>>>>> upstream
 
     # config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
     # config.autoload_paths += Dir[Rails.root.join('app', 'api', '*')]
