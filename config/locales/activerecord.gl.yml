@@ -1,0 +1,77 @@
+---
+gl:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: Remata en
+        options: Opcións
+      user:
+        agreement: Acordo do Servizo
+        email: Enderezo de correo
+        locale: Locale
+        password: Contrasinal
+      user/account:
+        username: Nome de usuaria
+      user/invite_request:
+        text: Razón
+    errors:
+      attributes:
+        domain:
+          invalid: non é un nome de dominio válido
+      messages:
+        invalid_domain_on_line: "%{value} non é un nome de dominio válido"
+      models:
+        account:
+          attributes:
+            fields:
+              fields_with_values_missing_labels: contén valores aos que lle faltan etiquetas
+            username:
+              invalid: só letras, números e trazo baixo
+              reserved: está reservado
+        admin/webhook:
+          attributes:
+            url:
+              invalid: non é un URL válido
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: non é un URL válido
+        import:
+          attributes:
+            data:
+              malformed: ten formato incorrecto
+        list_account:
+          attributes:
+            account_id:
+              taken: xa está na lista
+          must_be_following: ten que ser unha conta que segues
+        status:
+          attributes:
+            reblog:
+              taken: do estado xa existe
+        terms_of_service:
+          attributes:
+            effective_date:
+              too_soon: é demasiado axiña, debería ser posterior a %{date}
+        user:
+          attributes:
+            date_of_birth:
+              below_limit: é inferior ao límite de idade
+            email:
+              blocked: utiliza un provedor de email non autorizado
+              unreachable: semella que non existe
+            role_id:
+              elevated: non pode superar o teu rol actual
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: inclúe permisos que non son seguros para o rol básico
+              elevated: non pode incluir permisos que o teu rol actual non posúe
+              own_role: non pode ser modificado co teu rol actual
+            position:
+              elevated: non pode superar ao teu rol actual
+              own_role: non pode ser modificado co teu rol actual
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: non podes incluír eventos para os que non tes permiso

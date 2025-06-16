@@ -13,7 +13,7 @@ class Web::NotificationSerializer < ActiveModel::Serializer
   end
 
   def preferred_locale
-    current_push_subscription.associated_user&.locale || I18n.default_locale
+    current_push_subscription.user&.locale || I18n.default_locale
   end
 
   def notification_id
@@ -33,7 +33,7 @@ class Web::NotificationSerializer < ActiveModel::Serializer
   end
 
   def body
-    str = strip_tags(object.target_status&.spoiler_text&.presence || object.target_status&.text || object.from_account.note)
-    truncate(HTMLEntities.new.decode(str.to_str), length: 140) # Do not encode entities, since this value will not be used in HTML
+    str = strip_tags(object.target_status&.spoiler_text.presence || object.target_status&.text || object.from_account.note)
+    truncate(HTMLEntities.new.decode(str.to_str), length: 140, escape: false) # Do not encode entities, since this value will not be used in HTML
   end
 end

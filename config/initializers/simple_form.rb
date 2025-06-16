@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 # Use this setup block to configure all options available in SimpleForm.
 
 module AppendComponent
   def append(_wrapper_options = nil)
     @append ||= begin
-      options[:append].to_s.html_safe if options[:append].present?
+      options[:append].to_s.html_safe if options[:append].present? # rubocop:disable Rails/OutputSafety
     end
   end
 end
@@ -11,13 +13,35 @@ end
 module RecommendedComponent
   def recommended(_wrapper_options = nil)
     return unless options[:recommended]
-    options[:label_text] = ->(raw_label_text, _required_label_text, _label_present) { safe_join([raw_label_text, ' ', content_tag(:span, I18n.t('simple_form.recommended'), class: 'recommended')]) }
+
+    key = options[:recommended].is_a?(Symbol) ? options[:recommended] : :recommended
+    options[:label_text] = ->(raw_label_text, _required_label_text, _label_present) { safe_join([raw_label_text, ' ', content_tag(:span, I18n.t(key, scope: 'simple_form'), class: key)]) }
+
+    nil
+  end
+end
+
+module WarningHintComponent
+  def warning_hint(_wrapper_options = nil)
+    @warning_hint ||= begin
+      options[:warning_hint].to_s.html_safe if options[:warning_hint].present? # rubocop:disable Rails/OutputSafety
+    end
+  end
+end
+
+module GlitchOnlyComponent
+  def glitch_only(_wrapper_options = nil)
+    return unless options[:glitch_only]
+
+    options[:label_text] = ->(raw_label_text, _required_label_text, _label_present) { safe_join([raw_label_text, ' ', content_tag(:span, I18n.t('simple_form.glitch_only'), class: 'glitch_only')]) }
     nil
   end
 end
 
 SimpleForm.include_component(AppendComponent)
 SimpleForm.include_component(RecommendedComponent)
+SimpleForm.include_component(WarningHintComponent)
+SimpleForm.include_component(GlitchOnlyComponent)
 
 SimpleForm.setup do |config|
   # Wrappers are used by the form builder to generate a
@@ -75,6 +99,7 @@ SimpleForm.setup do |config|
 
     b.wrapper tag: :div, class: :label_input do |ba|
       ba.optional :recommended
+      ba.optional :glitch_only
       ba.use :label
 
       ba.wrapper tag: :div, class: :label_input__wrapper do |bb|
@@ -83,7 +108,8 @@ SimpleForm.setup do |config|
       end
     end
 
-    b.use :hint,  wrap_with: { tag: :span, class: :hint }
+    b.use :warning_hint, wrap_with: { tag: :span, class: [:hint, 'warning-hint'] }
+    b.use :hint, wrap_with: { tag: :span, class: :hint }
     b.use :error, wrap_with: { tag: :span, class: :error }
   end
 
@@ -97,6 +123,7 @@ SimpleForm.setup do |config|
   config.wrappers :with_block_label, class: [:input, :with_block_label], hint_class: :field_with_hint, error_class: :field_with_errors do |b|
     b.use :html5
     b.use :label
+    b.use :warning_hint, wrap_with: { tag: :span, class: [:hint, 'warning-hint'] }
     b.use :hint, wrap_with: { tag: :span, class: :hint }
     b.use :input, wrap_with: { tag: :div, class: :label_input }
     b.use :error, wrap_with: { tag: :span, class: :error }
@@ -148,7 +175,7 @@ SimpleForm.setup do |config|
   # config.item_wrapper_class = nil
 
   # How the label text should be generated altogether with the required text.
-  config.label_text = lambda { |label, required, explicit_label| "#{label} #{required}" }
+  config.label_text = ->(label, required, _explicit_label) { "#{label} #{required}" }
 
   # You can define the class to use on all labels. Default is nil.
   # config.label_class = nil

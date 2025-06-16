@@ -7,7 +7,13 @@ class Admin::SystemCheck::SidekiqProcessCheck < Admin::SystemCheck::BaseCheck
     mailers
     pull
     scheduler
+    ingress
+    fasp
   ).freeze
+
+  def skip?
+    !current_user.can?(:view_devops)
+  end
 
   def pass?
     missing_queues.empty?

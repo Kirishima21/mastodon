@@ -1,9 +1,8 @@
-@import 'mixins';
-@import 'variables';
-@import 'styles/fonts/roboto';
-@import 'styles/fonts/roboto-mono';
-@import 'styles/fonts/montserrat';
+/* This is a compat file so that third-party themes do not have to immediately
+  update their implementation, as the previous `index.scss` has been renamed
+  to `application.scss`. */
 
+<<<<<<< HEAD
 @import 'reset';
 @import 'basics';
 @import 'containers';
@@ -27,3 +26,6 @@
 @import 'bbcode';
 @import 'markdown';
 @import 'astarte';
+=======
+@import 'application';
+>>>>>>> upstream

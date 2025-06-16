@@ -1,0 +1,151 @@
+---
+kab:
+  activerecord:
+    attributes:
+      doorkeeper/application:
+        name: Isem n usnas
+        redirect_uri: URI n uwelleh
+        scopes: Tinerfadin
+        website: Asmel web n usnas
+    errors:
+      models:
+        doorkeeper/application:
+          attributes:
+            redirect_uri:
+              fragment_present: ur yezmir ad yegber afrur.
+              invalid_uri: ilaq ad tili d tansa URL tameɣtut.
+              relative_uri: ilaq ad yili d URI amagdaz.
+              secured_uri: ilaq URI ad yili HTTPS/SSL.
+  doorkeeper:
+    applications:
+      buttons:
+        authorize: Ssireg
+        cancel: Sefsex
+        destroy: Hudd
+        edit: Ẓreg
+        submit: Azen
+      confirmations:
+        destroy: Tetḥeqqeḍ?
+      edit:
+        title: Ẓreg asnas
+      form:
+        error: Ay ay! Senqed tiferkit-inek ma ulac deg-s tuccḍiwin
+      help:
+        native_redirect_uri: Seqdec %{native_redirect_uri} i yisekyaden idiganen
+        redirect_uri: Seqdec yiwen n ujerrid i yal URI
+      index:
+        application: Asnas
+        callback_url: URL n tririt n wawal
+        delete: Kkes
+        empty: Ulac ɣur-k·m isnasen.
+        name: Isem
+        new: Asnas amaynut
+        scopes: Tinerfadin
+        show: Ẓer
+        title: Isnasen-ik·im
+      new:
+        title: Asnas amaynut
+      show:
+        actions: Tigawin
+        application_id: ID n usnas
+        callback_urls: URL n tririt n wawal
+        scopes: Tinerfadin
+        secret: Tuffirt n umsaɣ
+        title: 'Asnas: %{name}'
+    authorizations:
+      buttons:
+        authorize: Ssireg
+        deny: Aggi
+      error:
+        title: Tella-d tuccḍa
+      new:
+        review_permissions: Asenqed n tsirag
+        title: Tlaq tsiregt
+      show:
+        title: Nɣel tangalt n wurag sakkin senteḍ-itt deg usnas.
+    authorized_applications:
+      buttons:
+        revoke: Ḥwi
+      confirmations:
+        revoke: Tetḥeqqeḍ?
+      index:
+        authorized_at: Yettwasireg ɣef %{date}
+        description_html: Ha-t-an yisnasen i izemren ad kecmen ɣer umiḍan-ik·im, s useqdec n API. Ma llan yisnasen ur teεqileḍ ara da, neɣ kra n wesnas ur iteddu ara akken ilaq, tzemreḍ ad tekkseḍ anekcum-is.
+        last_used_at: Yettwaseqdec i tikkelt taneggarut ass n %{date}
+        never_used: Urǧin yettwaseqdac
+        scopes: Tisirag
+        superapp: Adigan
+        title: Isnasen-ik·im yettusirgen
+    errors:
+      messages:
+        invalid_redirect_uri: URI n uwelleh mačči d ameγtu.
+    flash:
+      applications:
+        create:
+          notice: Asnas yettwarna-d.
+        destroy:
+          notice: Yettwakkes wesnas-nni.
+        update:
+          notice: Asnan yettwalqem.
+      authorized_applications:
+        destroy:
+          notice: Yettwaḥwi wesnas.
+    grouped_scopes:
+      access:
+        read: Anekcum i tɣuri kan
+        read/write: Anekcum i tɣuri d tira
+        write: Anekcum i tira kan
+      title:
+        accounts: Imiḍanen
+        admin/accounts: Tadbelt n imiḍan
+        admin/all: Akk timahilin tinebdalin
+        admin/reports: Tadbelt n yineqqisen
+        blocks: Yewḥel
+        bookmarks: Ticraḍ
+        conversations: Idiwenniyen
+        crypto: Awgelhen seg yixef ɣer yixef
+        favourites: Imenyafen
+        filters: Imzizdigen
+        follow: Aḍfar, asgugem akked usewḥel
+        follows: Aḍfar
+        lists: Tibdarin
+        media: Imeddayen n umidya
+        mutes: Yeggugem
+        notifications: Ilɣa
+        profile: Amaɣnu-k Mastodon
+        push: Ilɣa yettudemmren
+        reports: Ineqqisen
+        search: Nadi
+        statuses: Tisuffaɣ
+    layouts:
+      admin:
+        nav:
+          applications: Isnasen
+      application:
+        title: Tlaq tsiregt n OAuth
+    scopes:
+      admin:read: ad iɣeṛ akk isefka ɣef uqeddac
+      admin:write: ad iẓreg akk isefka ɣef uqeddac
+      follow: ad ibeddel assaɣen n umiḍan
+      push: ad iṭṭef-d ilɣa-k·m yettwademren
+      read: ad iɣeṛ akk isefka n umiḍan-ik·im
+      read:accounts: ẓer isallen n yimiḍanen
+      read:blocks: ẓer imiḍanen i tesḥebseḍ
+      read:bookmarks: ẓer ticraḍ-ik
+      read:filters: ad iẓer imsizdigen-ik·im
+      read:follows: ẓer imeḍfaṛen-ik
+      read:lists: ẓer tibdarin-ik·im
+      read:mutes: ẓer wid i tesgugmeḍ
+      read:notifications: ad iẓer ilɣa-inek·inem
+      read:reports: ẓer ineqqisen-ik·im
+      read:search: anadi deg umkan-ik·im
+      read:statuses: ad iẓer meṛṛa tisuffaɣ
+      write: beddel meṛṛa isefka n umiḍan-ik
+      write:accounts: ad iẓreg amaɣnu-ik·im
+      write:blocks: ad iseḥbes imiḍanen akked tɣula
+      write:bookmarks: ad yernu tisuffaɣ ɣer ticraḍ
+      write:filters: ad isnulfu imsizedgen
+      write:follows: ḍfeṛ imdanen
+      write:lists: ad yesnulfu tibdarin
+      write:media: ad yessali ifuyla n umidya
+      write:notifications: sfeḍ ilɣa-k·m

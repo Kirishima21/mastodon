@@ -3,20 +3,37 @@
 class Trends::Tags < Trends::Base
   PREFIX = 'trending_tags'
 
+  BATCH_SIZE = 100
+
   self.default_options = {
     threshold: 5,
-    review_threshold: 10,
+    review_threshold: 3,
     max_score_cooldown: 2.days.freeze,
     max_score_halflife: 4.hours.freeze,
+    decay_threshold: 1,
   }
 
+  class Query < Trends::Query
+    def to_arel
+      scope = Tag.joins(:trend).reorder(score: :desc)
+      scope = scope.reorder(language_order_clause, score: :desc) if preferred_languages.present?
+      scope = scope.merge(TagTrend.allowed) if @allowed
+      scope = scope.offset(@offset) if @offset.present?
+      scope = scope.limit(@limit) if @limit.present?
+      scope
+    end
+
+    private
+
+    def trend_class
+      TagTrend
+    end
+  end
+
   def register(status, at_time = Time.now.utc)
-    original_status = status.reblog? ? status.reblog : status
+    return unless !status.reblog? && status.public_visibility? && !status.account.silenced?
 
-    return unless original_status.public_visibility? && status.public_visibility? &&
-                  !original_status.account.silenced? && !status.account.silenced?
-
-    original_status.tags.each do |tag|
+    status.tags.each do |tag|
       add(tag, status.account_id, at_time) if tag.usable?
     end
   end
@@ -26,32 +43,39 @@ class Trends::Tags < Trends::Base
     record_used_id(tag.id, at_time)
   end
 
-  def refresh(at_time = Time.now.utc)
-    tags = Tag.where(id: (recently_used_ids(at_time) + currently_trending_ids(false, -1)).uniq)
-    calculate_scores(tags, at_time)
-    trim_older_items
+  def query
+    Query.new(key_prefix, klass)
   end
 
-  def get(allowed, limit)
-    tag_ids = currently_trending_ids(allowed, limit)
-    tags = Tag.where(id: tag_ids).index_by(&:id)
-    tag_ids.map { |id| tags[id] }.compact
+  def refresh(at_time = Time.now.utc)
+    # First, recalculate scores for tags that were trending previously. We split the queries
+    # to avoid having to load all of the IDs into Ruby just to send them back into Postgres
+    Tag.where(id: TagTrend.select(:tag_id)).find_in_batches(batch_size: BATCH_SIZE) do |tags|
+      calculate_scores(tags, at_time)
+    end
+
+    # Then, calculate scores for tags that were used today. There are potentially some
+    # duplicate items here that we might process one more time, but that should be fine
+    Tag.where(id: recently_used_ids(at_time)).find_in_batches(batch_size: BATCH_SIZE) do |tags|
+      calculate_scores(tags, at_time)
+    end
+
+    # Now that all trends have up-to-date scores, and all the ones below the threshold have
+    # been removed, we can recalculate their positions
+    TagTrend.recalculate_ordered_rank
   end
 
   def request_review
-    tags = Tag.where(id: currently_trending_ids(false, -1))
+    score_at_threshold = TagTrend.allowed.by_rank.ranked_below(options[:review_threshold]).first&.score || 0
+    tag_trends = TagTrend.not_allowed.includes(:tag)
 
-    tags_requiring_review = tags.filter_map do |tag|
-      next unless would_be_trending?(tag.id) && !tag.trendable? && tag.requires_review_notification?
+    tag_trends.filter_map do |trend|
+      tag = trend.tag
 
-      tag.touch(:requested_review_at)
-      tag
-    end
-
-    return if tags_requiring_review.empty?
-
-    User.staff.includes(:account).find_each do |user|
-      AdminMailer.new_trending_tags(user.account, tags_requiring_review).deliver_later! if user.allows_trending_tag_emails?
+      if trend.score > score_at_threshold && !tag.trendable? && tag.requires_review_notification?
+        tag.touch(:requested_review_at)
+        tag
+      end
     end
   end
 
@@ -61,10 +85,14 @@ class Trends::Tags < Trends::Base
     PREFIX
   end
 
+  def klass
+    Tag
+  end
+
   private
 
   def calculate_scores(tags, at_time)
-    tags.each do |tag|
+    items = tags.map do |tag|
       expected  = tag.history.get(at_time - 1.day).accounts.to_f
       expected  = 1.0 if expected.zero?
       observed  = tag.history.get(at_time).accounts.to_f
@@ -72,13 +100,11 @@ class Trends::Tags < Trends::Base
       max_score = tag.max_score
       max_score = 0 if max_time.nil? || max_time < (at_time - options[:max_score_cooldown])
 
-      score = begin
-        if expected > observed || observed < options[:threshold]
-          0
-        else
-          ((observed - expected)**2) / expected
-        end
-      end
+      score = if expected > observed || observed < options[:threshold]
+                0
+              else
+                ((observed - expected)**2) / expected
+              end
 
       if score > max_score
         max_score = score
@@ -90,22 +116,13 @@ class Trends::Tags < Trends::Base
 
       decaying_score = max_score * (0.5**((at_time.to_f - max_time.to_f) / options[:max_score_halflife].to_f))
 
-      if decaying_score.zero?
-        redis.zrem("#{PREFIX}:all", tag.id)
-        redis.zrem("#{PREFIX}:allowed", tag.id)
-      else
-        redis.zadd("#{PREFIX}:all", decaying_score, tag.id)
-
-        if tag.trendable?
-          redis.zadd("#{PREFIX}:allowed", decaying_score, tag.id)
-        else
-          redis.zrem("#{PREFIX}:allowed", tag.id)
-        end
-      end
+      [decaying_score, tag]
     end
-  end
 
-  def would_be_trending?(id)
-    score(id) > score_at_rank(options[:review_threshold] - 1)
+    to_insert = items.filter { |(score, _)| score >= options[:decay_threshold] }
+    to_delete = items.filter { |(score, _)| score < options[:decay_threshold] }
+
+    TagTrend.upsert_all(to_insert.map { |(score, tag)| { tag_id: tag.id, score: score, language: '', allowed: tag.trendable? || false } }, unique_by: %w(tag_id language)) if to_insert.any?
+    TagTrend.where(tag_id: to_delete.map { |(_, tag)| tag.id }).delete_all if to_delete.any?
   end
 end

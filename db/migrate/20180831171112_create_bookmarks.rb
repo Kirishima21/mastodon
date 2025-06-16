@@ -1,8 +1,11 @@
-# This migration is a duplicate of 20180410220657 and may get ignored, see
-# config/initializers/0_duplicate_migrations.rb
+# frozen_string_literal: true
 
-class CreateBookmarks < ActiveRecord::Migration[5.1]
-  def change
+# This migration is a duplicate of 20180410220657
+
+class CreateBookmarks < ActiveRecord::Migration[5.2]
+  def up
+    return if table_exists?(:bookmarks)
+
     create_table :bookmarks do |t|
       t.references :account, null: false
       t.references :status, null: false
@@ -16,5 +19,9 @@ class CreateBookmarks < ActiveRecord::Migration[5.1]
     end
 
     add_index :bookmarks, [:account_id, :status_id], unique: true
+  end
+
+  def down
+    drop_table :bookmarks
   end
 end

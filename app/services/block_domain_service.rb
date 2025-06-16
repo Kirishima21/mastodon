@@ -3,10 +3,13 @@
 class BlockDomainService < BaseService
   attr_reader :domain_block
 
-  def call(domain_block, update = false)
+  def call(domain_block, update: false)
     @domain_block = domain_block
+    @domain_block_event = nil
+
     process_domain_block!
     process_retroactive_updates! if update
+    notify_of_severed_relationships!
   end
 
   private
@@ -37,12 +40,30 @@ class BlockDomainService < BaseService
     blocked_domain_accounts.without_suspended.in_batches.update_all(suspended_at: @domain_block.created_at, suspension_origin: :local)
 
     blocked_domain_accounts.where(suspended_at: @domain_block.created_at).reorder(nil).find_each do |account|
-      DeleteAccountService.new.call(account, reserve_username: true, suspended_at: @domain_block.created_at)
+      DeleteAccountService.new.call(account, reserve_username: true, suspended_at: @domain_block.created_at, relationship_severance_event: domain_block_event)
+    end
+  end
+
+  def notify_of_severed_relationships!
+    return if @domain_block_event.nil?
+
+    # find_in_batches and perform_bulk both default to batches of 1000
+    @domain_block_event.affected_local_accounts.reorder(nil).find_in_batches do |accounts|
+      notification_jobs_args = accounts.map do |account|
+        event = AccountRelationshipSeveranceEvent.create!(account:, relationship_severance_event: @domain_block_event)
+        [account.id, event.id, 'AccountRelationshipSeveranceEvent', 'severed_relationships']
+      end
+
+      LocalNotificationWorker.perform_bulk(notification_jobs_args)
     end
   end
 
   def blocked_domain
     domain_block.domain
+  end
+
+  def domain_block_event
+    @domain_block_event ||= RelationshipSeveranceEvent.create!(type: :domain_block, target_name: blocked_domain)
   end
 
   def blocked_domain_accounts

@@ -11,18 +11,15 @@
     - if storage_host?
       %link{ rel: 'dns-prefetch', href: storage_host }/
 
+    = vite_client_tag
+    = vite_react_refresh_tag
+    = vite_polyfills_tag
+    = theme_style_tags current_theme
+    = vite_preload_file_tag "mastodon/locales/#{I18n.locale}.json" # TODO: fix preload for flavour
     = render_initial_state
-    = javascript_pack_tag "locales", crossorigin: 'anonymous'
-    - if @theme
-      - if @theme[:supported_locales].include? I18n.locale.to_s
-        = javascript_pack_tag "locales/#{@theme[:flavour]}/#{I18n.locale}", crossorigin: 'anonymous'
-      - elsif @theme[:supported_locales].include? 'en'
-        = javascript_pack_tag "locales/#{@theme[:flavour]}/en", crossorigin: 'anonymous'
-    = render partial: 'layouts/theme', object: @core
-    = render partial: 'layouts/theme', object: @theme
-
+    = flavoured_vite_typescript_tag 'embed.tsx', integrity: true, crossorigin: 'anonymous'
   %body.embed
     = yield
 
-    .logo-resources
-      = raw render file: Rails.root.join('app', 'javascript', 'images', 'logo_transparent.svg')
+    .logo-resources{ 'tabindex' => '-1', 'inert' => true, 'aria-hidden' => 'true' }
+      = inline_svg_tag 'logo-symbol-icon.svg'

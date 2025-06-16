@@ -7,12 +7,8 @@ class StatusPolicy < ApplicationPolicy
     @preloaded_relations = preloaded_relations
   end
 
-  def index?
-    staff?
-  end
-
   def show?
-    return false if author.suspended?
+    return false if author.unavailable?
     return false if local_only? && (current_account.nil? || !current_account.local?)
 
     if requires_mention?
@@ -33,13 +29,13 @@ class StatusPolicy < ApplicationPolicy
   end
 
   def destroy?
-    staff? || owned?
+    owned?
   end
 
   alias unreblog? destroy?
 
   def update?
-    staff?
+    owned?
   end
 
   private
@@ -62,7 +58,7 @@ class StatusPolicy < ApplicationPolicy
     if record.mentions.loaded?
       record.mentions.any? { |mention| mention.account_id == current_account.id }
     else
-      record.mentions.where(account: current_account).exists?
+      record.mentions.exists?(account: current_account)
     end
   end
 
@@ -93,7 +89,7 @@ class StatusPolicy < ApplicationPolicy
   def author
     record.account
   end
-  
+
   def local_only?
     record.local_only?
   end

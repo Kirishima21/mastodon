@@ -1,0 +1,77 @@
+---
+tr:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: Bitiş zamanı
+        options: Seçenekler
+      user:
+        agreement: Hizmet Sözleşmesi
+        email: E-posta adresi
+        locale: Bölge ayarı
+        password: Parola
+      user/account:
+        username: Kullanıcı adı
+      user/invite_request:
+        text: Gerekçe
+    errors:
+      attributes:
+        domain:
+          invalid: geçerli bir alan adı değil
+      messages:
+        invalid_domain_on_line: "%{value} geçerli bir alan adı değil"
+      models:
+        account:
+          attributes:
+            fields:
+              fields_with_values_missing_labels: etiketleri eksik değerler içeriyor
+            username:
+              invalid: sadece harfler, sayılar ve alt çizgiler
+              reserved: kullanılamaz
+        admin/webhook:
+          attributes:
+            url:
+              invalid: geçerli bir URL değil
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: geçerli bir bağlantı değil
+        import:
+          attributes:
+            data:
+              malformed: bozulmuştur
+        list_account:
+          attributes:
+            account_id:
+              taken: zaten listede var
+          must_be_following: takip edilen bir hesap olmalı
+        status:
+          attributes:
+            reblog:
+              taken: durum zaten var
+        terms_of_service:
+          attributes:
+            effective_date:
+              too_soon: çok erken, %{date} tarihinden sonra olmalıdır
+        user:
+          attributes:
+            date_of_birth:
+              below_limit: yaş sınırının altında
+            email:
+              blocked: izin verilmeyen bir e-posta sağlayıcı kullanıyor
+              unreachable: mevcut gözükmüyor
+            role_id:
+              elevated: mevcut rolünüzden yüksek olamaz
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: temel rol için güvenli olmayan izinleri içerir
+              elevated: mevcut rolünüzün sahip olmadığı izinleri içeremez
+              own_role: mevcut rolünüzle değiştirilemez
+            position:
+              elevated: mevcut rolünüzden yüksek olamaz
+              own_role: mevcut rolünüzle değiştirilemez
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: erişim hakkınız olmayan olayları içeremez

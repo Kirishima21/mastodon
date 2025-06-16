@@ -1,0 +1,62 @@
+---
+ar:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: آخر أجل
+        options: الخيارات
+      user:
+        agreement: اتفاقية الخدمة
+        email: عنوان البريد الإلكتروني
+        locale: اللغة
+        password: كلمة المرور
+      user/account:
+        username: اسم المستخدم
+      user/invite_request:
+        text: الغرض
+    errors:
+      attributes:
+        domain:
+          invalid: ليس بإسم نطاق صالح
+      models:
+        account:
+          attributes:
+            username:
+              invalid: يجب فقط أن يحتوي على حروف، وأرقام، وخطوط سفلية
+              reserved: محجوز
+        admin/webhook:
+          attributes:
+            url:
+              invalid: رابط تشعبي غير صالح
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: رابط تشعبي غير صالح
+        import:
+          attributes:
+            data:
+              malformed: معتل
+        status:
+          attributes:
+            reblog:
+              taken: المنشور موجود مِن قبل
+        user:
+          attributes:
+            email:
+              blocked: يستخدم مزوّد بريد إلكتروني غير مسموح به
+              unreachable: يبدو أنه لا وجود له
+            role_id:
+              elevated: لا يمكن أن يكون أعلى من دَورِك الحالي
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: تضمين استأذانات ليست آمنة للدور الأساسي
+              elevated: لا يمكن تضمين استأذانات التي لا يملكها دورك الحالي
+              own_role: لا يمكن تغييرها مع دورك الحالي
+            position:
+              elevated: لا يمكن أن يكون أعلى من دورك الحالي
+              own_role: لا يمكن تغييرها مع دورك الحالي
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: لا يمكن إدراج الأحداث التي لا تمتلك حقوقها

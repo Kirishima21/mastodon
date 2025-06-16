@@ -4,6 +4,7 @@ class Api::V1::AppsController < Api::BaseController
   skip_before_action :require_authenticated_user!
 
   def create
+<<<<<<< HEAD
     
     option = application_options
 
@@ -14,6 +15,10 @@ class Api::V1::AppsController < Api::BaseController
       render json: @app, serializer: REST::ApplicationSerializer
     end
 
+=======
+    @app = Doorkeeper::Application.create!(application_options)
+    render json: @app, serializer: REST::CredentialApplicationSerializer
+>>>>>>> upstream
   end
 
   private
@@ -32,6 +37,6 @@ class Api::V1::AppsController < Api::BaseController
   end
 
   def app_params
-    params.permit(:client_name, :redirect_uris, :scopes, :website)
+    params.permit(:client_name, :scopes, :website, :redirect_uris, redirect_uris: [])
   end
 end

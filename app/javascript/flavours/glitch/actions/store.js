@@ -1,6 +1,8 @@
-import { Iterable, fromJS } from 'immutable';
+import { fromJS, isIndexed } from 'immutable';
+
 import { hydrateCompose } from './compose';
 import { importFetchedAccounts } from './importer';
+import { hydrateSearch } from './search';
 import { saveSettings } from './settings';
 
 export const STORE_HYDRATE = 'STORE_HYDRATE';
@@ -8,7 +10,7 @@ export const STORE_HYDRATE_LAZY = 'STORE_HYDRATE_LAZY';
 
 const convertState = rawState =>
   fromJS(rawState, (k, v) =>
-    Iterable.isIndexed(v) ? v.toList() : v.toMap());
+    isIndexed(v) ? v.toList() : v.toMap());
 
 const applyMigrations = (state) => {
   return state.withMutations(state => {
@@ -18,10 +20,11 @@ const applyMigrations = (state) => {
       if (state.getIn(['settings', 'notifications', 'showUnread']) !== false) {
         state.setIn(['settings', 'notifications', 'showUnread'], state.getIn(['local_settings', 'notifications', 'show_unread']));
       }
-      state.removeIn(['local_settings', 'notifications', 'show_unread'])
+      state.removeIn(['local_settings', 'notifications', 'show_unread']);
     }
   });
 };
+
 
 export function hydrateStore(rawState) {
   return dispatch => {
@@ -33,7 +36,8 @@ export function hydrateStore(rawState) {
     });
 
     dispatch(hydrateCompose());
+    dispatch(hydrateSearch());
     dispatch(importFetchedAccounts(Object.values(rawState.accounts)));
     dispatch(saveSettings());
   };
-};
+}

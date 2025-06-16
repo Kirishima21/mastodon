@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Api::V1::Admin::ReportsController < Api::BaseController
-  protect_from_forgery with: :exception
-
   include Authorization
   include AccountableConcern
 
@@ -10,10 +8,10 @@ class Api::V1::Admin::ReportsController < Api::BaseController
 
   before_action -> { authorize_if_got_token! :'admin:read', :'admin:read:reports' }, only: [:index, :show]
   before_action -> { authorize_if_got_token! :'admin:write', :'admin:write:reports' }, except: [:index, :show]
-  before_action :require_staff!
   before_action :set_reports, only: :index
   before_action :set_report, except: :index
 
+  after_action :verify_authorized
   after_action :insert_pagination_headers, only: :index
 
   FILTER_PARAMS = %i(
@@ -37,6 +35,7 @@ class Api::V1::Admin::ReportsController < Api::BaseController
   def update
     authorize @report, :update?
     @report.update!(report_params)
+    log_action :update, @report
     render json: @report, serializer: REST::Admin::ReportSerializer
   end
 
@@ -90,10 +89,6 @@ class Api::V1::Admin::ReportsController < Api::BaseController
     params.permit(*FILTER_PARAMS)
   end
 
-  def insert_pagination_headers
-    set_pagination_headers(next_path, prev_path)
-  end
-
   def next_path
     api_v1_admin_reports_url(pagination_params(max_id: pagination_max_id)) if records_continue?
   end
@@ -102,12 +97,8 @@ class Api::V1::Admin::ReportsController < Api::BaseController
     api_v1_admin_reports_url(pagination_params(min_id: pagination_since_id)) unless @reports.empty?
   end
 
-  def pagination_max_id
-    @reports.last.id
-  end
-
-  def pagination_since_id
-    @reports.first.id
+  def pagination_collection
+    @reports
   end
 
   def records_continue?

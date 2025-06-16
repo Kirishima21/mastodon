@@ -1,0 +1,198 @@
+---
+lv:
+  activerecord:
+    attributes:
+      doorkeeper/application:
+        name: Lietotnes nosaukums
+        redirect_uri: Novirzīšanas URI
+        scopes: Darbības sfēras
+        website: Lietotnes mājvieta
+    errors:
+      models:
+        doorkeeper/application:
+          attributes:
+            redirect_uri:
+              fragment_present: nedrīkst saturēt fragmentu.
+              invalid_uri: jābūt derīgam URI.
+              relative_uri: jābūt absolūtam URI.
+              secured_uri: jābūt HTTPS/SSL URI.
+  doorkeeper:
+    applications:
+      buttons:
+        authorize: Pilnvarot
+        cancel: Atcelt
+        destroy: Iznīcināt
+        edit: Labot
+        submit: Apstiprināt
+      confirmations:
+        destroy: Vai tiešām?
+      edit:
+        title: Labot lietotni
+      form:
+        error: Hmm! Pārbaudi, vai tavā veidlapā nav kļūdu
+      help:
+        native_redirect_uri: Lokālajiem testiem izmanto %{native_redirect_uri}
+        redirect_uri: Katram URI izmanto vienu līniju
+        scopes: Atdali darbības jomas ar atstarpēm. Lai izmantotu noklusējuma darbības jomas, atstāj tukšu.
+      index:
+        application: Lietotne
+        callback_url: Atzvanīšanas URL
+        delete: Dzēst
+        empty: Tev nav lietotņu.
+        name: Nosaukums
+        new: Jauns pieteikums
+        scopes: Darbības sfēras
+        show: Parādīt
+        title: Tavas lietotnes
+      new:
+        title: Jauns pieteikums
+      show:
+        actions: Darbības
+        application_id: Klienta atslēga
+        callback_urls: Atzvanīšanas URL
+        scopes: Darbības sfēras
+        secret: Klienta noslēpums
+        title: 'Lietotne: %{name}'
+    authorizations:
+      buttons:
+        authorize: Pilnvarot
+        deny: Noraidīt
+      error:
+        title: Radās kļūda
+      new:
+        prompt_html: "%{client_name} vēlas atļauju piekļūt Tavam kontam. <strong>Apstiprini šo pieprasījumu tikai tad, ja atpazīsti un uzticies šim avotam!</strong>"
+        review_permissions: Pārskatīt atļaujas
+        title: Nepieciešama pilnvarošana
+      show:
+        title: Šis pilnvarošanas kods jāievieto starpliktuvē un jāielīmē lietotnē.
+    authorized_applications:
+      buttons:
+        revoke: Atsaukt
+      confirmations:
+        revoke: Vai tiešām?
+      index:
+        authorized_at: Pilnvarotas %{date}
+        description_html: Šīs ir lietotnes, kas var piekļūt Tavam kontam ar API. Ja šeit ir lietotnes, kuras neatpazīsti, vai lietotne darbojas ne tā, kā paredzēts, vari atsaukt tās piekļuvi.
+        last_used_at: Pēdējo reizi lietotas %{date}
+        never_used: Nekad nav lietotas
+        scopes: Atļaujas
+        superapp: Iekšējs
+        title: Tevis pilnvarotās lietotnes
+    errors:
+      messages:
+        access_denied: Resursa īpašnieks vai pilnvarošanas serveris noraidīja pieprasījumu.
+        credential_flow_not_configured: Resursa īpašnieka paroles akreditācijas datu plūsma neizdevās, jo Doorkeeper.configure.resource_owner_from_credentials nebija konfigurēts.
+        invalid_client: Klienta autentifikācija neizdevās nezināma klienta, klienta autentifikācijas vai neatbalstītas autentifikācijas metodes dēļ.
+        invalid_code_challenge_method: Koda izaicinājuma veidam jābūt S256, vienkāršs netiek atbalstīts.
+        invalid_grant: Sniegtais pilnvarošanas piešķīrums nav derīgs, tam ir beidzies derīgums, tas ir atsaukts, tas neatbilst pilnvarošanas pieprasījumā izmantotajam pārvirzīšanas URI vai tika izsniegts citam klientam.
+        invalid_redirect_uri: Iekļauts novirzīšanas uri nav derīgs.
+        invalid_request:
+          missing_param: 'Trūkst pieprasītā parametra: %{value}.'
+          request_not_authorized: Pieprasījums ir jāpilnvaro. Trūkst vai nav derīgas pieprasījuma pilnvarošanai nepieciešamās vērtības.
+          unknown: Pieprasījumā trūkst nepieciešamā parametra, tajā ir neatbalstīta parametra vērtība vai tas ir citādi nepareizi veidots.
+        invalid_resource_owner: Norādītie resursa īpašnieka akreditācijas dati nav derīgi, vai arī resursa īpašnieku nevar atrast
+        invalid_scope: Pieprasītā darbības joma nav derīga, nav zināma vai ir nepareizi veidota.
+        invalid_token:
+          expired: Piekļuves pilnvaras derīguma termiņš ir beidzies
+          revoked: Piekļuves pilnvara tika atsaukta
+          unknown: Piekļuves pilnvara nav derīga
+        resource_owner_authenticator_not_configured: Resursa īpašnieka atrašana neizdevās, jo Doorkeeper.configure.resource_owner_authenticator nav savienots.
+        server_error: Pilnvarošanas serverim radās neparedzēti apstākļi, kas tam neļāva izpildīt pieprasījumu.
+        temporarily_unavailable: Pilnvarošanas serveris šobrīd nevar apstrādāt pieprasījumu servera īslaicīgas pārslodzes vai uzturēšanas darbu dēļ.
+        unauthorized_client: Klients nav pilnvarots izpildīt šo pieprasījumu, izmantojot šo metodi.
+        unsupported_grant_type: Pilnvarošanas serveris neatbalsta atļaujas piešķiršanas veidu.
+        unsupported_response_type: Pilnvarošanas serveris neatbalsta šo atbildes veidu.
+    flash:
+      applications:
+        create:
+          notice: Lietotne izveidota.
+        destroy:
+          notice: Lietotne izdzēsta.
+        update:
+          notice: Lietotne atjaunināta.
+      authorized_applications:
+        destroy:
+          notice: Lietotne atsaukta.
+    grouped_scopes:
+      access:
+        read: Tikai lasīšanas piekļuve
+        read/write: Lasīšanas un rakstīšanas piekļuve
+        write: Tikai rakstīšanas piekļuve
+      title:
+        accounts: Konti
+        admin/accounts: Kontu pārvaldīšana
+        admin/all: Visas administrēšanas funkcijas
+        admin/reports: Ziņojumu pārvaldīšana
+        all: Pilna piekļuve Tavam Mastodon kontam
+        blocks: Bloķētie
+        bookmarks: Grāmatzīmes
+        conversations: Sarunas
+        crypto: Pilnīga šifrēšana
+        favourites: Izlase
+        filters: Filtri
+        follow: Seko, apklusina un liedz
+        follows: Seko
+        lists: Saraksti
+        media: Multividesu pielikumi
+        mutes: Apklusinātie
+        notifications: Paziņojumi
+        profile: Tavs Mastodon profils
+        push: Uznirstošie paziņojumi
+        reports: Ziņojumi
+        search: Meklēt
+        statuses: Ziņas
+    layouts:
+      admin:
+        nav:
+          applications: Lietotnes
+          oauth2_provider: OAuth2 nodrošinātājs
+      application:
+        title: Nepieciešama OAuth pilnvarošana
+    scopes:
+      admin:read: lasīt visus datus uz servera
+      admin:read:accounts: lasīt jūtīgu informāciju no visiem kontiem
+      admin:read:canonical_email_blocks: lasīt jūtīgu informāciju par visiem kanoniskajiem e-pasta blokiem
+      admin:read:domain_allows: lasīt jūtīgu informāciju par visiem atļautajiem domēniem
+      admin:read:domain_blocks: lasīt jūtīgu informāciju par visiem domēna blokiem
+      admin:read:email_domain_blocks: lasīt jūtīgu informāciju par visiem e-pasta domēna blokiem
+      admin:read:ip_blocks: lasīt jūtīgu informāciju par visiem IP blokiem
+      admin:read:reports: lasīt jūtīgu informāciju no visiem pārskatiem un kontiem, par kuriem ziņots
+      admin:write: modificēt visus datus uz servera
+      admin:write:accounts: veikt satura pārraudzības darbības kontos
+      admin:write:canonical_email_blocks: veikt satura pārraudzības darbības kanoniskajos e-pasta blokos
+      admin:write:domain_allows: veikt satura pārraudzības darbības domēna atļaujā
+      admin:write:domain_blocks: veikt satura pārraudzības darbības domēna blokos
+      admin:write:email_domain_blocks: veikt satura pārraudzības darbības e-pasta domēna blokos
+      admin:write:ip_blocks: veikt satura pārraudzības darbības IP blokos
+      admin:write:reports: veikt satura pārraudzības darbības pārskatos
+      crypto: lieto pilnīgu šifrēšanu
+      follow: mainīt konta attiecības
+      profile: lasīt tikai Tava konta profila informāciju
+      push: saņemt savus push paziņojumus
+      read: lasīt visus sava konta datus
+      read:accounts: apskatīt kontu informāciju
+      read:blocks: apskatīt savus blokus
+      read:bookmarks: apskatīt savas grāmatzīmes
+      read:favourites: skatīt tavu izlasi
+      read:filters: apskatīt savus filtrus
+      read:follows: apskatīt savus sekotājus
+      read:lists: apskatīt savus sarakstus
+      read:mutes: apskatīt savus apklusinātos
+      read:notifications: apskatīt savus paziņojumus
+      read:reports: apskatīt savus pārskatus
+      read:search: meklēt savā vārdā
+      read:statuses: skatīt visus ierakstus
+      write: labot visus sava konta datus
+      write:accounts: labot manu profilu
+      write:blocks: bloķēt kontus un domēnus
+      write:bookmarks: pievienotās grāmatzīmes
+      write:conversations: apklusināt un dzēst sarunas
+      write:favourites: iecienītākās ziņas
+      write:filters: izveidot filtrus
+      write:follows: seko cilvēkiem
+      write:lists: izveido sarakstus
+      write:media: pievieno multivides datnes
+      write:mutes: apklusini cilvēkus un sarunas
+      write:notifications: notīri savus paziņojumus
+      write:reports: ziņo par citiem cilvēkiem
+      write:statuses: publicē ziņas

@@ -1,0 +1,38 @@
+---
+tt:
+  devise:
+    confirmations:
+      confirmed: Сезнең э. почта адресыгыз уңышлы расланган.
+    failure:
+      already_authenticated: Сез кердегез инде.
+      inactive: Сезнең аккаунтыгыз әле активламаган.
+      invalid: "%{authentication_keys} яки серсүз дөрес кертелмәгән."
+      locked: Сезнең хисапъязмагыз блокланган.
+      not_found_in_database: "%{authentication_keys} яки серсүз дөрес кертелмәгән."
+    mailer:
+      confirmation_instructions:
+        action: Email адресын расла
+        action_with_app: Расла һәм %{app} эченә кайт
+        title: Email адресын раслагыз
+      email_changed:
+        explanation: 'Сезнең аккаунтыгызның email адресы моңа үзгәртеләчәк:'
+      reset_password_instructions:
+        action: Серсүзне үзгәртү
+        title: Серсүзне алыштыру
+      two_factor_enabled:
+        title: 2FA кабызылды
+      webauthn_credential:
+        deleted:
+          subject: 'Mastodon: Иминлек ачкычы бетерелгән'
+    passwords:
+      updated: Серсүзегез уңышлы үзгәртелде. Сез хәзер кердегез.
+      updated_not_active: Серсүзегез уңышлы үзгәртелде.
+    registrations:
+      updated: Хисабыгыз уңышлы яңартылды.
+    sessions:
+      already_signed_out: Уңышлы чыккансыз.
+      signed_in: Уңышлы кердегез.
+      signed_out: Уңышлы чыккансыз.
+  errors:
+    messages:
+      not_found: табылмады

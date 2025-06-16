@@ -8,10 +8,12 @@ module Admin
       authorize :follow_recommendation, :show?
 
       @form     = Form::AccountBatch.new
-      @accounts = filtered_follow_recommendations
+      @accounts = filtered_follow_recommendations.page(params[:page])
     end
 
     def update
+      authorize :follow_recommendation, :show?
+
       @form = Form::AccountBatch.new(form_account_batch_params.merge(current_account: current_account, action: action_from_button))
       @form.save
     rescue ActionController::ParameterMissing
@@ -35,7 +37,8 @@ module Admin
     end
 
     def form_account_batch_params
-      params.require(:form_account_batch).permit(:action, account_ids: [])
+      params
+        .expect(form_account_batch: [:action, account_ids: []])
     end
 
     def filter_params

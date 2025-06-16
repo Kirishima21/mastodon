@@ -1,0 +1,21 @@
+{
+  "about.fork_disclaimer": "Mae Glitch-Soc yn feddalwedd di-dal a ffynhonnell agored wedi'i fforchio o Mastodon.",
+  "account.disclaimer_full": "Mae'n bosib nad yw'r gwybodaeth isod yn rhoi darlun cyfan o broffil y defnyddiwr.",
+  "account.follows": "Yn dilyn",
+  "account.suspended_disclaimer_full": "Mae'r defnyddiwr yma wedi'i atal gan gymedrolwr.",
+  "account.view_full_profile": "Dangos proffil cyfan",
+  "boost_modal.missing_description": "Mae'r tŵt yma'n cynnwys ychydig gyfryngau heb ddisgrifiad",
+  "column.favourited_by": "Wedi'i hoffi gan",
+  "column.heading": "Misg",
+  "column.reblogged_by": "Wedi'i bŵstio gan",
+  "column.subheading": "Opsiynnau arall",
+  "column_header.profile": "Proffil",
+  "column_subheading.lists": "Rhestri",
+  "column_subheading.navigation": "Llywio",
+  "community.column_settings.allow_local_only": "Dangos tŵtiau lleol yn unig",
+  "compose.content-type.html": "HTML",
+  "compose.content-type.markdown": "Markdown",
+  "compose.content-type.plain": "Testun plaen",
+  "settings.content_warnings": "Content warnings",
+  "settings.preferences": "Preferences"
+}

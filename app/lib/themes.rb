@@ -6,25 +6,27 @@ require 'yaml'
 class Themes
   include Singleton
 
+  THEME_COLORS = {
+    dark: '#181820',
+    light: '#ffffff',
+  }.freeze
+
   def initialize
+    @flavours = {}
 
-    core = YAML.load_file(Rails.root.join('app', 'javascript', 'core', 'theme.yml'))
-    core['pack'] = Hash.new unless core['pack']
+    Rails.root.glob('app/javascript/flavours/*/theme.yml') do |pathname|
+      data = YAML.load_file(pathname)
+      next unless data['pack_directory']
 
-    result = Hash.new
-    Dir.glob(Rails.root.join('app', 'javascript', 'flavours', '*', 'theme.yml')) do |path|
-      data = YAML.load_file(path)
-      next unless data['pack']
-
-      dir = File.dirname(path)
-      name = File.basename(dir)
+      dir = pathname.dirname
+      name = dir.basename.to_s
       locales = []
       screenshots = []
 
       if data['locales']
         Dir.glob(File.join(dir, data['locales'], '*.{js,json}')) do |locale|
-          localeName = File.basename(locale, File.extname(locale))
-          locales.push(localeName) unless localeName.match(/defaultMessages|whitelist|index/)
+          locale_name = File.basename(locale, File.extname(locale))
+          locales.push(locale_name) unless /defaultMessages|whitelist|index/.match?(locale_name)
         end
       end
 
@@ -39,54 +41,40 @@ class Themes
       data['name'] = name
       data['locales'] = locales
       data['screenshot'] = screenshots
-      data['skin'] = { 'default' => [] }
-      result[name] = data
+      data['skins'] = []
+      @flavours[name] = data
     end
 
-    Dir.glob(Rails.root.join('app', 'javascript', 'skins', '*', '*')) do |path|
-      ext = File.extname(path)
-      skin = File.basename(path)
-      name = File.basename(File.dirname(path))
-      next unless result[name]
+    Rails.root.glob('app/javascript/skins/*/*') do |pathname|
+      ext = pathname.extname.to_s
+      skin = pathname.basename.to_s
+      name = pathname.dirname.basename.to_s
+      next unless @flavours[name]
 
-      if File.directory?(path)
-        pack = []
-        Dir.glob(File.join(path, '*.{css,scss}')) do |sheet|
-          pack.push(File.basename(sheet, File.extname(sheet)))
-        end
-      elsif ext.match(/^\.s?css$/i)
-        skin = File.basename(path, ext)
-        pack = ['common']
-      end
-
-      if skin != 'default'
-        result[name]['skin'][skin] = pack
+      if pathname.directory?
+        @flavours[name]['skins'] << skin if pathname.glob('{common,index,application}.{css,scss}').any?
+      elsif /^\.s?css$/i.match?(ext)
+        @flavours[name]['skins'] << pathname.basename(ext).to_s
       end
     end
-
-    @core = core
-    @conf = result
-  end
-
-  def core
-    @core
   end
 
   def flavour(name)
-    @conf[name]
+    @flavours[name]
   end
 
   def flavours
-    @conf.keys
+    @flavours.keys
   end
 
   def skins_for(name)
-    @conf[name]['skin'].keys
+    skins = @flavours[name]['skins']
+    skins.include?('default') && skins.include?('mastodon-light') ? ['system'] + skins : skins
   end
 
   def flavours_and_skins
     flavours.map do |flavour|
-      [flavour, skins_for(flavour).map{ |skin| [flavour, skin] }]
+      [flavour, skins_for(flavour).map { |skin| [flavour, skin] }]
     end
   end
 end

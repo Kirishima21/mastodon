@@ -29,12 +29,17 @@ module Admin
     end
 
     def batch
+      authorize :custom_emoji, :index?
+
       @form = Form::CustomEmojiBatch.new(form_custom_emoji_batch_params.merge(current_account: current_account, action: action_from_button))
       @form.save
     rescue ActionController::ParameterMissing
-      flash[:alert] = I18n.t('admin.accounts.no_account_selected')
+      flash[:alert] = I18n.t('admin.custom_emojis.no_emoji_selected')
     rescue Mastodon::NotPermittedError
       flash[:alert] = I18n.t('admin.custom_emojis.not_permitted')
+    rescue ActiveRecord::RecordInvalid => e
+      error_message = action_from_button == 'copy' ? 'admin.custom_emojis.batch_copy_error' : 'admin.custom_emojis.batch_error'
+      flash[:alert] = I18n.t(error_message, message: e.message)
     ensure
       redirect_to admin_custom_emojis_path(filter_params)
     end
@@ -42,7 +47,8 @@ module Admin
     private
 
     def resource_params
-      params.require(:custom_emoji).permit(:shortcode, :image, :visible_in_picker)
+      params
+        .expect(custom_emoji: [:shortcode, :image, :visible_in_picker])
     end
 
     def filtered_custom_emojis
@@ -72,7 +78,8 @@ module Admin
     end
 
     def form_custom_emoji_batch_params
-      params.require(:form_custom_emoji_batch).permit(:action, :category_id, :category_name, custom_emoji_ids: [])
+      params
+        .expect(form_custom_emoji_batch: [:action, :category_id, :category_name, custom_emoji_ids: []])
     end
   end
 end

@@ -1,14 +1,11 @@
 import escapeTextContentForBrowser from 'escape-html';
+
+import { makeEmojiMap } from 'mastodon/models/custom_emoji';
+
 import emojify from '../../features/emoji/emoji';
-import { unescapeHTML } from '../../utils/html';
 import { expandSpoilers } from '../../initial_state';
 
 const domParser = new DOMParser();
-
-const makeEmojiMap = record => record.emojis.reduce((obj, emoji) => {
-  obj[`:${emoji.shortcode}:`] = emoji;
-  return obj;
-}, {});
 
 export function searchTextFromRawStatus (status) {
   const spoilerText   = status.spoiler_text || '';
@@ -16,42 +13,47 @@ export function searchTextFromRawStatus (status) {
   return domParser.parseFromString(searchContent, 'text/html').documentElement.textContent;
 }
 
-export function normalizeAccount(account) {
-  account = { ...account };
+export function normalizeFilterResult(result) {
+  const normalResult = { ...result };
 
-  const emojiMap = makeEmojiMap(account);
-  const displayName = account.display_name.trim().length === 0 ? account.username : account.display_name;
+  normalResult.filter = normalResult.filter.id;
 
-  account.display_name_html = emojify(escapeTextContentForBrowser(displayName), emojiMap);
-  account.note_emojified = emojify(account.note, emojiMap);
-  account.note_plain = unescapeHTML(account.note);
-
-  if (account.fields) {
-    account.fields = account.fields.map(pair => ({
-      ...pair,
-      name_emojified: emojify(escapeTextContentForBrowser(pair.name), emojiMap),
-      value_emojified: emojify(pair.value, emojiMap),
-      value_plain: unescapeHTML(pair.value),
-    }));
-  }
-
-  if (account.moved) {
-    account.moved = account.moved.id;
-  }
-
-  return account;
+  return normalResult;
 }
 
 export function normalizeStatus(status, normalOldStatus) {
   const normalStatus   = { ...status };
+
   normalStatus.account = status.account.id;
 
   if (status.reblog && status.reblog.id) {
     normalStatus.reblog = status.reblog.id;
   }
 
+  if (status.quote?.quoted_status ?? status.quote?.quoted_status_id) {
+    normalStatus.quote = {
+      ...status.quote,
+      quoted_status: status.quote.quoted_status?.id ?? status.quote?.quoted_status_id,
+    };
+  }
+
   if (status.poll && status.poll.id) {
     normalStatus.poll = status.poll.id;
+  }
+
+  if (status.card) {
+    normalStatus.card = {
+      ...status.card,
+      authors: status.card.authors.map(author => ({
+        ...author,
+        accountId: author.account?.id,
+        account: undefined,
+      })),
+    };
+  }
+
+  if (status.filtered) {
+    normalStatus.filtered = status.filtered.map(normalizeFilterResult);
   }
 
   // Only calculate these values when status first encountered and
@@ -63,6 +65,10 @@ export function normalizeStatus(status, normalOldStatus) {
     normalStatus.spoilerHtml = normalOldStatus.get('spoilerHtml');
     normalStatus.spoiler_text = normalOldStatus.get('spoiler_text');
     normalStatus.hidden = normalOldStatus.get('hidden');
+
+    if (normalOldStatus.get('translation')) {
+      normalStatus.translation = normalOldStatus.get('translation');
+    }
   } else {
     // If the status has a CW but no contents, treat the CW as if it were the
     // status' contents, to avoid having a CW toggle with seemingly no effect.
@@ -73,33 +79,58 @@ export function normalizeStatus(status, normalOldStatus) {
 
     const spoilerText   = normalStatus.spoiler_text || '';
     const searchContent = ([spoilerText, status.content].concat((status.poll && status.poll.options) ? status.poll.options.map(option => option.title) : [])).concat(status.media_attachments.map(att => att.description)).join('\n\n').replace(/<br\s*\/?>/g, '\n').replace(/<\/p><p>/g, '\n\n');
-    const emojiMap      = makeEmojiMap(normalStatus);
+    const emojiMap      = makeEmojiMap(normalStatus.emojis);
 
     normalStatus.search_index = domParser.parseFromString(searchContent, 'text/html').documentElement.textContent;
     normalStatus.contentHtml  = emojify(normalStatus.content, emojiMap);
     normalStatus.spoilerHtml  = emojify(escapeTextContentForBrowser(spoilerText), emojiMap);
     normalStatus.hidden       = expandSpoilers ? false : spoilerText.length > 0 || normalStatus.sensitive;
+
+    if (normalStatus.url && !(normalStatus.url.startsWith('http://') || normalStatus.url.startsWith('https://'))) {
+      normalStatus.url = null;
+    }
+
+    normalStatus.url ||= normalStatus.uri;
+
+    normalStatus.media_attachments.forEach(item => {
+      if (item.remote_url && !(item.remote_url.startsWith('http://') || item.remote_url.startsWith('https://')))
+        item.remote_url = null;
+    });
+  }
+
+  if (normalOldStatus) {
+    const list = normalOldStatus.get('media_attachments');
+    if (normalStatus.media_attachments && list) {
+      normalStatus.media_attachments.forEach(item => {
+        const oldItem = list.find(i => i.get('id') === item.id);
+        if (oldItem && oldItem.get('description') === item.description) {
+          item.translation = oldItem.get('translation');
+        }
+      });
+    }
   }
 
   return normalStatus;
 }
 
-export function normalizePoll(poll) {
-  const normalPoll = { ...poll };
-  const emojiMap = makeEmojiMap(normalPoll);
+export function normalizeStatusTranslation(translation, status) {
+  const emojiMap = makeEmojiMap(status.get('emojis').toJS());
 
-  normalPoll.options = poll.options.map((option, index) => ({
-    ...option,
-    voted: poll.own_votes && poll.own_votes.includes(index),
-    title_emojified: emojify(escapeTextContentForBrowser(option.title), emojiMap),
-  }));
+  const normalTranslation = {
+    detected_source_language: translation.detected_source_language,
+    language: translation.language,
+    provider: translation.provider,
+    contentHtml: emojify(translation.content, emojiMap),
+    spoilerHtml: emojify(escapeTextContentForBrowser(translation.spoiler_text), emojiMap),
+    spoiler_text: translation.spoiler_text,
+  };
 
-  return normalPoll;
+  return normalTranslation;
 }
 
 export function normalizeAnnouncement(announcement) {
   const normalAnnouncement = { ...announcement };
-  const emojiMap = makeEmojiMap(normalAnnouncement);
+  const emojiMap = makeEmojiMap(normalAnnouncement.emojis);
 
   normalAnnouncement.contentHtml = emojify(normalAnnouncement.content, emojiMap);
 

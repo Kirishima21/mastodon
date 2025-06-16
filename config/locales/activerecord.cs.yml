@@ -1,0 +1,77 @@
+---
+cs:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: Uzávěrka
+        options: Volby
+      user:
+        agreement: Souhlas s podmínkami
+        email: E-mailová adresa
+        locale: Jazyk
+        password: Heslo
+      user/account:
+        username: Uživatelské jméno
+      user/invite_request:
+        text: Důvod
+    errors:
+      attributes:
+        domain:
+          invalid: není platný název domény
+      messages:
+        invalid_domain_on_line: "%{value} není platný název domény"
+      models:
+        account:
+          attributes:
+            fields:
+              fields_with_values_missing_labels: obsahuje hodnoty s chybějícími popisky
+            username:
+              invalid: musí obsahovat pouze písmena, číslice a podtržítka
+              reserved: je vyhrazeno
+        admin/webhook:
+          attributes:
+            url:
+              invalid: není platná URL
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: není platná URL
+        import:
+          attributes:
+            data:
+              malformed: je chybný
+        list_account:
+          attributes:
+            account_id:
+              taken: již je na seznamu
+          must_be_following: musí být sledovaný účet
+        status:
+          attributes:
+            reblog:
+              taken: příspěvku již existuje
+        terms_of_service:
+          attributes:
+            effective_date:
+              too_soon: je příliš brzy, musí být později než %{date}
+        user:
+          attributes:
+            date_of_birth:
+              below_limit: je pod věkovou hranicí
+            email:
+              blocked: používá zakázanou e-mailovou službu
+              unreachable: pravděpodobně neexistuje
+            role_id:
+              elevated: nemůže být vyšší než vaše aktuální role
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: obsahuje oprávnění, která nejsou bezpečná pro základní roli
+              elevated: nemůže obsahovat oprávnění, která vaše aktuální role nemá
+              own_role: nelze změnit s vaší aktuální rolí
+            position:
+              elevated: nemůže být vyšší než vaše aktuální role
+              own_role: nelze změnit s vaší aktuální rolí
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: nelze zahrnout události, k nimž nemáte práva

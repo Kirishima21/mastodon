@@ -5,7 +5,7 @@ module Mastodon
     module_function
 
     def major
-      3
+      4
     end
 
     def minor
@@ -13,15 +13,24 @@ module Mastodon
     end
 
     def patch
-      6
+      0
     end
 
-    def flags
-      ''
+    def default_prerelease
+      'beta.1'
     end
 
+<<<<<<< HEAD
     def suffix
       '+ Astarte on Glitch'
+=======
+    def prerelease
+      version_configuration[:prerelease].presence || default_prerelease
+    end
+
+    def build_metadata
+      version_configuration[:metadata]
+>>>>>>> upstream
     end
 
     def to_a
@@ -29,20 +38,33 @@ module Mastodon
     end
 
     def to_s
-      [to_a.join('.'), flags, suffix].join
+      components = [to_a.join('.')]
+      components << "-#{prerelease}" if prerelease.present?
+      components << "+#{build_metadata}" if build_metadata.present?
+      components.join
+    end
+
+    def gem_version
+      @gem_version ||= Gem::Version.new(to_s.split('+')[0])
+    end
+
+    def api_versions
+      {
+        mastodon: 6,
+      }
     end
 
     def repository
-      ENV.fetch('GITHUB_REPOSITORY', 'glitch-soc/mastodon')
+      source_configuration[:repository]
     end
 
     def source_base_url
-      ENV.fetch('SOURCE_BASE_URL', "https://github.com/#{repository}")
+      source_configuration[:base_url] || "https://github.com/#{repository}"
     end
 
     # specify git tag or commit hash here
     def source_tag
-      ENV.fetch('SOURCE_TAG', nil)
+      source_configuration[:tag]
     end
 
     def source_url
@@ -53,8 +75,24 @@ module Mastodon
       end
     end
 
+    def source_commit
+      ENV.fetch('SOURCE_COMMIT', nil)
+    end
+
     def user_agent
-      @user_agent ||= "#{HTTP::Request::USER_AGENT} (Mastodon/#{Version}; +http#{Rails.configuration.x.use_https ? 's' : ''}://#{Rails.configuration.x.web_domain}/)"
+      @user_agent ||= "Mastodon/#{Version} (#{HTTP::Request::USER_AGENT}; +http#{'s' if Rails.configuration.x.use_https}://#{Rails.configuration.x.web_domain}/)"
+    end
+
+    def version_configuration
+      mastodon_configuration.version
+    end
+
+    def source_configuration
+      mastodon_configuration.source
+    end
+
+    def mastodon_configuration
+      Rails.configuration.x.mastodon
     end
   end
 end

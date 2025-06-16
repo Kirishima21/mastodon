@@ -1,9 +1,12 @@
+- content_for :header_tags do
+  = flavoured_vite_typescript_tag 'public.tsx', crossorigin: 'anonymous'
+
 - content_for :content do
   .container-alt
     .logo-container
       %h1
         = link_to root_path do
-          = svg_logo_full
+          = logo_as_symbol(:wordmark)
 
     .form-container
       = render 'flashes'

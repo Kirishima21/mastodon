@@ -5,9 +5,9 @@ class Auth::ChallengesController < ApplicationController
 
   layout 'auth'
 
-  before_action :set_pack
   before_action :authenticate_user!
 
+  skip_before_action :check_self_destruct!
   skip_before_action :require_functional!
 
   def create
@@ -19,11 +19,5 @@ class Auth::ChallengesController < ApplicationController
       flash.now[:alert] = I18n.t('challenge.invalid_password')
       render_challenge
     end
-  end
-
-  private
-
-  def set_pack
-    use_pack 'auth'
   end
 end

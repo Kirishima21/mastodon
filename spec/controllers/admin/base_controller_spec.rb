@@ -2,32 +2,55 @@
 
 require 'rails_helper'
 
-describe Admin::BaseController, type: :controller do
+RSpec.describe Admin::BaseController do
+  render_views
+
   controller do
     def success
-      render 'admin/reports/show'
+      authorize :dashboard, :index?
+      render html: '<p>success</p>', layout: true
     end
   end
 
-  it 'requires administrator or moderator' do
-    routes.draw { get 'success' => 'admin/base#success' }
-    sign_in(Fabricate(:user, admin: false, moderator: false))
-    get :success
+  before { routes.draw { get 'success' => 'admin/base#success' } }
 
-    expect(response).to have_http_status(:forbidden)
+  context 'when signed in as regular user' do
+    before { sign_in Fabricate(:user) }
+
+    it 'responds with unauthorized' do
+      get :success
+
+      expect(response).to have_http_status(403)
+    end
   end
 
-  it 'renders admin layout as a moderator' do
-    routes.draw { get 'success' => 'admin/base#success' }
-    sign_in(Fabricate(:user, moderator: true))
-    get :success
-    expect(response).to render_template layout: 'admin'
+  context 'when signed in as moderator' do
+    before { sign_in Fabricate(:moderator_user) }
+
+    it 'returns success with private headers and admin layout' do
+      get :success
+
+      expect(response)
+        .to have_http_status(200)
+      expect(response.headers['Cache-Control'])
+        .to include('private, no-store')
+      expect(response.parsed_body)
+        .to have_css('body.admin')
+    end
   end
 
-  it 'renders admin layout as an admin' do
-    routes.draw { get 'success' => 'admin/base#success' }
-    sign_in(Fabricate(:user, admin: true))
-    get :success
-    expect(response).to render_template layout: 'admin'
+  context 'when signed in as admin' do
+    before { sign_in Fabricate(:admin_user) }
+
+    it 'returns success with private headers and admin layout' do
+      get :success
+
+      expect(response)
+        .to have_http_status(200)
+      expect(response.headers['Cache-Control'])
+        .to include('private, no-store')
+      expect(response.parsed_body)
+        .to have_css('body.admin')
+    end
   end
 end

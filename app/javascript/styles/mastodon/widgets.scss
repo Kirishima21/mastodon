@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @use "sass:math";
 
 .hero-widget {
@@ -279,12 +280,12 @@
     }
   }
 }
+=======
+@use 'variables' as *;
+@use 'functions' as *;
+>>>>>>> upstream
 
 .directory {
-  background: $ui-base-color;
-  border-radius: 4px;
-  box-shadow: 0 0 15px rgba($base-shadow-color, 0.2);
-
   &__tag {
     box-sizing: border-box;
     margin-bottom: 10px;
@@ -294,7 +295,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: $ui-base-color;
+      border: 1px solid var(--background-border-color);
       border-radius: 4px;
       padding: 15px;
       text-decoration: none;
@@ -306,7 +307,7 @@
       &:hover,
       &:active,
       &:focus {
-        background: lighten($ui-base-color, 8%);
+        background: $ui-base-color;
       }
     }
 
@@ -361,35 +362,7 @@
     }
 
     .trends__item__current {
-      padding-right: 0;
-    }
-  }
-}
-
-.avatar-stack {
-  display: flex;
-  justify-content: flex-end;
-
-  .account__avatar {
-    flex: 0 0 auto;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    position: relative;
-    margin-left: -10px;
-    background: darken($ui-base-color, 8%);
-    border: 2px solid $ui-base-color;
-
-    &:nth-child(1) {
-      z-index: 1;
-    }
-
-    &:nth-child(2) {
-      z-index: 2;
-    }
-
-    &:nth-child(3) {
-      z-index: 3;
+      padding-inline-end: 0;
     }
   }
 }
@@ -398,6 +371,7 @@
   width: 100%;
 
   .account {
+    max-width: calc(56px + 30ch);
     padding: 0;
     border: 0;
   }
@@ -414,7 +388,7 @@
     padding: 10px;
 
     &:first-child {
-      text-align: left;
+      text-align: start;
     }
   }
 
@@ -445,9 +419,9 @@
 
   tbody td.accounts-table__extra {
     width: 120px;
-    text-align: right;
+    text-align: end;
     color: $darker-text-color;
-    padding-right: 16px;
+    padding-inline-end: 16px;
 
     a {
       text-decoration: none;
@@ -456,7 +430,7 @@
       &:focus,
       &:hover,
       &:active {
-        text-decoration: underline;
+        color: $highlight-text-color;
       }
     }
   }
@@ -466,13 +440,12 @@
     vertical-align: initial !important;
   }
 
-  &__interrelationships {
+  tbody td.accounts-table__interrelationships {
     width: 21px;
+    padding-inline-end: 16px;
   }
 
-  .fa {
-    font-size: 16px;
-
+  .icon {
     &.active {
       color: $highlight-text-color;
     }
@@ -492,6 +465,7 @@
     }
   }
 }
+<<<<<<< HEAD
 
 .moved-account-widget,
 .memoriam-widget,
@@ -636,3 +610,5 @@ $fluid-breakpoint: $maximum-width + 20px;
     border-bottom: 1px solid lighten($ui-base-color, 4%);
   }
 }
+=======
+>>>>>>> upstream

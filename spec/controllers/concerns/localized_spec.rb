@@ -2,9 +2,9 @@
 
 require 'rails_helper'
 
-describe ApplicationController, type: :controller do
-  controller do
-    include Localized
+RSpec.describe Localized do
+  controller(ApplicationController) do
+    include Localized # rubocop:disable RSpec/DescribedClass
 
     def success
       render plain: I18n.locale, status: 200
@@ -41,7 +41,7 @@ describe ApplicationController, type: :controller do
     end
   end
 
-  context 'user with valid locale has signed in' do
+  context 'with a user with valid locale has signed in' do
     it "sets user's locale" do
       user = Fabricate(:user, locale: :ca)
 
@@ -52,17 +52,17 @@ describe ApplicationController, type: :controller do
     end
   end
 
-  context 'user with invalid locale has signed in' do
+  context 'with a user with invalid locale has signed in' do
     before do
       user = Fabricate.build(:user, locale: :invalid)
       user.save!(validate: false)
       sign_in(user)
     end
 
-    include_examples 'default locale'
+    it_behaves_like 'default locale'
   end
 
-  context 'user has not signed in' do
-    include_examples 'default locale'
+  context 'with a user who has not signed in' do
+    it_behaves_like 'default locale'
   end
 end

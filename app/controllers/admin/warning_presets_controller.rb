@@ -11,6 +11,10 @@ module Admin
       @warning_preset  = AccountWarningPreset.new
     end
 
+    def edit
+      authorize @warning_preset, :update?
+    end
+
     def create
       authorize :account_warning_preset, :create?
 
@@ -22,10 +26,6 @@ module Admin
         @warning_presets = AccountWarningPreset.alphabetic
         render :index
       end
-    end
-
-    def edit
-      authorize @warning_preset, :update?
     end
 
     def update
@@ -52,7 +52,8 @@ module Admin
     end
 
     def warning_preset_params
-      params.require(:account_warning_preset).permit(:title, :text)
+      params
+        .expect(account_warning_preset: [:title, :text])
     end
   end
 end

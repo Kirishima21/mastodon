@@ -3,12 +3,10 @@
 class ActivityPub::OutboxesController < ActivityPub::BaseController
   LIMIT = 20
 
-  include SignatureVerification
-  include AccountOwnedConcern
+  vary_by -> { 'Signature' if authorized_fetch_mode? || page_requested? }
 
-  before_action :require_signature!, if: :authorized_fetch_mode?
+  before_action :require_account_signature!, if: :authorized_fetch_mode?
   before_action :set_statuses
-  before_action :set_cache_headers
 
   def show
     if page_requested?
@@ -16,6 +14,7 @@ class ActivityPub::OutboxesController < ActivityPub::BaseController
     else
       expires_in(3.minutes, public: public_fetch_mode?)
     end
+
     render json: outbox_presenter, serializer: ActivityPub::OutboxSerializer, adapter: ActivityPub::Adapter, content_type: 'application/activity+json'
   end
 
@@ -42,12 +41,8 @@ class ActivityPub::OutboxesController < ActivityPub::BaseController
     end
   end
 
-  def outbox_url(**kwargs)
-    if params[:account_username].present?
-      account_outbox_url(@account, **kwargs)
-    else
-      instance_actor_outbox_url(**kwargs)
-    end
+  def outbox_url(...)
+    ActivityPub::TagManager.instance.outbox_uri_for(@account, ...)
   end
 
   def next_page
@@ -61,8 +56,8 @@ class ActivityPub::OutboxesController < ActivityPub::BaseController
   def set_statuses
     return unless page_requested?
 
-    @statuses = cache_collection_paginated_by_id(
-      @account.statuses.permitted_for(@account, signed_request_account),
+    @statuses = preload_collection_paginated_by_id(
+      AccountStatusesFilter.new(@account, signed_request_account).results,
       Status,
       LIMIT,
       params_slice(:max_id, :min_id, :since_id)
@@ -79,9 +74,5 @@ class ActivityPub::OutboxesController < ActivityPub::BaseController
 
   def set_account
     @account = params[:account_username].present? ? Account.find_local!(username_param) : Account.representative
-  end
-
-  def set_cache_headers
-    response.headers['Vary'] = 'Signature' if authorized_fetch_mode? || page_requested?
   end
 end

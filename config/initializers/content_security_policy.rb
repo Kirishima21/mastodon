@@ -1,31 +1,49 @@
-# Define an application-wide content security policy
-# For further information see the following documentation
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+# frozen_string_literal: true
 
+<<<<<<< HEAD
 if Rails.env.production?
   assets_host = Rails.configuration.action_controller.asset_host || "https://#{ENV['WEB_DOMAIN'] || ENV['LOCAL_DOMAIN']}"
   data_hosts = [assets_host]
   cloudflarecdn = 'https://cdnjs.cloudflare.com'
   mathjax = 'https://cdn.mathjax.org'
   cdn_hosts = 'https://media-astarte.global.ssl.fastly.net'
+=======
+# Be sure to restart your server when you modify this file.
+>>>>>>> upstream
 
-  if ENV['S3_ENABLED'] == 'true'
-    attachments_host = "https://#{ENV['S3_ALIAS_HOST'] || ENV['S3_CLOUDFRONT_HOST'] || ENV['S3_HOSTNAME'] || "s3-#{ENV['S3_REGION'] || 'us-east-1'}.amazonaws.com"}"
-    attachments_host = "https://#{Addressable::URI.parse(attachments_host).host}"
-  elsif ENV['SWIFT_ENABLED'] == 'true'
-    attachments_host = ENV['SWIFT_OBJECT_URL']
-    attachments_host = "https://#{Addressable::URI.parse(attachments_host).host}"
+# Define an application-wide content security policy.
+# See the Securing Rails Applications Guide for more information:
+# https://guides.rubyonrails.org/security.html#content-security-policy-header
+
+require_relative '../../app/lib/content_security_policy'
+
+policy = ContentSecurityPolicy.new
+assets_host = policy.assets_host
+media_hosts = policy.media_hosts
+
+Rails.application.config.content_security_policy do |p|
+  p.base_uri        :none
+  p.default_src     :none
+  p.frame_ancestors :none
+  p.font_src        :self, assets_host
+  p.img_src         :self, :data, :blob, *media_hosts
+  p.media_src       :self, :data, *media_hosts
+  p.manifest_src    :self, assets_host
+
+  if policy.sso_host.present?
+    p.form_action :self, policy.sso_host
   else
-    attachments_host = nil
+    p.form_action :self
   end
 
-  data_hosts << attachments_host unless attachments_host.nil?
+  p.child_src  :self, :blob, assets_host
+  p.worker_src :self, :blob, assets_host
 
-  if ENV['PAPERCLIP_ROOT_URL']
-    url = Addressable::URI.parse(assets_host) + ENV['PAPERCLIP_ROOT_URL']
-    data_hosts << "https://#{url.host}"
-  end
+  if Rails.env.development?
+    vite_public_host = ENV.fetch('VITE_DEV_SERVER_PUBLIC', "localhost:#{ViteRuby.config.port}")
+    front_end_build_urls = %w(ws http).map { |protocol| "#{protocol}#{'s' if ViteRuby.config.https}://#{vite_public_host}" }
 
+<<<<<<< HEAD
   data_hosts.concat(ENV['EXTRA_DATA_HOSTS'].split('|')) if ENV['EXTRA_DATA_HOSTS']
 
   data_hosts.uniq!
@@ -44,6 +62,17 @@ if Rails.env.production?
     p.worker_src      :self, :blob, assets_host
     p.connect_src     :self, :unsafe_inline, :blob, :data, Rails.configuration.x.streaming_api_base_url, *data_hosts, cloudflarecdn, mathjax
     p.manifest_src    :self, assets_host
+=======
+    p.connect_src :self, :data, :blob, *media_hosts, Rails.configuration.x.streaming_api_base_url, *front_end_build_urls
+    p.script_src  :self, :unsafe_inline, :unsafe_eval, assets_host
+    p.frame_src   :self, :https, :http
+    p.style_src   :self, assets_host, :unsafe_inline
+  else
+    p.connect_src :self, :data, :blob, *media_hosts, Rails.configuration.x.streaming_api_base_url
+    p.script_src  :self, assets_host, "'wasm-unsafe-eval'"
+    p.frame_src   :self, :https
+    p.style_src   :self, assets_host
+>>>>>>> upstream
   end
 end
 
@@ -52,7 +81,7 @@ end
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy-Report-Only
 # Rails.application.config.content_security_policy_report_only = true
 
-Rails.application.config.content_security_policy_nonce_generator = -> request { SecureRandom.base64(16) }
+Rails.application.config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
 
 Rails.application.config.content_security_policy_nonce_directives = %w(style-src)
 
@@ -64,5 +93,21 @@ Rails.application.reloader.to_prepare do
 
   PgHero::HomeController.after_action do
     request.content_security_policy_nonce_generator = nil
+  end
+
+  if Rails.env.development?
+    LetterOpenerWeb::LettersController.content_security_policy do |p|
+      p.child_src       :self
+      p.connect_src     :none
+      p.frame_ancestors :self
+      p.frame_src       :self
+      p.script_src      :unsafe_inline
+      p.style_src       :unsafe_inline
+      p.worker_src      :none
+    end
+
+    LetterOpenerWeb::LettersController.after_action do
+      request.content_security_policy_nonce_directives = %w(script-src)
+    end
   end
 end

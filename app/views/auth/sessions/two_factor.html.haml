@@ -1,7 +1,9 @@
 - content_for :page_title do
   = t('auth.login')
 
-- if @webauthn_enabled
+= flavoured_vite_typescript_tag 'two_factor_authentication.ts', crossorigin: 'anonymous'
+
+- if webauthn_enabled?
   = render partial: 'auth/sessions/two_factor/webauthn_form', locals: { hidden: @scheme_type != 'webauthn' }
 
 = render partial: 'auth/sessions/two_factor/otp_authentication_form', locals: { hidden: @scheme_type != 'totp' }

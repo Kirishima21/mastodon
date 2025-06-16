@@ -1,0 +1,77 @@
+---
+zh-TW:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: 截止時間
+        options: 選項
+      user:
+        agreement: 服務同意書
+        email: 電子郵件地址
+        locale: 地區
+        password: 密碼
+      user/account:
+        username: 使用者名稱
+      user/invite_request:
+        text: 原因
+    errors:
+      attributes:
+        domain:
+          invalid: 並非一個有效網域
+      messages:
+        invalid_domain_on_line: "%{value} 並非一個有效網域"
+      models:
+        account:
+          attributes:
+            fields:
+              fields_with_values_missing_labels: 包含缺少標籤之值
+            username:
+              invalid: 只能有字母、數字及底線
+              reserved: 是保留關鍵字
+        admin/webhook:
+          attributes:
+            url:
+              invalid: 不是有效的 URL
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: 不是有效的網址
+        import:
+          attributes:
+            data:
+              malformed: 資料不正確
+        list_account:
+          attributes:
+            account_id:
+              taken: 已於列表中
+          must_be_following: 必須為已跟隨之帳號
+        status:
+          attributes:
+            reblog:
+              taken: 嘟文已經存在
+        terms_of_service:
+          attributes:
+            effective_date:
+              too_soon: 太快了，必須晚於 %{date}
+        user:
+          attributes:
+            date_of_birth:
+              below_limit: 低於年齡要求
+            email:
+              blocked: 使用不被允許的電子郵件提供商
+              unreachable: 該電子郵件地址似乎無法使用
+            role_id:
+              elevated: 不能高於您目前的角色
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: 包含對基本角色不安全的權限
+              elevated: 不能包含您目前角色不具備的權限
+              own_role: 無法被您目前的角色更改
+            position:
+              elevated: 不能高於您目前的角色
+              own_role: 無法被您目前的角色更改
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: 無法包含您無存取權之事件

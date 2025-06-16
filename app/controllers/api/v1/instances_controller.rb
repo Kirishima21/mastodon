@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-class Api::V1::InstancesController < Api::BaseController
-  skip_before_action :set_cache_headers
-  skip_before_action :require_authenticated_user!, unless: :whitelist_mode?
+class Api::V1::InstancesController < Api::V2::InstancesController
+  include DeprecationConcern
+
+  deprecate_api '2022-11-14'
 
   def show
-    expires_in 3.minutes, public: true
-    render_with_cache json: {}, serializer: REST::InstanceSerializer, root: 'instance'
+    cache_even_if_authenticated!
+    render_with_cache json: InstancePresenter.new, serializer: REST::V1::InstanceSerializer, root: 'instance'
   end
 end

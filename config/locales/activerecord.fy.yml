@@ -1,0 +1,77 @@
+---
+fy:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: Deadline
+        options: Karren
+      user:
+        agreement: Tsjinstbetingsten
+        email: E-mailadres
+        locale: Taal
+        password: Wachtwurd
+      user/account:
+        username: Brûkersnamme
+      user/invite_request:
+        text: Reden
+    errors:
+      attributes:
+        domain:
+          invalid: is in ûnjildige domeinnamme
+      messages:
+        invalid_domain_on_line: "%{value} is in ûnjildige domeinnamme"
+      models:
+        account:
+          attributes:
+            fields:
+              fields_with_values_missing_labels: befettet wearden mei ûntbrekkende labels
+            username:
+              invalid: mei allinnich letters, nûmers en ûnderstreekjes befetsje
+              reserved: reservearre
+        admin/webhook:
+          attributes:
+            url:
+              invalid: is in ûnjildige URL
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: is in ûnjildige URL
+        import:
+          attributes:
+            data:
+              malformed: hat de ferkearde opmaak
+        list_account:
+          attributes:
+            account_id:
+              taken: stiet al yn de list
+          must_be_following: moat in folge account wêze
+        status:
+          attributes:
+            reblog:
+              taken: fan berjocht bestiet al
+        terms_of_service:
+          attributes:
+            effective_date:
+              too_soon: is te betiid, moat nei %{date} wêze
+        user:
+          attributes:
+            date_of_birth:
+              below_limit: is ûnder de leeftiidsgrins
+            email:
+              blocked: brûkt in net tastiene e-mailprovider
+              unreachable: liket net te bestean
+            role_id:
+              elevated: kin net heger wêze as jo aktuele rol
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: rjochten tafoegje dy’t net feilich binne foar de basisrol
+              elevated: kin gjin rjochten tafoegje dy’t jo aktuele rol net besit
+              own_role: kin net mei jo aktuele rol wizige wurde
+            position:
+              elevated: kin net heger wêze as jo aktuele rol
+              own_role: kin net mei jo aktuele rol wizige wurde
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: kin gjin barrens befetsje dêr’t jo gjin rjochten foar hawwe

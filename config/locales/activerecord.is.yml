@@ -1,0 +1,77 @@
+---
+is:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: Lokadagur
+        options: Valkostir
+      user:
+        agreement: Þjónustuskilmálar
+        email: Tölvupóstfang
+        locale: Staðfærsla
+        password: Lykilorð
+      user/account:
+        username: Notandanafn
+      user/invite_request:
+        text: Ástæða
+    errors:
+      attributes:
+        domain:
+          invalid: er ekki leyfilegt nafn á léni
+      messages:
+        invalid_domain_on_line: "%{value} er ekki leyfilegt nafn á léni"
+      models:
+        account:
+          attributes:
+            fields:
+              fields_with_values_missing_labels: inniheldur gildi sem vantar merkingar
+            username:
+              invalid: má aðeins innihalda bókstafi, tölur og undirstrik
+              reserved: er frátekið
+        admin/webhook:
+          attributes:
+            url:
+              invalid: er ekki gild vefslóð
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: er ekki gild vefslóð
+        import:
+          attributes:
+            data:
+              malformed: er rangt formað
+        list_account:
+          attributes:
+            account_id:
+              taken: er þegar á listanum
+          must_be_following: verður að vera aðgangur sem fylgst er með
+        status:
+          attributes:
+            reblog:
+              taken: af færslum er þegar fyrirliggjandi
+        terms_of_service:
+          attributes:
+            effective_date:
+              too_soon: er of snemmt, verður að vera síðar en %{date}
+        user:
+          attributes:
+            date_of_birth:
+              below_limit: er undir aldurstakmörkum
+            email:
+              blocked: notar óleyfilega tölvupóstþjónustu
+              unreachable: virðist ekki vera til
+            role_id:
+              elevated: getur ekki verið veigameiri en núverandi hlutverk þitt
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: hefur heimildir sem ekki eru öruggar fyrir grunnhlutverk
+              elevated: getur ekki haft heimildir sem núverandi hlutverk þitt er ekki með
+              own_role: er ekki hægt að breyta með þinu hlutverki
+            position:
+              elevated: getur ekki verið veigameiri en núverandi hlutverk þitt
+              own_role: er ekki hægt að breyta með þinu hlutverki
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: getur ekki innihaldið atburði sem þú hefur ekki réttindi á

@@ -1,117 +1,140 @@
 # frozen_string_literal: true
 
 class REST::InstanceSerializer < ActiveModel::Serializer
+  class ContactSerializer < ActiveModel::Serializer
+    attributes :email
+
+    has_one :account, serializer: REST::AccountSerializer
+  end
+
+  include InstanceHelper
   include RoutingHelper
 
-  attributes :uri, :title, :short_description, :description, :email,
-             :version, :urls, :stats, :thumbnail, :max_toot_chars, :poll_limits,
-             :languages, :registrations, :approval_required, :invites_enabled,
-             :configuration
+  attributes :domain, :title, :version, :source_url, :description,
+             :usage, :thumbnail, :icon, :languages, :configuration,
+             :registrations, :api_versions
 
-  has_one :contact_account, serializer: REST::AccountSerializer
-
+  has_one :contact, serializer: ContactSerializer
   has_many :rules, serializer: REST::RuleSerializer
 
-  delegate :contact_account, :rules, to: :instance_presenter
-
-  def uri
-    Rails.configuration.x.local_domain
-  end
-
-  def title
-    Setting.site_title
-  end
-
-  def short_description
-    Setting.site_short_description
-  end
-
-  def description
-    Setting.site_description
-  end
-
-  def email
-    Setting.site_contact_email
-  end
-
-  def version
-    Mastodon::Version.to_s
-  end
-
   def thumbnail
-    instance_presenter.thumbnail ? full_asset_url(instance_presenter.thumbnail.file.url) : full_pack_url('media/images/preview.jpg')
+    if object.thumbnail
+      {
+        url: full_asset_url(object.thumbnail.file.url(:'@1x')),
+        blurhash: object.thumbnail.blurhash,
+        versions: {
+          '@1x': full_asset_url(object.thumbnail.file.url(:'@1x')),
+          '@2x': full_asset_url(object.thumbnail.file.url(:'@2x')),
+        },
+      }
+    else
+      {
+        url: frontend_asset_url('images/preview.png'),
+      }
+    end
   end
 
-  def max_toot_chars
-    StatusLengthValidator::MAX_CHARS
+  def icon
+    SiteUpload::ANDROID_ICON_SIZES.map do |size|
+      src = app_icon_path(size.to_i)
+      src = URI.join(root_url, src).to_s if src.present?
+
+      {
+        src: src || frontend_asset_url("icons/android-chrome-#{size}x#{size}.png"),
+        size: "#{size}x#{size}",
+      }
+    end
   end
 
-  def poll_limits
+  def usage
     {
-      max_options: PollValidator::MAX_OPTIONS,
-      max_option_chars: PollValidator::MAX_OPTION_CHARS,
-      min_expiration: PollValidator::MIN_EXPIRATION,
-      max_expiration: PollValidator::MAX_EXPIRATION,
+      users: {
+        active_month: limited_federation? ? 0 : object.active_user_count(4),
+      },
     }
-  end
-
-  def stats
-    {
-      user_count: instance_presenter.user_count,
-      status_count: instance_presenter.status_count,
-      domain_count: instance_presenter.domain_count,
-    }
-  end
-
-  def urls
-    { streaming_api: Rails.configuration.x.streaming_api_base_url }
   end
 
   def configuration
     {
+      urls: {
+        streaming: Rails.configuration.x.streaming_api_base_url,
+        status: object.status_page_url,
+        about: about_url,
+        privacy_policy: privacy_policy_url,
+        terms_of_service: TermsOfService.live.exists? ? terms_of_service_url : nil,
+      },
+
+      vapid: {
+        public_key: Rails.configuration.x.vapid.public_key,
+      },
+
+      accounts: {
+        max_featured_tags: FeaturedTag::LIMIT,
+        max_pinned_statuses: StatusPinValidator::PIN_LIMIT,
+      },
+
       statuses: {
         max_characters: StatusLengthValidator::MAX_CHARS,
-        max_media_attachments: 4,
+        max_media_attachments: Status::MEDIA_ATTACHMENTS_LIMIT,
         characters_reserved_per_url: StatusLengthValidator::URL_PLACEHOLDER_CHARS,
+        supported_mime_types: HtmlAwareFormatter::STATUS_MIME_TYPES,
       },
 
       media_attachments: {
-        supported_mime_types: MediaAttachment::IMAGE_MIME_TYPES + MediaAttachment::VIDEO_MIME_TYPES + MediaAttachment::AUDIO_MIME_TYPES,
-        image_size_limit: MediaAttachment::IMAGE_LIMIT,
+        description_limit: MediaAttachment::MAX_DESCRIPTION_LENGTH,
         image_matrix_limit: Attachmentable::MAX_MATRIX_LIMIT,
-        video_size_limit: MediaAttachment::VIDEO_LIMIT,
+        image_size_limit: MediaAttachment::IMAGE_LIMIT,
+        supported_mime_types: MediaAttachment.supported_mime_types,
         video_frame_rate_limit: MediaAttachment::MAX_VIDEO_FRAME_RATE,
         video_matrix_limit: MediaAttachment::MAX_VIDEO_MATRIX_LIMIT,
+        video_size_limit: MediaAttachment::VIDEO_LIMIT,
       },
 
       polls: {
-        max_options: PollValidator::MAX_OPTIONS,
-        max_characters_per_option: PollValidator::MAX_OPTION_CHARS,
-        min_expiration: PollValidator::MIN_EXPIRATION,
-        max_expiration: PollValidator::MAX_EXPIRATION,
+        max_options: PollOptionsValidator::MAX_OPTIONS,
+        max_characters_per_option: PollOptionsValidator::MAX_OPTION_CHARS,
+        min_expiration: PollExpirationValidator::MIN_EXPIRATION,
+        max_expiration: PollExpirationValidator::MAX_EXPIRATION,
       },
+
+      translation: {
+        enabled: TranslationService.configured?,
+      },
+
+      limited_federation: limited_federation?,
     }
   end
 
-  def languages
-    [I18n.default_locale]
-  end
-
   def registrations
-    Setting.registrations_mode != 'none' && !Rails.configuration.x.single_user_mode
+    {
+      enabled: registrations_enabled?,
+      approval_required: Setting.registrations_mode == 'approved',
+      reason_required: Setting.registrations_mode == 'approved' && Setting.require_invite_text,
+      message: registrations_enabled? ? nil : registrations_message,
+      min_age: Setting.min_age.presence,
+      url: ENV.fetch('SSO_ACCOUNT_SIGN_UP', nil),
+    }
   end
 
-  def approval_required
-    Setting.registrations_mode == 'approved'
-  end
-
-  def invites_enabled
-    Setting.min_invite_role == 'user'
+  def api_versions
+    Mastodon::Version.api_versions
   end
 
   private
 
-  def instance_presenter
-    @instance_presenter ||= InstancePresenter.new
+  def registrations_enabled?
+    Setting.registrations_mode != 'none' && !Rails.configuration.x.single_user_mode
+  end
+
+  def registrations_message
+    markdown.render(Setting.closed_registrations_message) if Setting.closed_registrations_message.present?
+  end
+
+  def limited_federation?
+    Rails.configuration.x.limited_federation_mode
+  end
+
+  def markdown
+    @markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, no_images: true)
   end
 end

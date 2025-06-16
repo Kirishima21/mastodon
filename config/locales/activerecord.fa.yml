@@ -1,0 +1,77 @@
+---
+fa:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: مهلت
+        options: گزینه‌ها
+      user:
+        agreement: توافق‌نامهٔ خدمت
+        email: نشانی رایانامه
+        locale: موقعیت
+        password: گذرواژه
+      user/account:
+        username: نام کاربری
+      user/invite_request:
+        text: دلیل
+    errors:
+      attributes:
+        domain:
+          invalid: نام دامنهٔ معتبری نیست
+      messages:
+        invalid_domain_on_line: "%{value} نام دامنهٔ معتبری نیست"
+      models:
+        account:
+          attributes:
+            fields:
+              fields_with_values_missing_labels: حاوی مقادیری با برچسب های گم شده
+            username:
+              invalid: تنها حروف، اعداد، و زیرخط
+              reserved: محفوظ است
+        admin/webhook:
+          attributes:
+            url:
+              invalid: نشانی معتبری نیست
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: نشانی معتبری نیست
+        import:
+          attributes:
+            data:
+              malformed: بدریخت است
+        list_account:
+          attributes:
+            account_id:
+              taken: در حال حاضر در لیست است
+          must_be_following: باید یک حساب دنبال شده باشد
+        status:
+          attributes:
+            reblog:
+              taken: تا از وضعیت‌ها هنوز وجود دارند
+        terms_of_service:
+          attributes:
+            effective_date:
+              too_soon: بیش از حد زود است. باید بعد از %{date} باشد
+        user:
+          attributes:
+            date_of_birth:
+              below_limit: زیر کران سن است
+            email:
+              blocked: از فراهم‌کنندهٔ رایانامهٔ غیرمجازی استفاده می‌کند
+              unreachable: به نظر نمی‌رسد وجود داشته باشد
+            role_id:
+              elevated: نمی‌تواند بالاتر از نقش کنونیتان باشد
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: شاما اجازه‌هایی که برای نقش پایه امن نیستند
+              elevated: نمی‌تواند شامل اجازه‌هایی باشد که نقش کنونیتان ندارد
+              own_role: نمی‌تواند با نقش کنونیتان تغییر کند
+            position:
+              elevated: نمی‌تواند بالاتر از نقش کنونیتان باشد
+              own_role: نمی‌تواند با نقش کنونیتان تغییر کند
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: نمی‌تواند شامل رویدادهایی باشد که حقوقش را ندارید

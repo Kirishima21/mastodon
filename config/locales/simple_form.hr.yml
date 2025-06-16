@@ -1,0 +1,62 @@
+---
+hr:
+  simple_form:
+    hints:
+      account:
+        display_name: Tvoje puno ime ili tvoj online nadimak.
+      account_warning_preset:
+        title: Proizvoljno. Nije vidljivo primatelju
+      defaults:
+        autofollow: Ljudi koji se registriraju kroz pozivnicu će te automatski slijediti
+        password: Mora biti najmanje 8 znakova
+        setting_display_media_default: Sakrij medijski sadržaj označen kao osjetljiv
+        setting_display_media_hide_all: Uvijek sakrij medijski sadržaj
+        setting_display_media_show_all: Uvijek prikaži medijski sadržaj
+        username: Mora sadržavati samo slova, brojeve i _
+      imports:
+        data: CSV datoteka izvezena iz drugog Mastodonovog poslužitelja
+    labels:
+      account_warning_preset:
+        title: Naslov
+      admin_account_action:
+        type: Radnja
+      defaults:
+        avatar: Profilna slika
+        confirm_new_password: Potvrdi novu lozinku
+        confirm_password: Potvrdi lozinku
+        current_password: Trenutna lozinka
+        data: Podatci
+        display_name: Prikazano ime
+        email: Adresa e-pošte
+        locale: Jezik sučelja
+        new_password: Nova lozinka
+        note: Biografija
+        otp_attempt: Dvofaktorski kôd
+        password: Lozinka
+        setting_auto_play_gif: Automatski pokreni animirane GIF-ove
+        setting_default_privacy: Privatnost objavljivanja
+        setting_display_media_default: Zadano
+        setting_display_media_hide_all: Sakrij sve
+        setting_display_media_show_all: Prikaži sve
+        setting_reduce_motion: Smanji kretanje u animacijama
+        setting_system_font_ui: Koristi zadani font sustava
+        setting_theme: Tema stranice
+        setting_trends: Prikaži današnje trendove
+        type: Tip uvoza
+        username: Korisničko ime
+      interactions:
+        must_be_follower: Blokiraj obavijesti korisnika koji me ne prate
+        must_be_following: Blokiraj obavijesti korisnika koje ne pratim
+      notification_emails:
+        digest: Šalji e-poštu sa sažetkom obavijesti
+        favourite: Netko označi Vaš status favoritom
+        follow: Netko Vas počinje pratiti
+        follow_request: Netko zatraži da Vas prati
+        mention: Netko Vas spomene
+        reblog: Netko boosta Vaš status
+    'no': Ne
+    not_recommended: Nije preporučeno
+    recommended: Preporučeno
+    required:
+      text: obavezno
+    'yes': Da

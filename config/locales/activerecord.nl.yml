@@ -1,0 +1,77 @@
+---
+nl:
+  activerecord:
+    attributes:
+      poll:
+        expires_at: Vervaldatum
+        options: Keuzes
+      user:
+        agreement: Servicevoorwaarden
+        email: E-mailadres
+        locale: Taal
+        password: Wachtwoord
+      user/account:
+        username: Gebruikersnaam
+      user/invite_request:
+        text: Reden
+    errors:
+      attributes:
+        domain:
+          invalid: is een ongeldige domeinnaam
+      messages:
+        invalid_domain_on_line: "%{value} is een ongeldige domeinnaam"
+      models:
+        account:
+          attributes:
+            fields:
+              fields_with_values_missing_labels: bevat waarden met ontbrekende labels
+            username:
+              invalid: alleen letters, nummers en underscores
+              reserved: gereserveerd
+        admin/webhook:
+          attributes:
+            url:
+              invalid: is een ongeldige URL
+        doorkeeper/application:
+          attributes:
+            website:
+              invalid: is een ongeldige URL
+        import:
+          attributes:
+            data:
+              malformed: heeft de verkeerde opmaak
+        list_account:
+          attributes:
+            account_id:
+              taken: staat al in de lijst
+          must_be_following: moet een gevolgd account zijn
+        status:
+          attributes:
+            reblog:
+              taken: van bericht bestaat al
+        terms_of_service:
+          attributes:
+            effective_date:
+              too_soon: is te vroeg, moet na %{date} zijn
+        user:
+          attributes:
+            date_of_birth:
+              below_limit: is onder de leeftijdsgrens
+            email:
+              blocked: gebruikt een niet toegestane e-mailprovider
+              unreachable: schijnt niet te bestaan
+            role_id:
+              elevated: kan niet hoger zijn dan jouw huidige rol
+        user_role:
+          attributes:
+            permissions_as_keys:
+              dangerous: rechten toevoegen die niet veilig zijn voor de basisrol
+              elevated: kan geen rechten toevoegen die jouw huidige rol niet bezit
+              own_role: kan niet met jouw huidige rol worden gewijzigd
+            position:
+              elevated: kan niet hoger zijn dan jouw huidige rol
+              own_role: kan niet met jouw huidige rol worden gewijzigd
+        webhook:
+          attributes:
+            events:
+              invalid_permissions: kan geen gebeurtenissen bevatten waar je geen rechten voor hebt

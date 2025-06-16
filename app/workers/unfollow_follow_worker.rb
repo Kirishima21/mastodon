@@ -5,17 +5,12 @@ class UnfollowFollowWorker
 
   sidekiq_options queue: 'pull'
 
-  def perform(follower_account_id, old_target_account_id, new_target_account_id, bypass_locked = false)
+  def perform(follower_account_id, old_target_account_id, new_target_account_id, bypass_locked = false) # rubocop:disable Style/OptionalBooleanParameter
     follower_account   = Account.find(follower_account_id)
     old_target_account = Account.find(old_target_account_id)
     new_target_account = Account.find(new_target_account_id)
 
-    follow  = follower_account.active_relationships.find_by(target_account: old_target_account)
-    reblogs = follow&.show_reblogs?
-    notify  = follow&.notify?
-
-    FollowService.new.call(follower_account, new_target_account, reblogs: reblogs, notify: notify, bypass_locked: bypass_locked, bypass_limit: true)
-    UnfollowService.new.call(follower_account, old_target_account, skip_unmerge: true)
+    FollowMigrationService.new.call(follower_account, new_target_account, old_target_account, bypass_locked: bypass_locked)
   rescue ActiveRecord::RecordNotFound, Mastodon::NotPermittedError
     true
   end

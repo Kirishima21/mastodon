@@ -2,6 +2,7 @@
 
 class Trends::Base
   include Redisable
+  include LanguagesHelper
 
   class_attribute :default_options
 
@@ -32,20 +33,8 @@ class Trends::Base
     raise NotImplementedError
   end
 
-  def get(*)
-    raise NotImplementedError
-  end
-
-  def score(id)
-    redis.zscore("#{key_prefix}:all", id) || 0
-  end
-
-  def rank(id)
-    redis.zrevrank("#{key_prefix}:allowed", id)
-  end
-
-  def currently_trending_ids(allowed, limit)
-    redis.zrevrange(allowed ? "#{key_prefix}:allowed" : "#{key_prefix}:all", 0, limit.positive? ? limit - 1 : limit).map(&:to_i)
+  def query
+    Trends::Query.new(klass)
   end
 
   protected
@@ -61,15 +50,6 @@ class Trends::Base
   def record_used_id(id, at_time = Time.now.utc)
     redis.sadd(used_key(at_time), id)
     redis.expire(used_key(at_time), 1.day.seconds)
-  end
-
-  def trim_older_items
-    redis.zremrangebyscore("#{key_prefix}:all", '-inf', '(1')
-    redis.zremrangebyscore("#{key_prefix}:allowed", '-inf', '(1')
-  end
-
-  def score_at_rank(rank)
-    redis.zrevrange("#{key_prefix}:allowed", 0, rank, with_scores: true).last&.last || 0
   end
 
   private

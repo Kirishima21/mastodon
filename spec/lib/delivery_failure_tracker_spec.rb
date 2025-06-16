@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe DeliveryFailureTracker do
+RSpec.describe DeliveryFailureTracker do
   subject { described_class.new('http://example.com/inbox') }
 
   describe '#track_success!' do
@@ -22,7 +22,7 @@ describe DeliveryFailureTracker do
 
   describe '#track_failure!' do
     it 'marks URL as unavailable after 7 days of being called' do
-      6.times { |i| Redis.current.sadd('exhausted_deliveries:example.com', i) }
+      6.times { |i| redis.sadd('exhausted_deliveries:example.com', i) }
       subject.track_failure!
 
       expect(subject.days).to eq 7
@@ -42,8 +42,8 @@ describe DeliveryFailureTracker do
       Fabricate(:unavailable_domain, domain: 'foo.bar')
     end
 
-    it 'removes URLs that are unavailable' do
-      results = described_class.without_unavailable(['http://example.com/good/inbox', 'http://foo.bar/unavailable/inbox'])
+    it 'removes URLs that are bogus or unavailable' do
+      results = described_class.without_unavailable(['http://example.com/good/inbox', 'http://foo.bar/unavailable/inbox', '{foo:'])
 
       expect(results).to include('http://example.com/good/inbox')
       expect(results).to_not include('http://foo.bar/unavailable/inbox')

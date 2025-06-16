@@ -2,9 +2,11 @@
 
 require 'rails_helper'
 
-RSpec.describe ChallengableConcern, type: :controller do
+RSpec.describe ChallengableConcern do
+  render_views
+
   controller(ApplicationController) do
-    include ChallengableConcern
+    include ChallengableConcern # rubocop:disable RSpec/DescribedClass
 
     before_action :require_challenge!
 
@@ -31,7 +33,7 @@ RSpec.describe ChallengableConcern, type: :controller do
       sign_in user
     end
 
-    context 'for GET requests' do
+    context 'with GET requests' do
       before { get :foo }
 
       it 'does not ask for password' do
@@ -39,7 +41,7 @@ RSpec.describe ChallengableConcern, type: :controller do
       end
     end
 
-    context 'for POST requests' do
+    context 'with POST requests' do
       before { post :bar }
 
       it 'does not ask for password' do
@@ -56,7 +58,7 @@ RSpec.describe ChallengableConcern, type: :controller do
       sign_in user
     end
 
-    context 'for GET requests' do
+    context 'with GET requests' do
       before { get :foo, session: { challenge_passed_at: Time.now.utc } }
 
       it 'does not ask for password' do
@@ -64,7 +66,7 @@ RSpec.describe ChallengableConcern, type: :controller do
       end
     end
 
-    context 'for POST requests' do
+    context 'with POST requests' do
       before { post :bar, session: { challenge_passed_at: Time.now.utc } }
 
       it 'does not ask for password' do
@@ -81,33 +83,39 @@ RSpec.describe ChallengableConcern, type: :controller do
       sign_in user
     end
 
-    context 'for GET requests' do
+    context 'with GET requests' do
       before { get :foo }
 
       it 'renders challenge' do
-        expect(response).to render_template('auth/challenges/new')
+        expect(response.parsed_body)
+          .to have_title(I18n.t('challenge.prompt'))
       end
-
-      # See Auth::ChallengesControllerSpec
     end
 
-    context 'for POST requests' do
+    context 'with POST requests' do
       before { post :bar }
 
       it 'renders challenge' do
-        expect(response).to render_template('auth/challenges/new')
+        expect(response.parsed_body)
+          .to have_title(I18n.t('challenge.prompt'))
       end
 
       it 'accepts correct password' do
         post :bar, params: { form_challenge: { current_password: password } }
-        expect(response.body).to eq 'bar'
-        expect(session[:challenge_passed_at]).to_not be_nil
+
+        expect(response.body)
+          .to eq 'bar'
+        expect(session[:challenge_passed_at])
+          .to_not be_nil
       end
 
       it 'rejects wrong password' do
         post :bar, params: { form_challenge: { current_password: 'dddfff888123' } }
-        expect(response.body).to render_template('auth/challenges/new')
-        expect(session[:challenge_passed_at]).to be_nil
+
+        expect(response.parsed_body)
+          .to have_title(I18n.t('challenge.prompt'))
+        expect(session[:challenge_passed_at])
+          .to be_nil
       end
     end
   end

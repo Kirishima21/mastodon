@@ -1,7 +1,8 @@
 import { connect } from 'react-redux';
+
+import { changeColumnParams } from '../../../actions/columns';
+import api from '../../../api';
 import ColumnSettings from '../components/column_settings';
-import { changeColumnParams } from 'flavours/glitch/actions/columns';
-import api from 'flavours/glitch/util/api';
 
 const mapStateToProps = (state, { columnId }) => {
   const columns = state.getIn(['settings', 'columns']);
@@ -14,7 +15,7 @@ const mapStateToProps = (state, { columnId }) => {
   return {
     settings: columns.get(index).get('params'),
     onLoad (value) {
-      return api(() => state).get('/api/v2/search', { params: { q: value, type: 'hashtags' } }).then(response => {
+      return api().get('/api/v2/search', { params: { q: value, type: 'hashtags' } }).then(response => {
         return (response.data.hashtags || []).map((tag) => {
           return { value: tag.name, label: `#${tag.name}` };
         });
