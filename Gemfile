@@ -27,17 +27,11 @@ gem 'addressable', '~> 2.8'
 gem 'bootsnap', '~> 1.18.0', require: false
 gem 'browser'
 gem 'charlock_holmes', '~> 0.7.7'
-<<<<<<< HEAD
 gem 'iso-639'
-gem 'chewy', '~> 7.2'
-gem 'cld3', '~> 3.6.0'
-gem 'devise', '~> 4.8'
-gem 'devise-two-factor', '~> 4.0'
-=======
 gem 'chewy', '~> 7.3'
+gem 'cld3', '~> 3.6.0'
 gem 'devise', '~> 4.9'
-gem 'devise-two-factor'
->>>>>>> upstream
+gem 'devise-two-factor', '~> 4.0'
 
 group :pam_authentication, optional: true do
   gem 'devise_pam_authenticatable2', '~> 9.2'
@@ -108,13 +102,8 @@ gem 'json-ld'
 gem 'json-ld-preloaded', '~> 3.2'
 gem 'rdf-normalize', '~> 0.5'
 
-<<<<<<< HEAD
-gem 'redcarpet', '~> 3.5'
 gem 'ruby-bbcode'
-=======
 gem 'prometheus_exporter', '~> 2.2', require: false
->>>>>>> upstream
-
 gem 'opentelemetry-api', '~> 1.5.0'
 
 group :opentelemetry do

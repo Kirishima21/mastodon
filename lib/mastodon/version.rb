@@ -20,17 +20,16 @@ module Mastodon
       'beta.1'
     end
 
-<<<<<<< HEAD
     def suffix
       '+ Astarte on Glitch'
-=======
+    end
+
     def prerelease
       version_configuration[:prerelease].presence || default_prerelease
     end
 
     def build_metadata
       version_configuration[:metadata]
->>>>>>> upstream
     end
 
     def to_a
@@ -41,6 +40,7 @@ module Mastodon
       components = [to_a.join('.')]
       components << "-#{prerelease}" if prerelease.present?
       components << "+#{build_metadata}" if build_metadata.present?
+      components << suffix
       components.join
     end
 
